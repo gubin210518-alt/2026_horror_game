@@ -202,7 +202,17 @@
             {
               "scare": "#a00"
             },
+            {
+              "sfx": "glass"
+            },
+            {
+              "picture": "assets/pics/red_glass.png",
+              "zoom": true
+            },
             "@c4.redBreak",
+            {
+              "picture": null
+            },
             {
               "move": "player",
               "path": "d",

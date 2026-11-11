@@ -15,6 +15,8 @@ const P = {
   die: ['sawtooth', 220, 40, 0.9, 0.5],
   save: ['triangle', 392, 784, 0.4, 0.3],
   bad: ['sawtooth', 160, 90, 0.25, 0.3],
+  glass: ['noise', 9000, 2500, 0.35, 0.7],
+  scream: ['sawtooth', 500, 1400, 0.7, 0.45],
 };
 
 export function sfx(name, vol = 1) {

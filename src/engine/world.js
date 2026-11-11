@@ -101,7 +101,7 @@ function followPath(a) {
 
 export function updateWorld(dt, input) {
   const p = W.p, free = input && !W.busy;
-  W.t += dt;
+  W.t += dt; W.pictureT = (W.pictureT || 0) + dt;
   for (const k of ['shake', 'flash', 'fade', 'pushCd']) W[k] = Math.max(0, W[k] - dt);
 
   if (W.timer && !W.busy && (W.timer.left -= dt) <= 0) { const end = W.timer.end; W.timer = null; run(end); }
@@ -412,7 +412,9 @@ export function drawWorld(ctx) {
   if (big) { // 이벤트가 띄운 큰 그림 (액자 등). 화면 위쪽 가운데에 맞춰 넣는다
     const k = Math.min(440 / big.width, 230 / big.height), bw = big.width * k, bh = big.height * k, bx = (VW - bw) / 2, by = 12;
     ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(0, 0, VW, VH);
-    ctx.imageSmoothingEnabled = true; ctx.drawImage(big, bx, by, bw, bh); ctx.imageSmoothingEnabled = false;
+    // zoom 을 켠 그림은 틀 안에서 천천히 다가간다 (컷신 느낌)
+    const z = W.pictureZoom ? 1 + Math.min(0.12, (W.pictureT || 0) * 0.012) : 1, sw = big.width / z, sh = big.height / z;
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(big, (big.width - sw) / 2, (big.height - sh) / 2, sw, sh, bx, by, bw, bh); ctx.imageSmoothingEnabled = false;
     ctx.strokeStyle = '#0c0a08'; ctx.strokeRect(bx - 0.5, by - 0.5, bw + 1, bh + 1);
   }
   if (W.timer) { // 제한 시간: 화면 아래에서부터 붉게 차오른다

@@ -42,7 +42,14 @@
       {
         "scare": "#002"
       },
+      {
+        "picture": "assets/pics/guard_face.png",
+        "zoom": true
+      },
       "@c3.guard",
+      {
+        "picture": null
+      },
       {
         "move": "guard",
         "path": "dddd",

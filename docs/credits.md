@@ -8,6 +8,7 @@
 | `assets/portraits/yunha.png` | 같음 | 대화창 초상화 |
 | `assets/pics/sisters.png` | 같음 | <가란델가의 자매들> 액자 |
 | `assets/pics/title.png` | 같음 | 타이틀 배경 |
+| `assets/pics/yunha_window.png`, `guard_face.png`, `red_glass.png` | 같음 (2026-11-12 생성) | 컷신용 그림 |
 | 타일, 물건, 문 | 코드로 직접 그림 (`src/engine/art.js`) | 외부 소스 없음 |
 
 AI로 만든 그림입니다. 공개 배포 전에 Higgsfield 이용 약관의 상업적 이용 조건(무료 플랜 기준)을 확인해야 합니다.

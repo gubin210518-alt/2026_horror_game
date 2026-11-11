@@ -66,3 +66,33 @@ Character portrait, head and shoulders, facing slightly toward the viewer, squar
 ## 수정이 필요할 때
 
 넣어 보고 이상하면(칸이 어긋남, 초록 테두리가 남음, 방향 순서가 다름) 파일 이름과 증상을 알려 주세요. 코드 쪽에서 맞추거나 프롬프트를 고쳐 이 문서에 다시 적겠습니다.
+
+## 4. 아직 못 만든 것 (크레딧이 떨어져서 남겨 둔 목록)
+
+2026-11-12 기준 Higgsfield 크레딧을 다 써서 아래는 만들지 못했습니다. 다른 계정을 연결해 주시면 제가 이어서 만들고, 직접 만드실 때는 아래 프롬프트를 쓰시면 됩니다. 모든 프롬프트 앞에 맨 위의 공통 문구를 붙입니다.
+
+컷신용 그림 3장(창문 속 윤하, 경비, 유리를 깨는 붉은 형체)은 이미 만들어 넣었습니다: `assets/pics/yunha_window.png`, `guard_face.png`, `red_glass.png`.
+
+### 지금 넣으면 바로 적용되는 것
+
+| 저장 경로 | 용도 | 비율 | 프롬프트 |
+|---|---|---|---|
+| `assets/portraits/guard.png` | 경비 대화창 초상화 | 1:1 | `RPG Maker dialogue portrait style. Character portrait, head and shoulders filling the frame, square image, solid flat pure green #00FF00 background. A creepy night security guard, dark blue peaked cap, gaunt pale gray face, bloodshot glowing red eyes, expressionless. No green color on the character.` |
+
+### 5장 이후에 쓸 것 (4단계에서 자리를 만든 뒤 적용)
+
+| 저장 경로 | 용도 | 비율 | 프롬프트 |
+|---|---|---|---|
+| `assets/pics/graduation.png` | 강당의 졸업사진 (얼굴이 지워진 단체 사진) | 3:2 | `Cutscene illustration. An old faded class graduation photograph in a wooden frame on a dark wall: five high school students in uniform sitting in a row on chairs on a stage, a second row standing behind them. Every face is scratched out and blank. Dust, water stains, eerie.` |
+| `assets/pics/photo_developed.png` | 촬영 후 현상된 사진 (주인공과 윤하 뒤에 낯선 학생들) | 3:2 | `Cutscene illustration. A freshly developed photograph lying on a wooden stage floor: a high school boy in a navy blazer and a pale girl with long black hair standing side by side, and behind them several unfamiliar students in old-fashioned uniforms with blurred, smiling faces who should not be there. Flash-lit, unsettling.` |
+| `assets/pics/cctv.png` | CCTV 화면 | 16:9 | `Cutscene illustration. A grainy black-and-white CCTV monitor view of an empty school corridor at night, scan lines and static, a tall dark figure standing motionless at the far end, timestamp area left blank.` |
+| `assets/pics/rooftop.png` | 옥상, 마지막 장면 | 16:9 | `Cutscene illustration. A school rooftop at night just before dawn, chain-link fence, a single door at the far end leaking warm white light through its edges, a faint line of sunrise on the horizon, quiet and bittersweet.` |
+| `assets/pics/ending_true.png` | 진엔딩 | 16:9 | `Cutscene illustration. Early morning, a high school boy in a navy blazer and a girl with long black hair in a white blouse walking out through the school front gate together, seen from behind, soft sunrise light, long shadows, peaceful after a long night.` |
+| `assets/pics/ending_alone.png` | 혼자 나오는 엔딩 | 16:9 | `Cutscene illustration. Early morning, a high school boy in a navy blazer standing alone outside the school gate looking back at the building; in one upper window a pale girl with long black hair waves goodbye, smiling. Soft cold dawn light, melancholy.` |
+
+### 있으면 좋은 것 (코드 그림을 대신할 수 있는 것)
+
+타일은 AI로 만들면 칸 경계가 맞지 않아 권하지 않습니다. 대신 아래처럼 물건 하나씩은 바꿀 수 있습니다. 필요하시면 말씀해 주세요. 받는 자리를 만들겠습니다.
+
+- 인체 모형 (과학실), 사물함 벽, 칠판, 책상, 전시장 등 물건 그림: 각각 `#00FF00` 배경의 정면 3/4 시점 한 장
+- 아이템 아이콘 (잉크병, 열쇠, 손전등, 물감칼, 황산병, <읽으면 죽는 책>, 장기 9종): 한 장에 격자로

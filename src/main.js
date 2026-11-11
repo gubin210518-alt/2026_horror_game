@@ -70,7 +70,7 @@ function loop(t) {
   if (W.map && !(m && m.pause !== false)) updateWorld(dt, !m);
 
   ctx.setTransform(cv.width / VW, 0, 0, cv.height / VH, 0, 0);
-  if (W.map) drawWorld(ctx);
+  if (W.map) { if (W.picture && UI.modal) W.pictureT = (W.pictureT || 0) + dt; drawWorld(ctx); }
   else titleBackdrop(t / 1000);
   music(!!W.map && W.chasing);
   drawUI(ctx, dt);

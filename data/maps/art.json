@@ -42,6 +42,9 @@
         "then": [
           "@c2.flee",
           {
+            "picture": null
+          },
+          {
             "scare": "#fff"
           },
           {
@@ -126,6 +129,9 @@
     "stab": [
       {
         "timerStop": 1
+      },
+      {
+        "sfx": "scream"
       },
       {
         "scare": "#fff"
@@ -214,6 +220,10 @@
             "창문 너머에는 이제 아무도 없다."
           ],
           "else": [
+            {
+              "picture": "assets/pics/yunha_window.png",
+              "zoom": true
+            },
             "@c2.window",
             {
               "run": "flee"

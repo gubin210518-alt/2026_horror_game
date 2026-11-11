@@ -94,7 +94,7 @@ async function one(c) {
   if ('run' in c) return exec(c.run);
   if ('timer' in c) { W.timer = { left: c.timer, total: c.timer, label: T(c.label) || '남은 시간', end: c.end }; return; }
   if ('timerStop' in c) { W.timer = null; return; }
-  if ('picture' in c) { W.picture = c.picture || null; return; } // 화면 가운데에 큰 그림을 띄우거나(경로) 지운다(null)
+  if ('picture' in c) { W.picture = c.picture || null; W.pictureT = 0; W.pictureZoom = !!c.zoom; return; } // 화면 가운데에 큰 그림을 띄우거나(경로) 지운다(null)
   if ('readNote' in c) return say(D.notes[c.readNote].text || '(아무것도 적혀 있지 않다.)');
   if ('resetPush' in c) { // 밀어 둔 물건을 처음 자리로
     for (const id of [].concat(c.resetPush)) {
