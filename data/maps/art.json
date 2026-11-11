@@ -59,7 +59,13 @@
       }
     ],
     "intro": [
+      {
+        "picture": "assets/pics/sisters.png"
+      },
       "@c2.intro",
+      {
+        "picture": null
+      },
       {
         "set": "m2_started"
       },

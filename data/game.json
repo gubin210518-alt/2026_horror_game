@@ -61,5 +61,6 @@
         "sanity": 3
       }
     ]
-  }
+  },
+  "titleImage": "assets/pics/title.png"
 }

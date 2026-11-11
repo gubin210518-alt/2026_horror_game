@@ -6,6 +6,7 @@ import { UI, choose, openOptions, drawUI, font } from './engine/ui.js';
 import { startGame } from './engine/events.js';
 import { intro } from './minigames/m0.js';
 import { music } from './engine/audio.js';
+import { pic } from './engine/gfx.js';
 import './minigames/index.js';
 
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
@@ -25,6 +26,16 @@ UI.hooks.title = title;
 
 // 타이틀 배경: 밤의 학교. 창문 하나만 불이 깜빡인다
 function titleBackdrop(t) {
+  const bg = D.game.titleImage && pic(D.game.titleImage, false);
+  if (bg) { // 그림 파일이 있으면 그것을 깔고, 제목이 읽히게 위쪽을 어둡게 한다
+    const k = Math.max(VW / bg.width, VH / bg.height);
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(bg, (VW - bg.width * k) / 2, (VH - bg.height * k) / 2, bg.width * k, bg.height * k);
+    const shade = ctx.createLinearGradient(0, 0, 0, VH);
+    shade.addColorStop(0, 'rgba(0,0,8,.55)'); shade.addColorStop(0.5, 'rgba(0,0,8,.15)'); shade.addColorStop(1, 'rgba(0,0,8,.6)');
+    ctx.fillStyle = shade; ctx.fillRect(0, 0, VW, VH);
+    if (Math.sin(t * 9) * Math.sin(t * 2.3) > 0.5) { ctx.fillStyle = 'rgba(0,0,0,.12)'; ctx.fillRect(0, 0, VW, VH); } // 가끔 깜빡인다
+    return titleText(t);
+  }
   const sky = ctx.createLinearGradient(0, 0, 0, VH);
   sky.addColorStop(0, '#05060f'); sky.addColorStop(1, '#151a2e');
   ctx.fillStyle = sky; ctx.fillRect(0, 0, VW, VH);
@@ -38,6 +49,10 @@ function titleBackdrop(t) {
     ctx.fillStyle = lit ? '#c8b060' : '#11141f'; ctx.fillRect(86 + c * 34, 206 + r * 44, 20, 26);
   }
   ctx.fillStyle = '#04050a'; ctx.fillRect(0, 340, VW, 20);
+  titleText(t);
+}
+
+function titleText(t) {
   ctx.textAlign = 'center';
   font(ctx, 64, true); ctx.shadowColor = '#a00010'; ctx.shadowBlur = 18 + 6 * Math.sin(t * 2);
   ctx.fillStyle = '#b01020'; ctx.fillText(D.game.title, VW / 2, 108); ctx.shadowBlur = 0;

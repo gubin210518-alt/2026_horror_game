@@ -3,7 +3,7 @@ import { D, S, settings, cond, TILE, VW, VH } from './core.js';
 import { down, pressed, consume, lastDir } from './input.js';
 import { run } from './events.js';
 import { sfx } from './audio.js';
-import { sheet } from './gfx.js';
+import { sheet, pic } from './gfx.js';
 import { mapLayer, door, objectSprite } from './art.js';
 import { openStatus, openInventory, openJournal, openPause, toast, font } from './ui.js';
 
@@ -48,7 +48,7 @@ export async function enterMap(id, x, y, dir) {
   if (!D.maps[id]) D.maps[id] = await (await fetch(`data/maps/${id}.json`)).json();
   const m = D.maps[id];
   m.h = m.tiles.length; m.w = Math.max(...m.tiles.map(r => r.length));
-  Object.assign(W, { map: m, id, objs: m.objects || [], hidden: null, speedMul: m.speed || 1, fade: 0.35, breath: false });
+  Object.assign(W, { map: m, id, objs: m.objects || [], hidden: null, picture: null, speedMul: m.speed || 1, fade: 0.35, breath: false });
   W.npcs = (m.npcs || []).map(n => actor({ ...n, home: [n.x, n.y] }));
   S.pos ||= {};
   for (const o of W.objs) if (o.push) { // 밀 수 있는 물건은 옮겨 둔 자리를 기억한다
@@ -408,6 +408,13 @@ export function drawWorld(ctx) {
   if (W.flash > 0) { ctx.globalAlpha = Math.min(1, W.flash * 3); ctx.fillStyle = W.flashColor; ctx.fillRect(0, 0, VW, VH); ctx.globalAlpha = 1; }
   if (W.fade > 0) { ctx.globalAlpha = Math.min(1, W.fade / 0.35); ctx.fillStyle = '#000'; ctx.fillRect(0, 0, VW, VH); ctx.globalAlpha = 1; }
 
+  const big = W.picture && pic(W.picture, false);
+  if (big) { // 이벤트가 띄운 큰 그림 (액자 등). 화면 위쪽 가운데에 맞춰 넣는다
+    const k = Math.min(440 / big.width, 230 / big.height), bw = big.width * k, bh = big.height * k, bx = (VW - bw) / 2, by = 12;
+    ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(0, 0, VW, VH);
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(big, bx, by, bw, bh); ctx.imageSmoothingEnabled = false;
+    ctx.strokeStyle = '#0c0a08'; ctx.strokeRect(bx - 0.5, by - 0.5, bw + 1, bh + 1);
+  }
   if (W.timer) { // 제한 시간: 화면 아래에서부터 붉게 차오른다
     const k = 1 - W.timer.left / W.timer.total;
     ctx.fillStyle = 'rgba(150,0,10,.3)'; ctx.fillRect(0, VH * (1 - k), VW, VH * k);

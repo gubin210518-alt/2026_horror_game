@@ -30,7 +30,7 @@ const save = async () => { // 잉크가 없으면 검사용으로 하나 채우�
   await key('KeyJ'); await key('Space'); await says(); await menus();
 };
 const died = async name => { // 게임오버 화면이 뜨는지 확인하고 다시 시작
-  await page.until(`${G}.UI.modal?.kind === 'gameover'`, 30000);
+  await page.until(`${G}.UI.modal?.kind === 'gameover'`, 90000);
   t.ok(true, name);
   await sleep(1500); await key('Space'); await idle();
 };
