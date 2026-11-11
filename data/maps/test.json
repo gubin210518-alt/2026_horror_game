@@ -1,0 +1,50 @@
+{
+  "name": "엔진 시험장",
+  "lit": true,
+  "tiles": [
+    "########################",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#.....####.............#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#.............####.....#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "########################"
+  ],
+  "exits": [
+    { "x": 23, "y": 7, "to": "test2", "tx": 1, "ty": 3, "dir": "right", "if": "t_door",
+      "event": [ { "if": "has:key_test", "then": [ { "take": "key_test" }, { "set": "t_door" }, { "sfx": "door" }, "열쇠로 문을 열었다." ], "else": [ "잠겨 있다. 열쇠가 필요하다." ] } ] }
+  ],
+  "objects": [
+    { "id": "board", "x": 11, "y": 0, "w": 3, "color": "#1f4a3a", "label": "칠판",
+      "event": [ "@test.board", { "puzzle": "m1" }, { "rule": "hall" }, { "note": "test_note" } ] },
+    { "x": 2, "y": 1, "color": "#3a2a5a", "label": "일기장", "if": "!diary",
+      "event": [ { "set": "diary" }, { "sfx": "get" }, "일기장을 얻었다. J로 열 수 있다." ] },
+    { "x": 4, "y": 1, "color": "#b01030", "label": "잉크", "if": "!t_ink", "event": [ { "give": "ink" }, { "set": "t_ink" } ] },
+    { "x": 6, "y": 1, "color": "#d86a9a", "label": "사탕", "if": "!t_candy", "event": [ { "give": "candy" }, { "set": "t_candy" } ] },
+    { "x": 8, "y": 1, "color": "#c8c060", "label": "전등", "if": "!t_light", "event": [ { "give": "flashlight" }, { "set": "t_light" } ] },
+    { "x": 16, "y": 1, "color": "#aaaaaa", "label": "테이프", "if": "!t_tape", "event": [ { "give": "tape" }, { "set": "t_tape" } ] },
+    { "x": 18, "y": 1, "color": "#d8d0b0", "label": "종이", "if": "!t_paper", "event": [ { "give": "paper" }, { "set": "t_paper" } ] },
+    { "x": 20, "y": 1, "color": "#d8b040", "label": "열쇠", "if": "!t_key", "event": [ { "give": "key_test" }, { "set": "t_key" } ] },
+    { "x": 22, "y": 1, "color": "#a03030", "label": "심장", "if": "!t_heart", "event": [ { "organ": "heart" }, { "set": "t_heart" } ] },
+    { "id": "desk", "x": 8, "y": 6, "color": "#6a4a2a", "label": "책상", "hide": true },
+    { "id": "locker", "x": 22, "y": 12, "color": "#4a5a6a", "label": "사물함", "hide": true },
+    { "x": 18, "y": 6, "color": "#501010", "label": "얼룩",
+      "event": [ { "scare": "#a00" }, { "sanity": -30 }, "보면 안 되는 것을 본 것 같다. (정신력 -30)" ] },
+    { "x": 4, "y": 12, "color": "#806020", "label": "벨",
+      "event": [ { "if": "t_guard", "then": [ { "set": "t_guard", "to": 0 }, "경비를 돌려보냈다." ], "else": [ { "set": "t_guard" }, { "sfx": "alert" }, "경비가 순찰을 시작했다. 달리면 소리를 듣고 온다." ] } ] },
+    { "x": 1, "y": 7, "solid": false, "touch": true, "color": "#2a4a2a", "label": "발판", "if": "!t_step",
+      "event": [ { "set": "t_step" }, { "shake": 0.4 }, "밟으면 실행되는 이벤트다." ] }
+  ],
+  "npcs": [
+    { "id": "yunha", "x": 15, "y": 6, "if": "!t_yunha",
+      "event": [ "@test.yunha", { "choice": [ "같이 간다", "혼자 간다" ], "then": [ [ { "set": "t_yunha" }, { "companion": "yunha" }, "윤하가 동행한다." ], [ "윤하|흥." ] ] } ] },
+    { "id": "guard", "x": 2, "y": 11, "ai": "guard", "if": "t_guard", "route": [ [ 2, 11 ], [ 21, 11 ], [ 21, 2 ], [ 12, 3 ] ] }
+  ]
+}

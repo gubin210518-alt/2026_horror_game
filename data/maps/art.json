@@ -1,0 +1,528 @@
+{
+  "name": "미술실",
+  "lit": true,
+  "tiles": [
+    "####################",
+    "#..................#",
+    "#..................#",
+    "#..................#",
+    "#.....AAA..AAA.....#",
+    "#.....AAA..AAA.....#",
+    "#..................#",
+    "#..................#",
+    "#.....AAA..AAA.....#",
+    "#..................#",
+    "#..................#",
+    "####################"
+  ],
+  "onEnter": [
+    {
+      "if": "!m2_fled",
+      "then": [
+        "@c2.inside",
+        {
+          "scare": "#fff"
+        },
+        {
+          "set": "m2_fled"
+        },
+        {
+          "goal": "창가를 살펴본다"
+        }
+      ]
+    }
+  ],
+  "exits": [
+    {
+      "x": 0,
+      "y": 1,
+      "to": "floor2",
+      "tx": 44,
+      "ty": 8,
+      "dir": "left"
+    },
+    {
+      "x": 19,
+      "y": 5,
+      "to": "storage",
+      "tx": 1,
+      "ty": 4,
+      "dir": "right",
+      "if": "m2_done",
+      "locked": "[비품실] 잠겨 있다."
+    }
+  ],
+  "events": {
+    "intro": [
+      {
+        "picture": "assets/pics/sisters.png"
+      },
+      "@c2.intro",
+      {
+        "picture": null
+      },
+      {
+        "set": "m2_started"
+      },
+      {
+        "puzzle": "m2"
+      },
+      {
+        "note": "m2_lines"
+      },
+      {
+        "goal": "거짓말쟁이를 찾아서 죽인다"
+      },
+      {
+        "timer": 60,
+        "label": "피가 차오른다",
+        "end": "timeup"
+      }
+    ],
+    "timeup": [
+      "@c2.timeup",
+      {
+        "choice": [
+          "엘레나",
+          "마리",
+          "로제",
+          "이네스"
+        ],
+        "title": "누구를 죽이겠습니까?",
+        "then": [
+          [
+            {
+              "die": "@c2.chosen"
+            }
+          ],
+          [
+            {
+              "die": "@c2.chosen"
+            }
+          ],
+          [
+            {
+              "die": "@c2.chosen"
+            }
+          ],
+          [
+            {
+              "die": "@c2.chosen"
+            }
+          ]
+        ]
+      }
+    ],
+    "wrong": [
+      {
+        "die": "@c2.wrong"
+      }
+    ],
+    "stab": [
+      {
+        "timerStop": 1
+      },
+      {
+        "sfx": "scream"
+      },
+      {
+        "scare": "#fff"
+      },
+      "@c2.success",
+      {
+        "set": "m2_done"
+      },
+      {
+        "puzzleDone": "m2"
+      },
+      {
+        "sfx": "door"
+      },
+      {
+        "goal": "비품실을 살펴본다"
+      }
+    ]
+  },
+  "objects": [
+    {
+      "x": 4,
+      "y": 0,
+      "w": 4,
+      "color": "#1f4a3a",
+      "label": "칠판",
+      "event": [
+        "@c2.board"
+      ]
+    },
+    {
+      "x": 9,
+      "y": 0,
+      "color": "#c8c0a0",
+      "label": "게시",
+      "event": [
+        "벽에 학교 규칙이 붙어 있다. \"그림 속 인물 중 하나를 고르시오\"",
+        {
+          "rule": "art"
+        }
+      ]
+    },
+    {
+      "x": 11,
+      "y": 0,
+      "w": 3,
+      "color": "#b8b0a0",
+      "label": "석고상",
+      "art": "bustshelf",
+      "event": [
+        "선반에 석고상이 줄지어 있다. 하나같이 이쪽을 보고 있는 것 같다."
+      ]
+    },
+    {
+      "x": 15,
+      "y": 0,
+      "w": 3,
+      "color": "#8a7a4a",
+      "label": "작품",
+      "art": "artboard",
+      "event": [
+        "학생 작품이 붙어 있다. 인물화마다 얼굴만 까맣게 칠해져 있다."
+      ]
+    },
+    {
+      "x": 15,
+      "y": 3,
+      "color": "#8a6a4a",
+      "label": "이젤",
+      "event": [
+        "그리다 만 그림이 놓여 있다. 인물의 얼굴만 비어 있다."
+      ]
+    },
+    {
+      "x": 16,
+      "y": 3,
+      "color": "#b06a30",
+      "label": "물감통",
+      "event": [
+        {
+          "if": "c2_knife",
+          "then": [
+            "물감통에는 굳은 물감만 남아 있다."
+          ],
+          "else": [
+            "물감통에 물감칼이 꽂혀 있다.",
+            {
+              "give": "paintknife"
+            },
+            {
+              "set": "c2_knife"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "x": 15,
+      "y": 9,
+      "color": "#8a6a4a",
+      "label": "이젤",
+      "event": [
+        "빈 캔버스. 손자국 같은 얼룩이 있다."
+      ]
+    },
+    {
+      "x": 17,
+      "y": 9,
+      "color": "#8a6a4a",
+      "label": "이젤",
+      "event": [
+        "정물화. 사과가 썩어 가는 모습까지 그려져 있다."
+      ]
+    },
+    {
+      "x": 7,
+      "y": 4,
+      "color": "#b8b0a0",
+      "label": "정물",
+      "art": "still",
+      "event": [
+        "작업대 위에 정물이 놓여 있다. 과일은 모두 모형이다."
+      ]
+    },
+    {
+      "x": 12,
+      "y": 8,
+      "color": "#a08a6a",
+      "label": "화판",
+      "art": "canvas",
+      "event": [
+        "화판과 스케치북이 쌓여 있다."
+      ]
+    },
+    {
+      "x": 3,
+      "y": 11,
+      "color": "#8a9aa0",
+      "label": "개수대",
+      "event": [
+        "물감이 말라붙은 개수대. 수도꼭지에서 물이 한 방울씩 떨어진다."
+      ]
+    },
+    {
+      "x": 6,
+      "y": 11,
+      "w": 3,
+      "color": "#6a5a4a",
+      "label": "건조대",
+      "art": "rack",
+      "event": [
+        "그림을 말리는 건조대. 칸마다 누군가의 초상화가 꽂혀 있다."
+      ]
+    },
+    {
+      "x": 12,
+      "y": 11,
+      "w": 3,
+      "color": "#4a5a6a",
+      "label": "도구함",
+      "art": "cabinet",
+      "event": [
+        "붓과 팔레트가 든 도구함. 쓸 만한 건 없다."
+      ]
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "h": 4,
+      "color": "#6a8aa0",
+      "label": "창문",
+      "if": "!ink1",
+      "event": [
+        "복도 쪽으로 난 창문. 아까 그 아이가 서 있던 자리다."
+      ]
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "color": "#7a4a6a",
+      "label": "엘레나",
+      "if": "ink1",
+      "event": [
+        {
+          "if": "!m2_started",
+          "then": [
+            {
+              "run": "intro"
+            }
+          ],
+          "else": [
+            {
+              "if": "m2_done",
+              "then": [
+                "@c2.done"
+              ],
+              "else": [
+                {
+                  "if": "has:paintknife",
+                  "then": [
+                    {
+                      "choice": [
+                        "찌른다",
+                        "그만둔다"
+                      ],
+                      "title": "물감칼로 엘레나를 찌를까?",
+                      "then": [
+                        [
+                          {
+                            "run": "wrong"
+                          }
+                        ],
+                        []
+                      ]
+                    }
+                  ],
+                  "else": [
+                    "@c2.elena"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "color": "#6a5a8a",
+      "label": "마리",
+      "if": "ink1",
+      "event": [
+        {
+          "if": "!m2_started",
+          "then": [
+            {
+              "run": "intro"
+            }
+          ],
+          "else": [
+            {
+              "if": "m2_done",
+              "then": [
+                "@c2.done"
+              ],
+              "else": [
+                {
+                  "if": "has:paintknife",
+                  "then": [
+                    {
+                      "choice": [
+                        "찌른다",
+                        "그만둔다"
+                      ],
+                      "title": "물감칼로 마리를 찌를까?",
+                      "then": [
+                        [
+                          {
+                            "run": "wrong"
+                          }
+                        ],
+                        []
+                      ]
+                    }
+                  ],
+                  "else": [
+                    "@c2.marie"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "color": "#8a5a5a",
+      "label": "로제",
+      "if": "ink1",
+      "event": [
+        {
+          "if": "!m2_started",
+          "then": [
+            {
+              "run": "intro"
+            }
+          ],
+          "else": [
+            {
+              "if": "m2_done",
+              "then": [
+                "@c2.done"
+              ],
+              "else": [
+                {
+                  "if": "has:paintknife",
+                  "then": [
+                    {
+                      "choice": [
+                        "찌른다",
+                        "그만둔다"
+                      ],
+                      "title": "물감칼로 로제를 찌를까?",
+                      "then": [
+                        [
+                          {
+                            "run": "wrong"
+                          }
+                        ],
+                        []
+                      ]
+                    }
+                  ],
+                  "else": [
+                    "@c2.rose"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "x": 0,
+      "y": 6,
+      "color": "#5a6a7a",
+      "label": "이네스",
+      "if": "ink1",
+      "event": [
+        {
+          "if": "!m2_started",
+          "then": [
+            {
+              "run": "intro"
+            }
+          ],
+          "else": [
+            {
+              "if": "m2_done",
+              "then": [
+                "@c2.done"
+              ],
+              "else": [
+                {
+                  "if": "has:paintknife",
+                  "then": [
+                    {
+                      "choice": [
+                        "찌른다",
+                        "그만둔다"
+                      ],
+                      "title": "물감칼로 이네스를 찌를까?",
+                      "then": [
+                        [
+                          {
+                            "run": "stab"
+                          }
+                        ],
+                        []
+                      ]
+                    }
+                  ],
+                  "else": [
+                    "@c2.ines"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "color": "#b01030",
+      "label": "잉크",
+      "if": "m2_fled & !ink1",
+      "event": [
+        "@c2.ink",
+        {
+          "give": "ink"
+        },
+        {
+          "set": "ink1"
+        },
+        {
+          "flash": "#fff",
+          "t": 0.4
+        },
+        "@c2.frame",
+        {
+          "goal": "액자를 조사한다"
+        }
+      ]
+    }
+  ]
+}

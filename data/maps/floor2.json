@@ -1,0 +1,332 @@
+{
+  "name": "본관 2층 복도",
+  "flicker": {
+    "x": 44,
+    "y": 9,
+    "r": 9
+  },
+  "tiles": [
+    "################################################",
+    "#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,###",
+    "#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,###",
+    "#,,#####ww##ww##ww##ww##ww##ww##ww##ww#####,,###",
+    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
+    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
+    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
+    "#,,#ggggttgggggggggggggggggggggggggggggggg#,,###",
+    "#,,wggggtgggggggggggggggggggggggggggtgggggw,,###",
+    "#,,wggggggggggggggggggtgggggggggggggggggggw,,#.#",
+    "#,,#gggggggggggggggggggggggggggggggggggggg#,,=.#",
+    "#,,#gggggggggggggggggggggggggggggggggggggg#,,=.#",
+    "#,,wggggggggggggggggggggggggggggggggggggggw,,=.#",
+    "#,,wggggggggggggggggggggggttggggggggggggggw,,=.#",
+    "#,,#gggggggggggggggggggggggggggggggggggggg#,,#.#",
+    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
+    "#,,wgggggggggggttgggggggggggggggggggggggggw,,###",
+    "#,cwggggggggggggggggggggggggggggggggggggggw,,###",
+    "#,,#ggggggggggggggggggggggggggttgggggggggg#,,###",
+    "#,,#ggggggggggggggggggggggggggtggggggggggg#,,###",
+    "#,,wggggggggtgggggggggggggggggggggggggggggw,,###",
+    "#c,wggggggggggggggggggggggggggggggggggggggw,,###",
+    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
+    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
+    "#,,#####ww##ww##ww##ww##ww##ww##ww##ww#####,,###",
+    "#,,,,,,,,,c,,,,,,,,,,,c,,,,,,,,,,,,,,,,,,,,,,###",
+    "#,,,,c,,,,,,,,,,c,,,,,,,,,,,,,,,,,,,,,,,,,,,,###",
+    "################################################"
+  ],
+  "onEnter": [
+    {
+      "if": "!hall_seen",
+      "then": [
+        {
+          "set": "hall_seen"
+        },
+        "@c1.hall"
+      ]
+    }
+  ],
+  "exits": [
+    {
+      "x": 6,
+      "y": 0,
+      "to": "classroom",
+      "tx": 2,
+      "ty": 9,
+      "dir": "up"
+    },
+    {
+      "x": 12,
+      "y": 0,
+      "to": "floor2",
+      "tx": 1,
+      "ty": 1,
+      "if": "never",
+      "locked": "2학년 1반 뒷문. 밖에서도 열리지 않는다."
+    },
+    {
+      "x": 18,
+      "y": 0,
+      "to": "class2",
+      "tx": 2,
+      "ty": 9,
+      "dir": "up"
+    },
+    {
+      "x": 24,
+      "y": 0,
+      "to": "floor2",
+      "tx": 1,
+      "ty": 1,
+      "if": "never",
+      "locked": "2학년 2반 뒷문. 잠겨 있다."
+    },
+    {
+      "x": 30,
+      "y": 0,
+      "to": "floor2",
+      "tx": 1,
+      "ty": 1,
+      "if": "never",
+      "locked": "[2학년 3반] 잠겨 있다."
+    },
+    {
+      "x": 36,
+      "y": 0,
+      "to": "floor2",
+      "tx": 1,
+      "ty": 1,
+      "if": "never",
+      "locked": "문을 흔들어 봤지만, 여긴 아무것도 없다."
+    },
+    {
+      "x": 44,
+      "y": 0,
+      "to": "floor2",
+      "tx": 1,
+      "ty": 1,
+      "if": "never",
+      "locked": "위층으로 가는 계단에 셔터가 내려와 있다."
+    },
+    {
+      "x": 45,
+      "y": 8,
+      "to": "art",
+      "tx": 1,
+      "ty": 1,
+      "dir": "right"
+    },
+    {
+      "x": 45,
+      "y": 18,
+      "to": "floor2",
+      "tx": 1,
+      "ty": 1,
+      "if": "never",
+      "locked": "[미술 준비실] 잠겨 있다."
+    },
+    {
+      "x": 45,
+      "y": 23,
+      "to": "floor2",
+      "tx": 1,
+      "ty": 1,
+      "if": "never",
+      "locked": "문패가 떨어져 나간 문. 잠겨 있다."
+    },
+    {
+      "x": 10,
+      "y": 27,
+      "to": "floor2",
+      "tx": 1,
+      "ty": 1,
+      "if": "never",
+      "locked": "아래층으로 가는 계단에 셔터가 내려와 있다."
+    },
+    {
+      "x": 20,
+      "y": 27,
+      "to": "floor2",
+      "tx": 1,
+      "ty": 1,
+      "if": "never",
+      "locked": "[시청각실] 잠겨 있다."
+    },
+    {
+      "x": 30,
+      "y": 27,
+      "to": "library",
+      "tx": 2,
+      "ty": 1,
+      "dir": "down",
+      "if": "lib_open",
+      "event": [
+        {
+          "if": "has:key_library",
+          "then": [
+            {
+              "take": "key_library"
+            },
+            {
+              "set": "lib_open"
+            },
+            {
+              "sfx": "door"
+            },
+            "도서관 문이 열렸다."
+          ],
+          "else": [
+            "[도서관] 잠겨 있다."
+          ]
+        }
+      ]
+    },
+    {
+      "x": 40,
+      "y": 27,
+      "to": "floor2",
+      "tx": 1,
+      "ty": 1,
+      "if": "never",
+      "locked": "여긴 아무것도 없다."
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "to": "science",
+      "tx": 18,
+      "ty": 6,
+      "dir": "left"
+    },
+    {
+      "x": 0,
+      "y": 8,
+      "to": "floor2",
+      "tx": 1,
+      "ty": 1,
+      "if": "never",
+      "locked": "[실험 준비실] 안에서 잠겨 있다."
+    },
+    {
+      "x": 0,
+      "y": 20,
+      "to": "floor2",
+      "tx": 1,
+      "ty": 1,
+      "if": "never",
+      "locked": "[기술실] 잠겨 있다."
+    }
+  ],
+  "objects": [
+    {
+      "x": 9,
+      "y": 0,
+      "color": "#c8c0a0",
+      "label": "게시",
+      "event": [
+        "벽에 학교 규칙이 붙어 있다. \"복도에서 뛰지 마시오\"",
+        {
+          "rule": "hall"
+        }
+      ]
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "w": 2,
+      "color": "#555",
+      "label": "셔터",
+      "art": "shutter",
+      "if": "!m5_start",
+      "event": [
+        "특별동으로 가는 통로에 방화 셔터가 내려와 있다."
+      ]
+    },
+    {
+      "x": 1,
+      "y": 23,
+      "w": 2,
+      "color": "#555",
+      "label": "셔터",
+      "art": "shutter",
+      "if": "!m5_start",
+      "event": [
+        "특별동으로 가는 통로에 방화 셔터가 내려와 있다."
+      ]
+    },
+    {
+      "x": 45,
+      "y": 10,
+      "h": 4,
+      "invisible": true,
+      "label": "창문",
+      "if": "!ink1",
+      "event": [
+        {
+          "if": "m2_fled",
+          "then": [
+            "창문 너머 미술실에는 이제 아무도 없다."
+          ],
+          "else": [
+            {
+              "picture": "assets/pics/yunha_window.png",
+              "zoom": true
+            },
+            "@c2.window",
+            "@c2.flee",
+            {
+              "picture": null
+            },
+            {
+              "scare": "#fff"
+            },
+            {
+              "set": "m2_fled"
+            },
+            {
+              "goal": "미술실에 들어가 본다"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "x": 45,
+      "y": 9,
+      "w": 2,
+      "h": 6,
+      "art": "wallpatch",
+      "color": "#23232e",
+      "if": "ink1",
+      "event": [
+        "창문이 있던 자리가 벽으로 막혀 있다. 처음부터 창문 같은 건 없었던 것처럼."
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "yunha",
+      "x": 46,
+      "y": 11,
+      "dir": "left",
+      "if": "!m2_fled"
+    },
+    {
+      "id": "guard",
+      "x": 31,
+      "y": 26,
+      "dir": "left",
+      "ai": "hunter",
+      "speed": 6.2,
+      "stun": 1.6,
+      "fear": 0,
+      "clumsy": true,
+      "if": "m5_start & !m5_done",
+      "onCatch": [
+        {
+          "die": "경비에게 붙잡혔다."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,382 @@
+{
+  "name": "비품실",
+  "lit": true,
+  "tiles": [
+    "############",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "############"
+  ],
+  "exits": [
+    {
+      "x": 0,
+      "y": 4,
+      "to": "art",
+      "tx": 18,
+      "ty": 5,
+      "dir": "left"
+    }
+  ],
+  "objects": [
+    {
+      "x": 1,
+      "y": 1,
+      "color": "#c8c0b0",
+      "label": "석고상",
+      "art": "bust",
+      "event": [
+        {
+          "if": "has:hammer",
+          "then": [
+            "@c2.bustHammer"
+          ],
+          "else": [
+            "@c2.bust"
+          ]
+        }
+      ]
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "color": "#c8c0b0",
+      "label": "석고상",
+      "art": "bust",
+      "event": [
+        {
+          "if": "has:hammer",
+          "then": [
+            "@c2.bustHammer"
+          ],
+          "else": [
+            "@c2.bust"
+          ]
+        }
+      ]
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "color": "#c8c0b0",
+      "label": "석고상",
+      "art": "bust",
+      "event": [
+        {
+          "if": "has:hammer",
+          "then": [
+            "@c2.bustHammer"
+          ],
+          "else": [
+            "@c2.bust"
+          ]
+        }
+      ]
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "color": "#c8c0b0",
+      "label": "석고상",
+      "art": "bust",
+      "event": [
+        {
+          "if": "has:hammer",
+          "then": [
+            "@c2.bustHammer"
+          ],
+          "else": [
+            "@c2.bust"
+          ]
+        }
+      ]
+    },
+    {
+      "x": 1,
+      "y": 6,
+      "color": "#c8c0b0",
+      "label": "석고상",
+      "art": "bust",
+      "event": [
+        {
+          "if": "has:hammer",
+          "then": [
+            "@c2.bustHammer"
+          ],
+          "else": [
+            "@c2.bust"
+          ]
+        }
+      ]
+    },
+    {
+      "x": 10,
+      "y": 1,
+      "color": "#c8c0b0",
+      "label": "석고상",
+      "art": "bust",
+      "event": [
+        {
+          "if": "has:hammer",
+          "then": [
+            "@c2.bustHammer"
+          ],
+          "else": [
+            "@c2.bust"
+          ]
+        }
+      ]
+    },
+    {
+      "x": 10,
+      "y": 2,
+      "color": "#c8c0b0",
+      "label": "석고상",
+      "art": "bust",
+      "event": [
+        {
+          "if": "has:hammer",
+          "then": [
+            "@c2.bustHammer"
+          ],
+          "else": [
+            "@c2.bust"
+          ]
+        }
+      ]
+    },
+    {
+      "x": 10,
+      "y": 4,
+      "color": "#c8c0b0",
+      "label": "석고상",
+      "art": "bust",
+      "event": [
+        {
+          "if": "has:hammer",
+          "then": [
+            "@c2.bustHammer"
+          ],
+          "else": [
+            "@c2.bust"
+          ]
+        }
+      ]
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "color": "#c8c0b0",
+      "label": "석고상",
+      "art": "bust",
+      "event": [
+        {
+          "if": "has:hammer",
+          "then": [
+            "@c2.bustHammer"
+          ],
+          "else": [
+            "@c2.bust"
+          ]
+        }
+      ]
+    },
+    {
+      "x": 10,
+      "y": 6,
+      "color": "#c8c0b0",
+      "label": "석고상",
+      "art": "bust",
+      "event": [
+        {
+          "if": "has:hammer",
+          "then": [
+            "@c2.bustHammer"
+          ],
+          "else": [
+            "@c2.bust"
+          ]
+        }
+      ]
+    },
+    {
+      "x": 10,
+      "y": 3,
+      "color": "#d0c8b8",
+      "label": "석고상",
+      "art": "bust",
+      "if": "!c2_libkey",
+      "event": [
+        {
+          "if": "has:hammer",
+          "then": [
+            "@c2.bustWarm",
+            {
+              "choice": [
+                "망치로 깬다",
+                "그만둔다"
+              ],
+              "then": [
+                [
+                  {
+                    "sfx": "glass"
+                  },
+                  {
+                    "shake": 0.6
+                  },
+                  "@c2.bustBreak",
+                  {
+                    "take": "hammer"
+                  },
+                  {
+                    "give": "key_library"
+                  },
+                  {
+                    "set": "c2_libkey"
+                  },
+                  {
+                    "puzzleDone": "m2b"
+                  },
+                  {
+                    "goal": "도서관으로 간다 (복도 남쪽)"
+                  }
+                ],
+                []
+              ]
+            }
+          ],
+          "else": [
+            "@c2.bustWarm",
+            "@c2.bustNeed",
+            {
+              "puzzle": "m2b"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "x": 10,
+      "y": 3,
+      "color": "#8a8478",
+      "label": "조각",
+      "art": "rubble",
+      "if": "c2_libkey",
+      "event": [
+        "부서진 석고 조각. 안쪽이 텅 비어 있다."
+      ]
+    },
+    {
+      "x": 6,
+      "y": 4,
+      "color": "#7a5a3a",
+      "label": "망치",
+      "art": "hammer",
+      "if": "!c2_hammer",
+      "event": [
+        "@c2.hammer",
+        {
+          "give": "hammer"
+        },
+        {
+          "set": "c2_hammer"
+        }
+      ]
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "w": 2,
+      "color": "#5a4a3a",
+      "label": "선반",
+      "art": "shelfbox",
+      "event": [
+        {
+          "if": "c2_light",
+          "then": [
+            "선반에는 먼지 쌓인 상자뿐이다."
+          ],
+          "else": [
+            "선반 위 상자에 손전등이 들어 있다.",
+            {
+              "give": "flashlight"
+            },
+            {
+              "set": "c2_light"
+            },
+            "소지품에서 사용하면 켤 수 있다. 어두운 곳에서는 켜 두자."
+          ]
+        }
+      ]
+    },
+    {
+      "x": 7,
+      "y": 0,
+      "color": "#8a7a4a",
+      "label": "안내도",
+      "event": [
+        {
+          "if": "map",
+          "then": [
+            "낡은 학교 안내도. M 키로 펼쳐 볼 수 있다."
+          ],
+          "else": [
+            "벽에 낡은 학교 안내도가 붙어 있다. 떼어서 챙겼다.",
+            {
+              "set": "map"
+            },
+            {
+              "note": "school_map"
+            },
+            {
+              "toast": "M 키: 안내도 펼치기"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "x": 3,
+      "y": 6,
+      "color": "#6a5030",
+      "label": "상자",
+      "art": "crate",
+      "event": [
+        "석고 가루가 든 상자."
+      ]
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "color": "#6a5030",
+      "label": "상자",
+      "art": "crate",
+      "event": [
+        "굳은 찰흙이 든 상자."
+      ]
+    },
+    {
+      "x": 8,
+      "y": 6,
+      "color": "#a08a6a",
+      "label": "캔버스",
+      "art": "canvas",
+      "event": [
+        "쓰다 만 캔버스가 쌓여 있다. 전부 같은 얼굴을 그리다 만 것이다."
+      ]
+    },
+    {
+      "x": 6,
+      "y": 6,
+      "color": "#5a6a6a",
+      "label": "청소도구",
+      "art": "mop",
+      "event": [
+        "대걸레와 양동이. 물이 검붉게 말라 있다."
+      ]
+    }
+  ]
+}
