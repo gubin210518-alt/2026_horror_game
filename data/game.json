@@ -94,5 +94,18 @@
       "cols": 3,
       "rows": 3
     }
+  },
+  "sounds": {
+    "laugh": "assets/audio/laugh.mp3",
+    "v_one": "assets/audio/v_one.mp3",
+    "v_two": "assets/audio/v_two.mp3",
+    "v_three": "assets/audio/v_three.mp3",
+    "v_fast": "assets/audio/v_fast.mp3",
+    "v_run": "assets/audio/v_run.mp3",
+    "v_frog": "assets/audio/v_frog.mp3",
+    "v_rat": "assets/audio/v_rat.mp3",
+    "v_dont": "assets/audio/v_dont.mp3",
+    "v_first": "assets/audio/v_first.mp3",
+    "v_caught": "assets/audio/v_caught.mp3"
   }
 }

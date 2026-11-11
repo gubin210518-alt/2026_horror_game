@@ -107,6 +107,9 @@
       {
         "companion": "yunha"
       },
+      {
+        "sfx": "v_run"
+      },
       "@c3.run",
       {
         "goal": "경비를 피해 특별동 과학실로 도망친다 (복도 서쪽)"
@@ -225,7 +228,15 @@
                       }
                     ],
                     "else": [
+                      {
+                        "sfx": "v_fast"
+                      },
                       "@c3.tooFast"
+                    ],
+                    "voices": [
+                      "v_one",
+                      "v_two",
+                      "v_three"
                     ]
                   }
                 ],

@@ -1,6 +1,6 @@
 // 화면 위에 뜨는 것들: 대화창, 선택지, 상태창, 인벤토리, 일기장, 옵션, 게임오버, 알림
 import { D, S, settings, saveSettings, save, T, josa, VW, VH } from './core.js';
-import { pressed, consume } from './input.js';
+import { pressed, consume, mouse } from './input.js';
 import { sfx } from './audio.js';
 import { W } from './world.js';
 import { run } from './events.js';
@@ -39,6 +39,39 @@ export function wrap(text, maxW, px = 14) {
 }
 const blink = () => (performance.now() / 400 | 0) % 2;
 const eat = (...keys) => keys.forEach(consume);
+
+export const BAG = { x: 8, y: 8, w: 30, h: 28 }; // 왼쪽 위 가방 단추의 자리
+
+// 아이템을 얻는 효과: 그림이 화면 가운데에 크게 떴다가 가방 단추로 날아 들어간다
+export function itemFx(id, text) {
+  return new Promise(res => {
+    let t = 0, fly = -1;
+    const m = push({
+      kind: 'say', // 대화창처럼 Space 나 화면 누르기로 넘길 수 있다
+      update(dt) {
+        t += dt;
+        if (fly < 0 && (t > 1.8 || (t > 0.25 && (pressed('ok') || pressed('cancel'))))) { eat('ok', 'cancel'); fly = 0; }
+        if (fly >= 0 && (fly += dt) > 0.32) { pop(m); res(); }
+      },
+      draw(ctx) {
+        const grow = Math.min(1, t / 0.24), e = 1 - Math.pow(1 - grow, 3), f = fly < 0 ? 0 : Math.min(1, fly / 0.32);
+        const bx = BAG.x + BAG.w / 2, by = BAG.y + BAG.h / 2;
+        const cx = VW / 2 + (bx - VW / 2) * f * f, cy = 146 + (by - 146) * f * f, size = (30 + 80 * e) * (1 - f * 0.82);
+        ctx.fillStyle = 'rgba(0,0,0,' + 0.5 * e * (1 - f) + ')'; ctx.fillRect(0, 0, VW, VH);
+        const glow = ctx.createRadialGradient(cx, cy, 4, cx, cy, size);
+        glow.addColorStop(0, 'rgba(255,230,160,' + 0.35 * (1 - f) + ')'); glow.addColorStop(1, 'rgba(255,230,160,0)');
+        ctx.fillStyle = glow; ctx.fillRect(cx - size, cy - size, size * 2, size * 2);
+        drawIcon(ctx, id, cx, cy, size);
+        if (fly < 0 && grow >= 1) {
+          font(ctx, 15, true);
+          const w = ctx.measureText(text).width + 40;
+          box(ctx, (VW - w) / 2, 222, w, 34);
+          ctx.fillStyle = '#ffd27a'; ctx.textAlign = 'center'; ctx.fillText(text, VW / 2, 244); ctx.textAlign = 'left';
+        }
+      },
+    });
+  });
+}
 
 export function toast(text) { UI.toasts.push({ text, t: 3 }); }
 
@@ -85,28 +118,33 @@ export function choose(opts, { title, cancel = true, pause = true, y: fixedY } =
   return new Promise(res => {
     const tl = title ? wrap(T(title), VW - 160) : [];
     font(mc, 14);
-    const w = Math.max(170, ...opts.map(o => mc.measureText(o).width + 60), ...tl.map(l => mc.measureText(l).width + 36));
+    const w = Math.min(VW - 40, Math.max(170, ...opts.map(o => mc.measureText(o).width + 60), ...tl.map(l => mc.measureText(l).width + 36)));
     const h = opts.length * 22 + 18 + (tl.length ? tl.length * 20 + 10 : 0);
-    let i = 0;
+    const x = (VW - w) / 2, y = fixedY ?? (VH - h) / 2, top = y + 24 + (tl.length ? tl.length * 20 + 10 : 0);
+    const over = () => opts.findIndex((o, k) => mouse.x >= x && mouse.x <= x + w && mouse.y >= top + k * 22 - 16 && mouse.y < top + k * 22 + 6);
+    let i = 0, mx = mouse.x, my = mouse.y;
     const m = push({
-      pause,
+      pause, mouse: true, // 마우스나 손가락으로 고를 수 있다
       update() {
+        const k = over();
+        if (k >= 0 && (mouse.x !== mx || mouse.y !== my)) i = k;
+        mx = mouse.x; my = mouse.y;
+        if (mouse.clicked && k >= 0) { pop(m); sfx('ok'); return res(k); }
         if (pressed('up')) { i = (i + opts.length - 1) % opts.length; sfx('blip'); }
         if (pressed('down')) { i = (i + 1) % opts.length; sfx('blip'); }
         if (pressed('ok')) { eat('ok'); pop(m); sfx('ok'); res(i); }
         else if (cancel && pressed('cancel')) { eat('cancel'); pop(m); res(-1); }
       },
       draw(ctx) {
-        const x = (VW - w) / 2, y = fixedY ?? (VH - h) / 2;
         box(ctx, x, y, w, h);
         font(ctx, 14);
         let ty = y + 24;
         ctx.fillStyle = '#ffd27a';
         for (const l of tl) { ctx.fillText(l, x + 18, ty); ty += 20; }
-        if (tl.length) ty += 10;
         opts.forEach((o, k) => {
+          if (k === i) { ctx.fillStyle = 'rgba(255,210,122,.14)'; ctx.fillRect(x + 6, top + k * 22 - 16, w - 12, 22); }
           ctx.fillStyle = k === i ? '#fff' : '#999';
-          ctx.fillText((k === i ? '▶ ' : '   ') + o, x + 18, ty + k * 22);
+          ctx.fillText((k === i ? '▶ ' : '   ') + o, x + 18, top + k * 22);
         });
       },
     });
@@ -117,6 +155,7 @@ export function choose(opts, { title, cancel = true, pause = true, y: fixedY } =
 function panel(draw, keys, extra = {}) {
   return new Promise(res => {
     const m = push({
+      mouse: !!extra.mouse, close: res,
       pause: !W.chasing, // 추격 중에는 메뉴를 열어도 시간이 흐른다
       update(dt) {
         if (m.lock) return;
@@ -179,14 +218,21 @@ export function openInventory() {
     } else { font(ctx, 14); ctx.fillStyle = '#888'; ctx.fillText('아무것도 없다.', 292, 100); }
     font(ctx, 12); ctx.fillStyle = '#666'; ctx.fillText('방향키: 고르기   Space: 조사 / 사용 / 조합   I / X: 닫기', 84, 322);
   }, ['inv', 'cancel'], {
+    mouse: true,
     update(m) {
       const n = S.items.length;
+      let tap = false;
+      if (mouse.clicked) {
+        if (mouse.x < 64 || mouse.x > 576 || mouse.y < 28 || mouse.y > 332) { pop(m); return m.close(); } // 창 밖을 누르면 닫는다
+        const cx = Math.floor((mouse.x - GX) / CELL), cy = Math.floor((mouse.y - GY) / CELL), k = cy * COLS + cx;
+        if (cx >= 0 && cx < COLS && cy >= 0 && k < n) { i = k; tap = true; }
+      }
       if (!n) return;
       if (pressed('left')) i = Math.max(0, i - 1);
       if (pressed('right')) i = Math.min(n - 1, i + 1);
       if (pressed('up')) i = Math.max(0, i - COLS);
       if (pressed('down')) i = Math.min(n - 1, i + COLS);
-      if (pressed('ok')) {
+      if (pressed('ok') || tap) {
         eat('ok'); m.lock = true;
         itemMenu(S.items[i]).then(after => {
           m.lock = false; i = Math.min(i, Math.max(0, S.items.length - 1));
@@ -397,12 +443,16 @@ export function gameOver(text) {
 export function drawUI(ctx, dt) {
   for (const m of UI.stack) m.draw(ctx);
   UI.toasts = UI.toasts.filter(t => (t.t -= dt) > 0);
-  font(ctx, 13);
-  UI.toasts.slice(-3).forEach((t, i) => {
-    const w = ctx.measureText(t.text).width + 24;
+  let y = 10;
+  for (const t of UI.toasts.slice(-3)) { // 긴 알림은 줄을 바꿔서 화면 안에 넣는다
+    const lines = wrap(t.text, VW - 120, 13);
+    font(ctx, 13);
+    const w = Math.max(...lines.map(l => ctx.measureText(l).width)) + 24, h = 8 + lines.length * 17;
     ctx.globalAlpha = Math.min(1, t.t);
-    box(ctx, (VW - w) / 2, 10 + i * 28, w, 24);
-    ctx.fillStyle = '#eee'; ctx.fillText(t.text, (VW - w) / 2 + 12, 27 + i * 28);
+    box(ctx, (VW - w) / 2, y, w, h);
+    ctx.fillStyle = '#eee';
+    lines.forEach((l, k) => ctx.fillText(l, (VW - w) / 2 + 12, y + 17 + k * 17));
     ctx.globalAlpha = 1;
-  });
+    y += h + 4;
+  }
 }

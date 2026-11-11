@@ -16,6 +16,7 @@ export const pressed = a => hit.has(a);
 export const consume = a => hit.delete(a);
 export const lastDir = () => dirs[dirs.length - 1];
 export function endFrame() { hit.clear(); mouse.clicked = false; }
+export const tapOk = () => hit.add('ok'); // 화면을 누른 것을 조사 버튼으로 친다 (대화 넘기기 등)
 
 // 화면 단추(모바일)가 부르는 함수. on: 누름 true, 뗌 false
 export function press(a, on) {

@@ -65,13 +65,17 @@ function tile(g, ch, x, y, m) {
     else { R(g, '#0b1322', px + 11, py, 10, T); R(g, 'rgba(140,170,220,.25)', px + 12, py, 2, T); }
     return;
   }
+  if (ch === 'h') { // 가로로 난 유리창: 벽 윗면에 유리 띠. 너머의 방이 보인다
+    R(g, '#14161c', px, py, T, T); R(g, 'rgba(120,170,190,.3)', px, py + 9, T, 14); R(g, 'rgba(220,240,250,.45)', px, py + 10, T, 1); R(g, '#3a4a52', px, py + 8, T, 1); R(g, '#3a4a52', px, py + 23, T, 1);
+    return;
+  }
   if (ch === 'g' || ch === 't') { // 창밖 중정. 어두운 잔디와 나무
     R(g, '#0d1a14', px, py, T, T);
     for (let i = 0; i < 6; i++) R(g, 'rgba(60,110,70,.18)', px + rnd(x, y, i) * 30, py + rnd(y, x, i) * 30, 2, 3);
     if (ch === 't') { g.fillStyle = '#081009'; g.beginPath(); g.arc(px + 16, py + 14, 15, 0, 7); g.fill(); g.fillStyle = '#0f1d12'; g.beginPath(); g.arc(px + 12, py + 10, 8, 0, 7); g.fill(); }
     return;
   }
-  (FLOOR[UNDER[ch] || ch] || wood)(g, px, py, x, y, ch === '~' ? 'rgba(90,120,50,.45)' : ch === '%' ? 'rgba(110,150,40,.75)' : null);
+  (FLOOR[UNDER[ch] || ch] || wood)(g, px, py, x, y, ch === '~' ? 'rgba(120,40,52,.45)' : ch === '%' ? 'rgba(140,38,55,.72)' : null);
   if (ch === 's') for (let i = 0; i < 4; i++) { R(g, '#555b62', px + i * 8, py, 7, T); R(g, '#23272b', px + i * 8 + 7, py, 1, T); }
   if (ch === 'd') { // 학생 책상
     R(g, 'rgba(0,0,0,.3)', px + 4, py + 26, 26, 5);
@@ -165,7 +169,7 @@ const DRAW = {
   jars(g) { R(g, '#3a2a1a', 2, 20, 28, 4); for (let i = 0; i < 3; i++) { R(g, 'rgba(190,210,160,.55)', 4 + i * 9, 8, 7, 12); R(g, ['#5a7a3a', '#7a6a5a', '#6a4a4a'][i], 6 + i * 9, 13, 3, 5); R(g, '#555', 4 + i * 9, 6, 7, 2); } },
   sink(g) { R(g, '#7a868c', 3, 6, 26, 20); R(g, '#3a4448', 7, 10, 18, 12); R(g, '#b0bcc2', 14, 3, 4, 8); R(g, '#1a2024', 15, 15, 2, 2); },
   ventcover(g) { R(g, 'rgba(0,0,0,.4)', 5, 6, 24, 22); R(g, '#3a3e44', 4, 4, 24, 22); for (let i = 0; i < 5; i++) R(g, '#15171a', 7, 7 + i * 4, 18, 2); },
-  tentacle(g) { g.strokeStyle = '#4a6a2a'; g.lineWidth = 5; g.lineCap = 'round'; g.beginPath(); g.moveTo(3, 24); g.quadraticCurveTo(12, 8, 18, 20); g.quadraticCurveTo(24, 28, 29, 16); g.stroke(); g.strokeStyle = '#6a8a3a'; g.lineWidth = 1.5; g.stroke(); g.lineWidth = 1; g.lineCap = 'butt'; },
+  tentacle(g) { g.strokeStyle = '#7a2a3a'; g.lineWidth = 5; g.lineCap = 'round'; g.beginPath(); g.moveTo(3, 24); g.quadraticCurveTo(12, 8, 18, 20); g.quadraticCurveTo(24, 28, 29, 16); g.stroke(); g.strokeStyle = '#b05a68'; g.lineWidth = 1.5; g.stroke(); g.lineWidth = 1; g.lineCap = 'butt'; },
   doorobj(g) { R(g, '#0a0a0e', 2, 2, 28, 30); R(g, '#5a4020', 5, 5, 22, 27); R(g, '#74542a', 5, 5, 22, 2); R(g, '#3a2812', 8, 9, 16, 8); R(g, '#c8b060', 21, 20, 3, 3); },
   candy(g) { R(g, 'rgba(0,0,0,.25)', 9, 22, 14, 3); g.fillStyle = '#e06a9a'; g.beginPath(); g.arc(16, 17, 5, 0, 7); g.fill(); R(g, '#f0a0c0', 8, 15, 4, 4); R(g, '#f0a0c0', 20, 15, 4, 4); R(g, '#fff', 14, 14, 2, 2); },
   organ(g) { R(g, 'rgba(0,0,0,.3)', 9, 23, 14, 3); g.fillStyle = '#9a2020'; g.beginPath(); g.arc(13, 15, 5, 0, 7); g.arc(19, 15, 5, 0, 7); g.fill(); g.beginPath(); g.moveTo(8, 17); g.lineTo(16, 26); g.lineTo(24, 17); g.fill(); R(g, '#c84040', 11, 12, 2, 2); },

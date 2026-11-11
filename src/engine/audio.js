@@ -36,6 +36,13 @@ export function sfx(name, vol = 1) {
   try {
     ac ||= new AudioContext();
     if (ac.state === 'suspended') ac.resume();
+    const buf = buffers[name];
+    if (buf) { // 파일로 넣은 소리 (game.json sounds)
+      const src = ac.createBufferSource(), g = ac.createGain();
+      src.buffer = buf; g.gain.value = vol * settings.sfx; src.connect(g); g.connect(ac.destination); src.start();
+      return;
+    }
+    if (name.startsWith('v_')) return; // 목소리 파일이 없으면 조용히 넘어간다
     if (name === 'laugh') return laugh(vol);
     const [type, f0, f1, dur, v] = P[name] || P.blip;
     const t = ac.currentTime, g = ac.createGain();
@@ -88,4 +95,16 @@ export function music(chasing) {
     bgm.master.gain.setTargetAtTime(settings.bgm * 0.16, t, 0.8);
     bgm.pulse.gain.setTargetAtTime(chasing ? settings.bgm * 0.5 : 0, t, 0.3);
   } catch { /* 소리가 안 나도 게임은 계속 */ }
+}
+
+// 소리 파일을 미리 받아 둔다. 이름 → 경로 (data/game.json 의 sounds). 없는 파일은 건너뛰고 합성음을 쓴다
+const buffers = {};
+export async function loadSounds(map = {}) {
+  try { ac ||= new AudioContext(); } catch { return; }
+  await Promise.all(Object.entries(map).map(async ([name, url]) => {
+    try {
+      const r = await fetch(url);
+      if (r.ok) buffers[name] = await ac.decodeAudioData(await r.arrayBuffer());
+    } catch { /* 파일이 없거나 못 읽으면 합성음 */ }
+  }));
 }

@@ -1,11 +1,11 @@
 // 필드: 맵, 충돌, 플레이어 이동, 조사, 숨기, 동행, 추격 AI, 그리기
 import { D, S, settings, cond, TILE, VW, VH } from './core.js';
-import { down, pressed, consume, lastDir } from './input.js';
+import { down, pressed, consume, lastDir, mouse } from './input.js';
 import { run } from './events.js';
 import { sfx } from './audio.js';
-import { sheet, pic } from './gfx.js';
+import { sheet, pic, itemIcon } from './gfx.js';
 import { mapLayer, door, objectSprite } from './art.js';
-import { openStatus, openInventory, openJournal, openPause, openMap, toast, font } from './ui.js';
+import { openStatus, openInventory, openJournal, openPause, openMap, toast, font, BAG } from './ui.js';
 
 export const DIRS = { down: [0, 1], left: [-1, 0], right: [1, 0], up: [0, -1] };
 const ROW = { down: 0, left: 1, right: 2, up: 3 };
@@ -85,8 +85,10 @@ function stepActor(a, dt) {
 }
 
 // 컷신용 강제 이동. path 는 'uuddlr' 같은 문자열. 충돌을 무시한다.
-export function walk(a, path, spd = WALK) {
+// keep 이 true 면 보던 방향을 유지한 채 움직인다 (뒷걸음질)
+export function walk(a, path, spd = WALK, keep = false) {
   return new Promise(res => {
+    a.pathKeep = keep;
     a.path = [...path].map(c => ({ u: 'up', d: 'down', l: 'left', r: 'right' }[c])).filter(Boolean);
     a.pathSpd = spd; a.pathDone = res;
     if (!a.path.length) { a.path = null; res(); }
@@ -94,7 +96,7 @@ export function walk(a, path, spd = WALK) {
 }
 function followPath(a) {
   if (!a.path) return false;
-  if (a.path.length) startMove(a, a.path.shift(), a.pathSpd);
+  if (a.path.length) { const d = a.dir; startMove(a, a.path.shift(), a.pathSpd); if (a.pathKeep) a.dir = d; }
   else { const done = a.pathDone; a.path = a.pathDone = null; if (a === W.p) Object.assign(S, { x: a.x, y: a.y, dir: a.dir }); done(); }
   return true;
 }
@@ -117,6 +119,8 @@ export function updateWorld(dt, input) {
     }
   }
 
+  // 왼쪽 위 가방 단추를 누르면 소지품이 열린다
+  if (free && !W.hidden && mouse.clicked && mouse.x >= BAG.x && mouse.x <= BAG.x + BAG.w && mouse.y >= BAG.y && mouse.y <= BAG.y + BAG.h) { openInventory(); return; }
   // 걷는 도중에 누른 키도 놓치지 않는다: 메뉴는 바로 열고, 조사는 잠깐 기억해 둔다
   if (free && !p.path && !W.hidden && menuKeys()) return;
   if (free && pressed('ok') && !W.hidden) { consume('ok'); W.okBuf = 0.25; }
@@ -334,6 +338,24 @@ function facing() {
   return e && !cond(e.if) ? { text: '잠긴 문', x: fx, y: fy } : null;
 }
 
+// 과학실 인체 모형: 넣은 장기가 바로 보이도록 모형 그림 위에 장기 그림을 얹는다
+let modelCv;
+function liveModel() {
+  const pz = D.puzzles.m6, img = pic(pz.image);
+  if (!img) return null;
+  const key = S.placed.join(',');
+  if (modelCv && modelCv.key === key) return modelCv;
+  const hh = 220, ww = Math.round(img.width * hh / img.height), c = Object.assign(document.createElement('canvas'), { width: ww, height: hh }), g = c.getContext('2d');
+  g.imageSmoothingQuality = 'high'; g.drawImage(img, 0, 0, ww, hh);
+  const kind = id => D.items[id].organ || id;
+  for (const s of pz.slots) {
+    const id = S.placed.filter(p => kind(p) === s.id)[pz.slots.filter(t => t.id === s.id).indexOf(s)], ic = id && itemIcon(id);
+    if (ic) { const k = s.size * ww / Math.max(ic.width, ic.height); g.drawImage(ic, s.fx * ww - ic.width * k / 2, s.fy * hh - ic.height * k / 2, ic.width * k, ic.height * k); }
+  }
+  c.key = key;
+  return (modelCv = c);
+}
+
 const onTable = o => !o.w && !o.h && 'TA'.includes(W.map.tiles[o.y]?.[o.x]);
 
 // ---------- 그리기 ----------
@@ -353,10 +375,21 @@ export function drawWorld(ctx) {
   font(ctx, 10); ctx.textAlign = 'center';
   for (const o of W.objs) {
     if (!vis(o) || o.invisible) continue;
-    const w = (o.w || 1) * TILE, h = (o.h || 1) * TILE, img = o.img && pic(o.img), spr = img ? null : objectSprite(o);
-    if (img) { // 그림 파일이 있는 물건: 높이 ih 타일에 맞춰 줄이고 바닥을 맞춘다
+    const w = (o.w || 1) * TILE, h = (o.h || 1) * TILE, ox = o.x * TILE, oy = o.y * TILE;
+    const img = o.live ? liveModel() : o.img && pic(o.img), spr = img || o.actorIn ? null : objectSprite(o);
+    if (o.actorIn) { // 유리 전시장 안에 인물이 서 있다
+      const s = sheet(o.actorIn), fw = s.width / 3, fh = s.height / 4, dh = h - 14, dw = fw * dh / fh;
+      ctx.fillStyle = '#1c2228'; ctx.fillRect(ox + 2, oy + 2, w - 4, h - 4);
+      ctx.fillStyle = '#2a3238'; ctx.fillRect(ox + 4, oy + 4, w - 8, h - 12);
+      ctx.imageSmoothingEnabled = true; ctx.drawImage(s, fw, 0, fw, fh, ox + (w - dw) / 2, oy + 5, dw, dh); ctx.imageSmoothingEnabled = false;
+      ctx.fillStyle = 'rgba(150,200,220,.16)'; ctx.fillRect(ox + 4, oy + 4, w - 8, h - 12);
+      ctx.fillStyle = 'rgba(230,245,255,.4)'; ctx.fillRect(ox + 6, oy + 6, 2, h - 18);
+      ctx.fillStyle = '#3a4448'; ctx.fillRect(ox + 2, oy + h - 8, w - 4, 6);
+    } else if (img && o.fit) { // 벽에 건 그림: 물건 자리에 꽉 채운다
+      ctx.imageSmoothingEnabled = true; ctx.drawImage(img, ox + 3, oy + 4, w - 6, h - 8); ctx.imageSmoothingEnabled = false;
+    } else if (img) { // 그림 파일이 있는 물건: 높이 ih 타일에 맞춰 줄이고 바닥을 맞춘다
       const dh = (o.ih || 1.5) * TILE, dw = img.width * dh / img.height;
-      ctx.imageSmoothingEnabled = true; ctx.drawImage(img, o.x * TILE + (w - dw) / 2, o.y * TILE + h - dh, dw, dh); ctx.imageSmoothingEnabled = false;
+      ctx.imageSmoothingEnabled = true; ctx.drawImage(img, ox + (w - dw) / 2, oy + h - dh, dw, dh); ctx.imageSmoothingEnabled = false;
     } else if (spr) ctx.drawImage(spr, o.x * TILE, o.y * TILE + (onTable(o) ? -9 : 0)); // 실험대나 작업대 위의 물건은 상판 높이에 맞춘다
     else { // 그림이 없는 종류는 색 상자와 글자로
       ctx.fillStyle = o.color || '#7a6048'; ctx.fillRect(o.x * TILE + 3, o.y * TILE + 3, w - 6, h - 6);
@@ -432,6 +465,15 @@ export function drawWorld(ctx) {
     const z = W.pictureZoom ? 1 + Math.min(0.12, (W.pictureT || 0) * 0.012) : 1, sw = big.width / z, sh = big.height / z;
     ctx.imageSmoothingEnabled = true; ctx.drawImage(big, (big.width - sw) / 2, (big.height - sh) / 2, sw, sh, bx, by, bw, bh); ctx.imageSmoothingEnabled = false;
     ctx.strokeStyle = '#0c0a08'; ctx.strokeRect(bx - 0.5, by - 0.5, bw + 1, bh + 1);
+  }
+  { // 가방 단추 (왼쪽 위). 누르면 소지품이 열린다
+    const b = BAG;
+    ctx.fillStyle = 'rgba(8,8,14,.72)'; ctx.fillRect(b.x, b.y, b.w, b.h);
+    ctx.strokeStyle = '#a89a6a'; ctx.strokeRect(b.x + 0.5, b.y + 0.5, b.w - 1, b.h - 1);
+    ctx.strokeStyle = '#d8b070'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(b.x + 15, b.y + 11, 5, Math.PI, 0); ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = '#8a5a2a'; ctx.fillRect(b.x + 6, b.y + 10, 18, 13); ctx.fillStyle = '#a8743a'; ctx.fillRect(b.x + 6, b.y + 10, 18, 5);
+    ctx.fillStyle = '#d8b070'; ctx.fillRect(b.x + 14, b.y + 14, 2, 3);
+    font(ctx, 9, true); ctx.fillStyle = '#fff'; ctx.textAlign = 'right'; ctx.fillText(String(S.items.length), b.x + b.w - 3, b.y + b.h - 3); ctx.textAlign = 'left';
   }
   if (W.timer) { // 제한 시간: 화면 아래에서부터 붉게 차오른다
     const k = 1 - W.timer.left / W.timer.total;

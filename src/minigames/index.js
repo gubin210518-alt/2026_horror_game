@@ -19,11 +19,16 @@ minigames.grid = c => open(done => {
   const pz = D.puzzles[c.puzzle], cw = 34, ch = 26, ox = (VW - pz.cols * cw) / 2, oy = 74;
   let x = 0, y = 0;
   return {
+    mouse: true,
     update() {
       if (pressed('left')) x = move(x, -1, pz.cols);
       if (pressed('right')) x = move(x, 1, pz.cols);
       if (pressed('up')) y = move(y, -1, pz.rows);
       if (pressed('down')) y = move(y, 1, pz.rows);
+      if (mouse.clicked) { // 칸을 직접 눌러서 열 수도 있다
+        const cx = Math.floor((mouse.x - ox) / cw), cy = Math.floor((mouse.y - oy) / ch);
+        if (cx >= 0 && cx < pz.cols && cy >= 0 && cy < pz.rows) return done(cx + 1 === pz.answer[0] && cy + 1 === pz.answer[1]);
+      }
       if (pressed('ok')) { consume('ok'); done(x + 1 === pz.answer[0] && y + 1 === pz.answer[1]); }
       else if (pressed('cancel')) { consume('cancel'); done(null); }
     },
@@ -50,7 +55,7 @@ minigames.timing = c => open(done => {
     update(dt) {
       t += dt;
       const i = Math.floor(t / gap);
-      if (i !== Math.floor((t - dt) / gap) && i >= 1 && i <= beats.length) sfx(i === beats.length ? 'ok' : 'blip');
+      if (i !== Math.floor((t - dt) / gap) && i >= 1 && i <= beats.length) { sfx(i === beats.length ? 'ok' : 'blip'); if (c.voices) sfx(c.voices[i - 1]); } // 목소리가 있으면 같이 읊는다
       if (auto) { if (t > target + 0.2) done(true); return; }
       if (pressed('ok')) { consume('ok'); done(Math.abs(t - target) <= win); }
       else if (t > target + win) done(false);
@@ -202,7 +207,7 @@ minigames.painting = c => open(done => {
   };
   const rect = img => { const k = Math.min(560 / img.width, 286 / img.height), w = img.width * k, h = img.height * k; return { x: (VW - w) / 2, y: 8, w, h }; };
   return {
-    pause: false, // 고르는 동안에도 피는 계속 차오른다
+    pause: false, mouse: true, // 고르는 동안에도 피는 계속 차오른다
     update() {
       if (live && !W.timer) return done(null); // 시간이 다 되면 닫힌다
       const img = pic(url());

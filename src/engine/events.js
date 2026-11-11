@@ -1,7 +1,7 @@
 // JSON 이벤트 명령 해석기. 맵과 아이템의 "event" 목록을 순서대로 실행한다.
 import { D, S, settings, cond, T, josa, loadSave, resetState } from './core.js';
 import { W, enterMap, npcById, walk, syncCompanion } from './world.js';
-import { say, choose, gameOver, toast, waitKey } from './ui.js';
+import { say, choose, gameOver, toast, waitKey, itemFx } from './ui.js';
 import { sfx } from './audio.js';
 
 class Abort {} // 스크립트를 중간에 끝낼 때 던진다 (사망, 가방 가득 참)
@@ -52,12 +52,12 @@ async function one(c) {
   }
   if ('give' in c) {
     const n = c.n || 1;
-    if (c.give === 'ink') { S.ink += n; sfx('get'); if (!c.quiet) await say(`잉크를 얻었다. (잉크 ${S.ink}개)`); return; }
+    if (c.give === 'ink') { S.ink += n; sfx('get'); if (!c.quiet) await itemFx('_ink', `잉크를 얻었다. (잉크 ${S.ink}개)`); return; }
     if (c.give === 'coin') { S.coins += n; sfx('get'); toast(`동전 ${n}개를 주웠다. (${S.coins}개)`); return; }
     const it = D.items[c.give];
     if (S.items.length >= (D.game.slots || 16)) { sfx('bad'); await say('더 이상 들 수 없다. 소지품을 정리하자.'); throw new Abort(); }
     S.items.push(c.give); sfx('get');
-    if (!c.quiet) await say(`${josa(it.name, '을', '를')} 얻었다.`);
+    if (!c.quiet) await itemFx(c.give, `${josa(it.name, '을', '를')} 얻었다.`);
     return;
   }
   if ('take' in c) { const i = S.items.indexOf(c.take); if (i >= 0) S.items.splice(i, 1); return; }
@@ -65,7 +65,7 @@ async function one(c) {
     if (S.items.includes(c.organ) || S.placed.includes(c.organ)) return;
     if (S.items.length >= (D.game.slots || 16)) { sfx('bad'); await say('더 이상 들 수 없다. 소지품을 정리하자.'); throw new Abort(); }
     S.items.push(c.organ); sfx('get');
-    await say('<' + D.items[c.organ].name + '>' + josa(D.items[c.organ].name, '을', '를').slice(-1) + ' 얻었다.');
+    await itemFx(c.organ, '<' + D.items[c.organ].name + '>' + josa(D.items[c.organ].name, '을', '를').slice(-1) + ' 얻었다.');
     return;
   }
   if ('set' in c) { S.flags[c.set] = c.to ?? 1; return; }
@@ -90,13 +90,14 @@ async function one(c) {
   if ('npc' in c) { const n = npcById(c.npc); if (n) { const { npc, ...rest } = c; Object.assign(n, rest); } return; }
   if ('move' in c) {
     const a = c.move === 'player' ? W.p : npcById(c.move);
-    if (a) { const p = walk(a, c.path, c.speed); if (!c.nowait) await p; }
+    if (a) { const p = walk(a, c.path, c.speed, c.keep); if (!c.nowait) await p; }
     return;
   }
   if ('face' in c) { const a = c.face === 'player' ? W.p : npcById(c.face); if (a) a.dir = c.dir; return; }
   if ('run' in c) return exec(c.run);
   if ('timer' in c) { W.timer = { left: c.timer, total: c.timer, label: T(c.label) || '남은 시간', end: c.end, style: c.style }; return; }
   if ('timerStop' in c) { W.timer = null; return; }
+  if ('fx' in c) { sfx('get'); return itemFx(c.fx, T(c.text) || josa(D.items[c.fx].name, '을', '를') + ' 얻었다.'); } // 아이템 그림이 크게 떴다가 가방으로 들어가는 효과
   if ('picture' in c) { W.picture = c.picture || null; W.pictureT = 0; W.pictureZoom = !!c.zoom; return; } // 화면 가운데에 큰 그림을 띄우거나(경로) 지운다(null)
   if ('readNote' in c) return say(D.notes[c.readNote].text || '(아무것도 적혀 있지 않다.)');
   if ('resetPush' in c) { // 밀어 둔 물건을 처음 자리로

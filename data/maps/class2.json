@@ -50,7 +50,7 @@
               "set": "diary"
             },
             {
-              "sfx": "get"
+              "fx": "_diary"
             },
             "@c1.diary",
             {

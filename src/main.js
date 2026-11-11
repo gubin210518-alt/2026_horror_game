@@ -1,11 +1,11 @@
 // 시작점: 데이터 불러오기, 타이틀, 게임 루프
 import { D, S, VW, VH, hasSave, loadSave, settings } from './engine/core.js';
-import { initInput, endFrame } from './engine/input.js';
+import { initInput, endFrame, mouse, tapOk } from './engine/input.js';
 import { W, enterMap, updateWorld, drawWorld } from './engine/world.js';
 import { UI, choose, openOptions, drawUI, font } from './engine/ui.js';
 import { startGame } from './engine/events.js';
 import { intro } from './minigames/m0.js';
-import { music } from './engine/audio.js';
+import { music, loadSounds } from './engine/audio.js';
 import { pic, preload } from './engine/gfx.js';
 import { initTouch, showTouch } from './engine/touch.js';
 import './minigames/index.js';
@@ -67,6 +67,7 @@ function loop(t) {
   const dt = Math.min(0.05, (t - last) / 1000 || 0);
   last = t;
   const m = UI.modal;
+  if (m && mouse.clicked && !m.mouse) tapOk(); // 마우스를 따로 받지 않는 창에서는 화면을 누르면 Space 와 같다
   m?.update(dt);
   if (W.map && !(m && m.pause !== false)) updateWorld(dt, !m);
 
@@ -94,7 +95,7 @@ async function boot() {
   // 맵을 모두 받아 두고, 데이터에 적힌 그림 경로를 전부 미리 불러온다 (그림이 뒤늦게 바뀌어 보이지 않게)
   await Promise.all((D.game.maps || []).map(async id => { D.maps[id] = await (await fetch('data/maps/' + id + '.json')).json(); }));
   const urls = [...JSON.stringify(D).matchAll(/assets\/[\w\/.-]+\.(?:png|jpg|jpeg|webp)/g)].map(x => x[0]);
-  await preload(urls, (done, total) => { loading = [done, total]; });
+  await Promise.all([preload(urls, (done, total) => { loading = [done, total]; }), loadSounds(D.game.sounds)]);
   loading = null;
   title();
 }

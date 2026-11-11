@@ -506,7 +506,15 @@
                     }
                   ],
                   "else": [
+                    {
+                      "sfx": "v_fast"
+                    },
                     "@c3.tooFast"
+                  ],
+                  "voices": [
+                    "v_one",
+                    "v_two",
+                    "v_three"
                   ]
                 }
               ],

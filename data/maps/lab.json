@@ -114,10 +114,131 @@
       ]
     },
     {
+      "x": 1,
+      "y": 0,
+      "color": "#6a8a6a",
+      "label": "표본",
+      "art": "jars",
+      "event": [
+        "포르말린 병. 쥐가 들어 있다."
+      ]
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "color": "#6a8a6a",
+      "label": "표본",
+      "art": "jars",
+      "event": [
+        "포르말린 병. 뱀이 똬리를 틀고 있다."
+      ]
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "color": "#6a8a6a",
+      "label": "표본",
+      "art": "jars",
+      "event": [
+        "포르말린 병. 라벨이 지워져 있다."
+      ]
+    },
+    {
       "x": 5,
       "y": 0,
       "color": "#6a8a6a",
       "label": "표본",
+      "art": "jars",
+      "event": [
+        "포르말린 병. 안이 텅 비어 있다. 뚜껑이 열려 있다."
+      ]
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "color": "#6a8a6a",
+      "label": "표본",
+      "art": "jars",
+      "event": [
+        "벽 선반의 표본. 날짜가 전부 같다."
+      ]
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "color": "#6a8a6a",
+      "label": "표본",
+      "art": "jars",
+      "event": [
+        "벽 선반의 표본. 눈알 같은 것이 떠 있다."
+      ]
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "color": "#6a8a6a",
+      "label": "표본",
+      "art": "jars",
+      "event": [
+        "벽 선반의 표본. 손가락이 여섯 개인 손."
+      ]
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "color": "#6a8a6a",
+      "label": "표본",
+      "art": "jars",
+      "event": [
+        "벽 선반의 표본. 내용물이 이쪽으로 돌아누웠다."
+      ]
+    },
+    {
+      "x": 11,
+      "y": 1,
+      "color": "#6a8a6a",
+      "label": "표본",
+      "art": "jars",
+      "event": [
+        "벽 선반의 표본. 개구리 알."
+      ]
+    },
+    {
+      "x": 11,
+      "y": 2,
+      "color": "#6a8a6a",
+      "label": "표본",
+      "art": "jars",
+      "event": [
+        "벽 선반의 표본. 액체가 탁하다."
+      ]
+    },
+    {
+      "x": 11,
+      "y": 4,
+      "color": "#6a8a6a",
+      "label": "표본",
+      "art": "jars",
+      "event": [
+        "벽 선반의 표본. 병에 금이 가 있다."
+      ]
+    },
+    {
+      "x": 11,
+      "y": 5,
+      "color": "#6a8a6a",
+      "label": "표본",
+      "art": "jars",
+      "event": [
+        "벽 선반의 표본. 뭔가 유리를 두드린 자국."
+      ]
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "color": "#6a8a6a",
+      "label": "표본",
+      "art": "jars",
       "event": [
         {
           "if": "m7_lung",
@@ -125,38 +246,92 @@
             "포르말린 병들이 늘어서 있다. 개구리, 쥐, 그리고 알 수 없는 것들."
           ],
           "else": [
+            {
+              "npc": "yunha",
+              "x": 1,
+              "y": 1,
+              "dir": "up",
+              "queue": []
+            },
+            {
+              "face": "player",
+              "dir": "left"
+            },
+            "@c4.prank0",
+            {
+              "face": "yunha",
+              "dir": "right"
+            },
+            {
+              "sfx": "v_frog"
+            },
             "@c4.prank1",
             {
-              "waitKey": "right",
-              "prompt": "→ 를 눌러 뒤로 물러난다"
+              "waitKey": "ok",
+              "prompt": "Space: 뒷걸음질 친다"
             },
             {
               "move": "player",
-              "path": "r"
+              "path": "r",
+              "keep": true
+            },
+            {
+              "face": "yunha",
+              "dir": "up"
+            },
+            "@c4.prank1b",
+            {
+              "move": "yunha",
+              "path": "r",
+              "speed": 6
+            },
+            {
+              "sfx": "v_rat"
             },
             "@c4.prank2",
             {
-              "waitKey": "right",
-              "prompt": "→ 를 눌러 뒤로 물러난다"
+              "waitKey": "ok",
+              "prompt": "Space: 뒷걸음질 친다"
             },
             {
               "move": "player",
-              "path": "r"
+              "path": "r",
+              "keep": true
+            },
+            {
+              "move": "yunha",
+              "path": "l",
+              "speed": 6
+            },
+            {
+              "face": "yunha",
+              "dir": "up"
+            },
+            "@c4.prank2b",
+            {
+              "move": "yunha",
+              "path": "rr",
+              "speed": 7
+            },
+            {
+              "sfx": "v_dont"
             },
             "@c4.prank3",
             {
-              "waitKey": "right",
-              "prompt": "→ 를 눌러 뒤로 물러난다"
+              "waitKey": "ok",
+              "prompt": "Space: 뒷걸음질 친다"
             },
             {
               "move": "player",
-              "path": "r"
+              "path": "r",
+              "keep": true,
+              "speed": 7
             },
             {
               "shake": 0.5
             },
             {
-              "sfx": "scare"
+              "sfx": "glass"
             },
             "@c4.lung",
             {
@@ -170,19 +345,29 @@
       ]
     },
     {
-      "x": 9,
+      "x": 6,
       "y": 1,
       "color": "#7a9aa8",
       "label": "전시장",
       "event": [
-        "유리 전시장. 안은 비어 있다."
+        {
+          "if": "m7_lung",
+          "then": [
+            "유리 전시장. 안에 있던 것이 떨어져 나가 비어 있다."
+          ],
+          "else": [
+            "유리 전시장. 안에 폐 모형이 걸려 있다."
+          ]
+        }
       ]
     },
     {
-      "x": 8,
+      "x": 7,
       "y": 0,
+      "h": 2,
       "color": "#7a2a2a",
       "label": "전시장",
+      "actorIn": "red",
       "if": "!m7_chase",
       "event": [
         {
@@ -200,23 +385,21 @@
               "readNote": "diary1"
             },
             {
-              "scare": "#a00"
-            },
-            {
               "sfx": "glass"
             },
             {
               "picture": "assets/pics/red_glass.png",
               "zoom": true
             },
+            {
+              "scare": "#a00"
+            },
             "@c4.redBreak",
             {
               "picture": null
             },
             {
-              "move": "player",
-              "path": "d",
-              "speed": 8
+              "sfx": "v_run"
             },
             {
               "set": "m7_chase"
@@ -229,21 +412,21 @@
       ]
     },
     {
-      "x": 2,
+      "x": 7,
       "y": 0,
-      "w": 2,
-      "color": "#6a8a6a",
-      "label": "선반",
-      "art": "jars",
+      "color": "#5a6a72",
+      "label": "전시장",
+      "art": "rubble",
+      "if": "m7_chase",
       "event": [
-        "포르말린 병이 빼곡하다. 라벨은 전부 같은 날짜다."
+        "깨진 전시장. 유리 조각에 붉은 것이 묻어 있다."
       ]
     }
   ],
   "npcs": [
     {
       "id": "red",
-      "x": 8,
+      "x": 7,
       "y": 1,
       "ai": "hunter",
       "speed": 1.5,

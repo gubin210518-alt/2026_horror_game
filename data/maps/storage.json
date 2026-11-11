@@ -13,12 +13,12 @@
   ],
   "exits": [
     {
-      "x": 0,
-      "y": 4,
+      "x": 5,
+      "y": 0,
       "to": "art",
-      "tx": 18,
-      "ty": 5,
-      "dir": "left"
+      "tx": 10,
+      "ty": 12,
+      "dir": "up"
     }
   ],
   "objects": [
@@ -376,6 +376,24 @@
       "art": "mop",
       "event": [
         "대걸레와 양동이. 물이 검붉게 말라 있다."
+      ]
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "color": "#c8c0b0",
+      "label": "석고상",
+      "art": "bust",
+      "event": [
+        {
+          "if": "has:hammer",
+          "then": [
+            "@c2.bustHammer"
+          ],
+          "else": [
+            "@c2.bust"
+          ]
+        }
       ]
     }
   ]

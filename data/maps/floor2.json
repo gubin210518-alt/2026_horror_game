@@ -1,8 +1,8 @@
 {
   "name": "본관 2층 복도",
   "flicker": {
-    "x": 44,
-    "y": 9,
+    "x": 39,
+    "y": 26,
     "r": 9
   },
   "tiles": [
@@ -15,12 +15,12 @@
     "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
     "#,,#ggggttgggggggggggggggggggggggggggggggg#,,###",
     "#,,wggggtgggggggggggggggggggggggggggtgggggw,,###",
-    "#,,wggggggggggggggggggtgggggggggggggggggggw,,#.#",
-    "#,,#gggggggggggggggggggggggggggggggggggggg#,,=.#",
-    "#,,#gggggggggggggggggggggggggggggggggggggg#,,=.#",
-    "#,,wggggggggggggggggggggggggggggggggggggggw,,=.#",
-    "#,,wggggggggggggggggggggggttggggggggggggggw,,=.#",
-    "#,,#gggggggggggggggggggggggggggggggggggggg#,,#.#",
+    "#,,wggggggggggggggggggtgggggggggggggggggggw,,###",
+    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
+    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
+    "#,,wggggggggggggggggggggggggggggggggggggggw,,###",
+    "#,,wggggggggggggggggggggggttggggggggggggggw,,###",
+    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
     "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
     "#,,wgggggggggggttgggggggggggggggggggggggggw,,###",
     "#,cwggggggggggggggggggggggggggggggggggggggw,,###",
@@ -33,7 +33,8 @@
     "#,,#####ww##ww##ww##ww##ww##ww##ww##ww#####,,###",
     "#,,,,,,,,,c,,,,,,,,,,,c,,,,,,,,,,,,,,,,,,,,,,###",
     "#,,,,c,,,,,,,,,,c,,,,,,,,,,,,,,,,,,,,,,,,,,,,###",
-    "################################################"
+    "######################################hhhh######",
+    "#####################################......#####"
   ],
   "onEnter": [
     {
@@ -110,23 +111,6 @@
     },
     {
       "x": 45,
-      "y": 8,
-      "to": "art",
-      "tx": 1,
-      "ty": 1,
-      "dir": "right"
-    },
-    {
-      "x": 45,
-      "y": 18,
-      "to": "floor2",
-      "tx": 1,
-      "ty": 1,
-      "if": "never",
-      "locked": "[미술 준비실] 잠겨 있다."
-    },
-    {
-      "x": 45,
       "y": 23,
       "to": "floor2",
       "tx": 1,
@@ -182,15 +166,6 @@
       ]
     },
     {
-      "x": 40,
-      "y": 27,
-      "to": "floor2",
-      "tx": 1,
-      "ty": 1,
-      "if": "never",
-      "locked": "여긴 아무것도 없다."
-    },
-    {
       "x": 0,
       "y": 14,
       "to": "science",
@@ -215,6 +190,32 @@
       "ty": 1,
       "if": "never",
       "locked": "[기술실] 잠겨 있다."
+    },
+    {
+      "x": 45,
+      "y": 8,
+      "to": "floor2",
+      "tx": 1,
+      "ty": 1,
+      "if": "never",
+      "locked": "[미술 준비실] 잠겨 있다."
+    },
+    {
+      "x": 45,
+      "y": 18,
+      "to": "floor2",
+      "tx": 1,
+      "ty": 1,
+      "if": "never",
+      "locked": "여긴 아무것도 없다."
+    },
+    {
+      "x": 36,
+      "y": 27,
+      "to": "art",
+      "tx": 2,
+      "ty": 2,
+      "dir": "down"
     }
   ],
   "objects": [
@@ -255,9 +256,8 @@
       ]
     },
     {
-      "x": 45,
-      "y": 10,
-      "h": 4,
+      "x": 38,
+      "y": 27,
       "invisible": true,
       "label": "창문",
       "if": "!ink1",
@@ -288,13 +288,14 @@
             }
           ]
         }
-      ]
+      ],
+      "w": 4
     },
     {
-      "x": 45,
-      "y": 9,
-      "w": 2,
-      "h": 6,
+      "x": 37,
+      "y": 27,
+      "w": 6,
+      "h": 2,
       "art": "wallpatch",
       "color": "#23232e",
       "if": "ink1",
@@ -306,9 +307,9 @@
   "npcs": [
     {
       "id": "yunha",
-      "x": 46,
-      "y": 11,
-      "dir": "left",
+      "x": 39,
+      "y": 28,
+      "dir": "up",
       "if": "!m2_fled"
     },
     {

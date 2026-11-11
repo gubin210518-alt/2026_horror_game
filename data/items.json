@@ -143,5 +143,17 @@
     "desc": "자루에 금이 간 낡은 망치. 한 번 내리치면 부서질 것 같다.",
     "key": true,
     "icon": "items:7"
+  },
+  "_ink": {
+    "name": "잉크",
+    "desc": "일기를 쓰는 데 필요한 붉은 잉크.",
+    "icon": "items:8",
+    "hidden": true
+  },
+  "_diary": {
+    "name": "일기장",
+    "desc": "낡은 일기장.",
+    "icon": "items:9",
+    "hidden": true
   }
 }
