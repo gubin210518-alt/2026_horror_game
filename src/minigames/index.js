@@ -1,12 +1,12 @@
 // 여러 장면에서 같이 쓰는 미니게임. 정답과 수치는 data/puzzles.json 에 있다.
 // 결과: true 성공, false 실패, null 취소(아무 일도 일어나지 않음)
-import { D, S, settings, T, VW, josa } from '../engine/core.js';
-import { pressed, consume, down } from '../engine/input.js';
+import { D, S, settings, T, VW, VH, josa, heldOrgans } from '../engine/core.js';
+import { pressed, consume, down, mouse } from '../engine/input.js';
 import { push, pop, box, font, wrap } from '../engine/ui.js';
 import { minigames } from '../engine/events.js';
 import { sfx } from '../engine/audio.js';
 import { W } from '../engine/world.js';
-import { pic, cell } from '../engine/gfx.js';
+import { pic, itemIcon } from '../engine/gfx.js';
 
 function open(build) {
   return new Promise(res => { const m = push(build(v => { pop(m); res(v); })); });
@@ -120,7 +120,7 @@ minigames.mash = c => open(done => {
 // puzzles.m6: image(모형 그림), sheet(장기 아이콘 시트), slots [{ id, fx, fy, size }] (그림 안에서의 비율 위치)
 minigames.organs = () => open(done => {
   const pz = D.puzzles.m6, slots = pz.slots, kind = id => D.items[id].organ || id;
-  const icon = id => cell(pz.sheet.url, pz.sheet.cols, pz.sheet.rows, D.items[id].icon ?? 0);
+  const icon = itemIcon;
   // 같은 종류 자리가 여러 개면(신장 2개) 넣은 개수만큼 앞에서부터 찬 것으로 본다
   const placedIn = s => S.placed.filter(p => kind(p) === s.id)[slots.filter(t => t.id === s.id).indexOf(s)];
   const IH = 304, IY = 28; // 모형 그림 높이와 위치
@@ -130,7 +130,7 @@ minigames.organs = () => open(done => {
       turned = Math.max(0, turned - dt);
       if (pressed('cancel')) { consume('cancel'); if (phase) phase = 0; else done(true); return; }
       if (!phase) {
-        const n = S.organs.length;
+        const n = heldOrgans().length;
         if (!n) { if (pressed('ok')) { consume('ok'); done(true); } return; }
         if (pressed('up')) oi = move(oi, -1, n);
         if (pressed('down')) oi = move(oi, 1, n);
@@ -141,9 +141,9 @@ minigames.organs = () => open(done => {
       if (pressed('right') || pressed('down')) si = move(si, 1, slots.length);
       if (pressed('ok')) {
         consume('ok');
-        const id = S.organs[oi], s = slots[si];
+        const id = heldOrgans()[oi], s = slots[si];
         if (kind(id) === s.id && !placedIn(s)) {
-          S.organs.splice(oi, 1); S.placed.push(id); oi = 0; phase = 0; sfx('get');
+          S.items.splice(S.items.indexOf(id), 1); S.placed.push(id); oi = 0; phase = 0; sfx('get');
           msg = josa(D.items[id].name, '이', '가') + ' 제자리에 들어갔다.';
         } else { // 틀린 자리: 모형이 이쪽을 본다
           S.sanity = Math.max(0, S.sanity - 5); turned = 1.5; phase = 0; sfx('bad');
@@ -170,9 +170,9 @@ minigames.organs = () => open(done => {
         }
       });
       if (turned) { ctx.fillStyle = 'rgba(120,0,0,.25)'; ctx.fillRect(600 - iw - 44, IY - 6, iw + 28, IH + 12); }
-      font(ctx, 14); ctx.fillStyle = '#ccc'; ctx.fillText('장기 주머니', 50, 70);
-      if (!S.organs.length) { ctx.fillStyle = '#888'; ctx.fillText('넣을 장기가 없다.', 50, 98); }
-      S.organs.forEach((id, k) => {
+      font(ctx, 14); ctx.fillStyle = '#ccc'; ctx.fillText('가진 장기', 50, 70);
+      if (!heldOrgans().length) { ctx.fillStyle = '#888'; ctx.fillText('넣을 장기가 없다.', 50, 98); }
+      heldOrgans().forEach((id, k) => {
         const y = 84 + k * 30, ic = icon(id);
         if (k === oi) { ctx.fillStyle = 'rgba(255,210,122,.15)'; ctx.fillRect(46, y - 2, 230, 28); }
         if (ic) { const k2 = 24 / Math.max(ic.width, ic.height); ctx.drawImage(ic, 62 - ic.width * k2 / 2, y + 12 - ic.height * k2 / 2, ic.width * k2, ic.height * k2); }
@@ -183,6 +183,58 @@ minigames.organs = () => open(done => {
       font(ctx, 13); ctx.fillStyle = '#e0a0a0'; wrap(msg, 250, 13).forEach((l, k) => ctx.fillText(l, 50, 292 + k * 18));
       font(ctx, 12); ctx.fillStyle = '#777';
       ctx.fillText(phase ? '방향키: 자리 고르기   Space: 놓기   X: 뒤로' : 'Space: 장기 고르기   X: 닫기', 50, 334);
+    },
+  };
+});
+
+// 그림 속 인물 고르기 (M2). 그림을 크게 띄우고, 인물을 누르거나 ←→ 와 Space 로 고른다. 고른 번호(0부터)를 돌려준다.
+// puzzles: images { base, blood: [3장], full }, regions [{ name, x0, x1, y0, y1 }] (그림 안에서의 비율)
+// 제한 시간이 흐르는 동안에는 남은 시간에 따라 피가 차오른 그림으로 바뀐다. c.image 를 주면 그 그림으로 고정, c.must 면 취소할 수 없다
+minigames.painting = c => open(done => {
+  const pz = D.puzzles[c.puzzle], R = pz.regions, live = !!W.timer && !c.image;
+  let sel = 0, hover = -1, mx = mouse.x, my = mouse.y;
+  const url = () => {
+    if (c.image) return c.image;
+    const t = W.timer;
+    if (!t) return pz.images.base;
+    const k = t.left / t.total;
+    return pz.images.blood[k > 0.66 ? 0 : k > 0.33 ? 1 : 2];
+  };
+  const rect = img => { const k = Math.min(560 / img.width, 286 / img.height), w = img.width * k, h = img.height * k; return { x: (VW - w) / 2, y: 8, w, h }; };
+  return {
+    pause: false, // 고르는 동안에도 피는 계속 차오른다
+    update() {
+      if (live && !W.timer) return done(null); // 시간이 다 되면 닫힌다
+      const img = pic(url());
+      hover = -1;
+      if (img) {
+        const r = rect(img), fx = (mouse.x - r.x) / r.w, fy = (mouse.y - r.y) / r.h;
+        hover = R.findIndex(q => fx >= q.x0 && fx <= q.x1 && fy >= q.y0 && fy <= q.y1);
+        if (hover >= 0 && (mouse.x !== mx || mouse.y !== my)) sel = hover; // 마우스를 움직였을 때만 따라간다 (키보드로 고르는 중에 덮어쓰지 않게)
+        mx = mouse.x; my = mouse.y;
+        if (mouse.clicked && hover >= 0) { sfx('ok'); return done(hover); }
+      }
+      if (pressed('left')) { sel = move(sel, -1, R.length); sfx('blip'); }
+      if (pressed('right')) { sel = move(sel, 1, R.length); sfx('blip'); }
+      if (pressed('ok')) { consume('ok'); sfx('ok'); done(sel); }
+      else if (pressed('cancel') && !c.must) { consume('cancel'); done(null); }
+    },
+    draw(ctx) {
+      ctx.fillStyle = 'rgba(0,0,0,.82)'; ctx.fillRect(0, 0, VW, VH);
+      const img = pic(url());
+      if (!img) return;
+      const r = rect(img), q = R[sel];
+      ctx.imageSmoothingEnabled = true; ctx.drawImage(img, r.x, r.y, r.w, r.h); ctx.imageSmoothingEnabled = false;
+      const x = r.x + q.x0 * r.w, y = r.y + q.y0 * r.h, w = (q.x1 - q.x0) * r.w, h = (q.y1 - q.y0) * r.h;
+      ctx.strokeStyle = (performance.now() / 300 | 0) % 2 ? '#fff' : '#ffd27a'; ctx.lineWidth = 2; ctx.strokeRect(x, y, w, h); ctx.lineWidth = 1;
+      font(ctx, 13, true);
+      const tw = ctx.measureText(q.name).width + 16;
+      ctx.fillStyle = 'rgba(8,8,14,.9)'; ctx.fillRect(x + w / 2 - tw / 2, y + h - 22, tw, 20);
+      ctx.fillStyle = '#ffd27a'; ctx.textAlign = 'center'; ctx.fillText(q.name, x + w / 2, y + h - 8);
+      box(ctx, 60, VH - 58, VW - 120, 46);
+      font(ctx, 14, true); ctx.fillStyle = c.must ? '#ff8080' : '#eee'; ctx.fillText(T(c.title) || '', VW / 2, VH - 38);
+      font(ctx, 12); ctx.fillStyle = '#888'; ctx.fillText('인물을 누르거나, ←→ 로 고르고 Space' + (c.must ? '' : '   X: 그만 보기'), VW / 2, VH - 20);
+      ctx.textAlign = 'left';
     },
   };
 });

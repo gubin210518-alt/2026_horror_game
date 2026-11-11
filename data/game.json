@@ -1,6 +1,6 @@
 {
   "title": "비현실",
-  "slots": 8,
+  "slots": 16,
   "intro": true,
   "start": {
     "map": "classroom",
@@ -62,5 +62,37 @@
       }
     ]
   },
-  "titleImage": "assets/pics/title.png"
+  "titleImage": "assets/pics/title.png",
+  "maps": [
+    "archive",
+    "art",
+    "auditorium",
+    "class2",
+    "classroom",
+    "floor2",
+    "lab",
+    "library",
+    "science",
+    "storage",
+    "test",
+    "test2",
+    "vent"
+  ],
+  "greenScreen": [
+    "assets/pics/organs.png",
+    "assets/pics/model.png",
+    "assets/pics/items.png"
+  ],
+  "sheets": {
+    "items": {
+      "url": "assets/pics/items.png",
+      "cols": 4,
+      "rows": 3
+    },
+    "organs": {
+      "url": "assets/pics/organs.png",
+      "cols": 3,
+      "rows": 3
+    }
+  }
 }

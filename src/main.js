@@ -6,7 +6,8 @@ import { UI, choose, openOptions, drawUI, font } from './engine/ui.js';
 import { startGame } from './engine/events.js';
 import { intro } from './minigames/m0.js';
 import { music } from './engine/audio.js';
-import { pic } from './engine/gfx.js';
+import { pic, preload } from './engine/gfx.js';
+import { initTouch, showTouch } from './engine/touch.js';
 import './minigames/index.js';
 
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
@@ -60,7 +61,7 @@ function titleText(t) {
   ctx.textAlign = 'left';
 }
 
-let last = 0;
+let last = 0, loading = [0, 1]; // 불러오는 중이면 [끝난 수, 전체 수]
 function loop(t) {
   requestAnimationFrame(loop); // 먼저 예약해서, 한 프레임에 오류가 나도 게임이 멈추지 않게 한다
   const dt = Math.min(0.05, (t - last) / 1000 || 0);
@@ -71,9 +72,15 @@ function loop(t) {
 
   ctx.setTransform(cv.width / VW, 0, 0, cv.height / VH, 0, 0);
   if (W.map) { if (W.picture && UI.modal) W.pictureT = (W.pictureT || 0) + dt; drawWorld(ctx); }
-  else titleBackdrop(t / 1000);
+  else if (loading) { // 불러오는 중
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, VW, VH);
+    font(ctx, 13); ctx.fillStyle = '#888'; ctx.textAlign = 'center'; ctx.fillText('불러오는 중…', VW / 2, VH / 2 - 10);
+    ctx.fillStyle = '#222'; ctx.fillRect(VW / 2 - 100, VH / 2, 200, 4); ctx.fillStyle = '#b01020'; ctx.fillRect(VW / 2 - 100, VH / 2, 200 * loading[0] / loading[1], 4);
+    ctx.textAlign = 'left';
+  } else titleBackdrop(t / 1000);
   music(!!W.map && W.chasing);
   drawUI(ctx, dt);
+  showTouch(UI.modal?.kind !== 'intro'); // 인트로는 화면을 직접 누르는 장면이라 단추를 숨긴다
   endFrame();
 }
 
@@ -82,7 +89,13 @@ async function boot() {
     D[k] = await (await fetch(`data/${k}.json`)).json();
   }
   initInput(cv);
+  initTouch();
   requestAnimationFrame(loop);
+  // 맵을 모두 받아 두고, 데이터에 적힌 그림 경로를 전부 미리 불러온다 (그림이 뒤늦게 바뀌어 보이지 않게)
+  await Promise.all((D.game.maps || []).map(async id => { D.maps[id] = await (await fetch('data/maps/' + id + '.json')).json(); }));
+  const urls = [...JSON.stringify(D).matchAll(/assets\/[\w\/.-]+\.(?:png|jpg|jpeg|webp)/g)].map(x => x[0]);
+  await preload(urls, (done, total) => { loading = [done, total]; });
+  loading = null;
   title();
 }
 boot();

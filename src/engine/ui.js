@@ -4,7 +4,7 @@ import { pressed, consume } from './input.js';
 import { sfx } from './audio.js';
 import { W } from './world.js';
 import { run } from './events.js';
-import { sheet, pic } from './gfx.js';
+import { sheet, pic, itemIcon } from './gfx.js';
 import { actorOf, portrait } from './art.js';
 
 const FONT = '"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif';
@@ -146,25 +146,47 @@ export function openStatus() {
   }, ['status', 'cancel', 'ok']);
 }
 
+// 아이콘을 칸 가운데에 맞춰 그린다. 그림이 없는 아이템은 이름 첫 글자
+export function drawIcon(ctx, id, cx, cy, size) {
+  const ic = itemIcon(id);
+  if (ic) {
+    const k = size / Math.max(ic.width, ic.height);
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(ic, cx - ic.width * k / 2, cy - ic.height * k / 2, ic.width * k, ic.height * k); ctx.imageSmoothingEnabled = false;
+  } else {
+    ctx.fillStyle = '#3a3640'; ctx.fillRect(cx - size / 2, cy - size / 2, size, size);
+    font(ctx, Math.round(size * 0.5), true); ctx.fillStyle = '#ccc'; ctx.textAlign = 'center'; ctx.fillText(D.items[id].name[0], cx, cy + size * 0.18); ctx.textAlign = 'left';
+  }
+}
+
 export function openInventory() {
+  const COLS = 4, CELL = 46, GX = 84, GY = 70, max = D.game.slots || 16;
   let i = 0;
   return panel(ctx => {
-    box(ctx, 110, 36, 420, 288);
-    header(ctx, 130, 62, `소지품 (${S.items.length}/${D.game.slots || 8})`);
-    if (!S.items.length) { ctx.fillStyle = '#888'; ctx.fillText('아무것도 없다.', 130, 92); }
-    S.items.forEach((id, k) => {
-      ctx.fillStyle = k === i ? '#fff' : '#999';
-      ctx.fillText((k === i ? '▶ ' : '   ') + D.items[id].name, 130, 92 + k * 22);
-    });
-    ctx.fillStyle = '#aaa'; font(ctx, 13);
-    if (S.items[i]) wrap(D.items[S.items[i]].desc, 380, 13).forEach((l, k) => ctx.fillText(l, 130, 276 + k * 18));
-    ctx.fillStyle = '#c88'; ctx.fillText('장기 주머니: ' + (S.organs.map(o => D.items[o].name).join(', ') || '비어 있음'), 130, 312);
+    box(ctx, 64, 28, 512, 304);
+    header(ctx, 84, 54, '소지품 (' + S.items.length + '/' + max + ')');
+    for (let k = 0; k < max; k++) { // 칸
+      const x = GX + (k % COLS) * CELL, y = GY + Math.floor(k / COLS) * CELL;
+      ctx.fillStyle = k === i && S.items[k] ? 'rgba(255,210,122,.22)' : 'rgba(255,255,255,.04)'; ctx.fillRect(x, y, CELL - 4, CELL - 4);
+      ctx.strokeStyle = k === i && S.items.length ? '#ffd27a' : '#4a4652'; ctx.strokeRect(x + 0.5, y + 0.5, CELL - 5, CELL - 5);
+      if (S.items[k]) drawIcon(ctx, S.items[k], x + (CELL - 4) / 2, y + (CELL - 4) / 2, 34);
+    }
+    const id = S.items[i];
+    if (id) { // 고른 아이템: 큰 그림, 이름, 설명
+      ctx.fillStyle = '#14151c'; ctx.fillRect(290, 70, 266, 96);
+      drawIcon(ctx, id, 338, 118, 76);
+      font(ctx, 15, true); ctx.fillStyle = '#fff'; wrap(D.items[id].name, 160, 15).forEach((l, k) => ctx.fillText(l, 390, 104 + k * 20));
+      font(ctx, 13); ctx.fillStyle = '#bbb'; wrap(D.items[id].desc, 262, 13).forEach((l, k) => ctx.fillText(l, 292, 190 + k * 19));
+    } else { font(ctx, 14); ctx.fillStyle = '#888'; ctx.fillText('아무것도 없다.', 292, 100); }
+    font(ctx, 12); ctx.fillStyle = '#666'; ctx.fillText('방향키: 고르기   Space: 조사 / 사용 / 조합   I / X: 닫기', 84, 322);
   }, ['inv', 'cancel'], {
     update(m) {
       const n = S.items.length;
-      if (pressed('up')) i = Math.max(0, i - 1);
-      if (pressed('down')) i = Math.min(Math.max(0, n - 1), i + 1);
-      if (pressed('ok') && n) {
+      if (!n) return;
+      if (pressed('left')) i = Math.max(0, i - 1);
+      if (pressed('right')) i = Math.min(n - 1, i + 1);
+      if (pressed('up')) i = Math.max(0, i - COLS);
+      if (pressed('down')) i = Math.min(n - 1, i + COLS);
+      if (pressed('ok')) {
         eat('ok'); m.lock = true;
         itemMenu(S.items[i]).then(after => {
           m.lock = false; i = Math.min(i, Math.max(0, S.items.length - 1));

@@ -48,9 +48,14 @@ await page.until(`!!document.querySelector('input')`);
 await snap('m0-1-login');
 await ev(`(()=>{const i=document.querySelector('input'); i.value='테스터'; i.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter'}));})()`);
 t.ok(await ev(`__intro().scene`) === 'desktop', 'M0: 이름을 입력하면 바탕화면이 나온다');
-await clickL(50, 60); t.ok(await ev(`__intro().scene`) === 'desktop', 'M0: 다른 아이콘은 빈 폴더만 열린다'); await clickL(400, 300);
-await clickL(50, 281); await snap('m0-2-board');
-await clickL(300, 109); await clickL(300, 139); await clickL(200, 262); // 삭제된 글, 게임 글, 첨부 파일
+const tap = async k => { const p = await ev(`__intro().ui.${k}`); await clickL(p[0], p[1]); }; // 지금 화면의 단추 위치를 받아서 누른다
+await snap('m0-1b-desktop');
+await tap('folder'); t.ok(await ev(`__intro().windows.includes('folder')`), 'M0: 폴더를 누르면 파일 목록 창이 열린다'); await tap('close');
+await tap('note'); t.ok(await ev(`__intro().windows.includes('note')`), 'M0: 글 파일을 누르면 메모장이 열린다'); await snap('m0-1c-note'); await tap('close');
+await tap('start'); await snap('m0-1d-start'); await tap('start');
+t.ok(await ev(`__intro().windows.length`) === 0, 'M0: 창을 닫을 수 있다');
+await tap('net'); await snap('m0-2-board');
+await tap('deadPost'); await tap('gamePost'); await snap('m0-2b-post'); await tap('attach'); // 삭제된 글, 게임 글, 첨부 파일
 t.ok(await ev(`__intro().dialogs.length`) === 1, 'M0: 첨부 파일을 누르면 가짜 다운로드 창이 뜬다');
 const dlg = async () => ev(`(()=>{const d=__intro().dialogs.at(-1); return [d.x+d.cancel.dx+40, d.y+d.cancel.dy+12, d.x+d.close.dx+9, d.y+d.close.dy+8, d.x+70, d.y+108];})()`);
 let b = await dlg(); await clickL(b[0], b[1]); await clickL(b[0], b[1]);
@@ -119,8 +124,10 @@ await retry(() => key('Space'), `${G}.UI.modal?.kind === 'gameover'`);
 await died('M2 실패: 이네스가 아닌 인물을 찌르면 죽는다');
 
 await use(1, 4, 'left'); await use(16, 4, 'up');
-await put(1, 6, 'left'); await key('Space'); await key('Space'); await says();
-t.ok(await flag('m2_done') === 1 && await ev(`${G}.W.timer`) === null, 'M2 정답: 물감칼로 이네스를 찌르면 피가 빠지고 비품실이 열린다');
+await put(1, 6, 'left'); await key('Space'); await snap('m2-painting');
+for (const k of ['ArrowRight', 'ArrowRight', 'ArrowRight', 'Space', 'Space']) await key(k); // 그림에서 이네스를 고르고, 찌른다
+await says();
+t.ok(await flag('m2_done') === 1 && await ev(`${G}.W.timer`) === null, 'M2 정답: 그림에서 이네스를 골라 물감칼로 찌르면 피가 빠지고 비품실이 열린다');
 await put(18, 5, 'right'); await walkTo('ArrowRight', `${G}.S.map === 'storage'`);
 await snap('c2-storage');
 await use(3, 1, 'up'); await use(7, 1, 'up');
@@ -197,10 +204,10 @@ t.ok(await flag('m5_done') === 1 && await ev(`${G}.W.chasing`) === false, 'M5 �
 // ---------- 4장: 과학실 M6, 실험실 M7, 환풍구 M8 ----------
 await snap('c4-science');
 await use(7, 3, 'up'); await use(3, 10, 'down'); await use(10, 4, 'down'); await use(15, 7, 'down');
-t.ok(await ev(`${G}.S.organs.includes('heart') && ['acid','key_lab'].every(i=>${G}.S.items.includes(i))`) && await flag('ink3') === 1, '4장: 심장, 황산, 실험실 열쇠, 세 번째 잉크를 얻는다');
+t.ok(await ev(`${G}.S.items.includes('heart') && ['acid','key_lab'].every(i=>${G}.S.items.includes(i))`) && await flag('ink3') === 1, '4장: 심장, 황산, 실험실 열쇠, 세 번째 잉크를 얻는다');
 await put(17, 2, 'right'); await key('Space'); await says(); await snap('m6-model');
 await ev(`${G}.S.sanity = 100`); await key('Space'); await key('Space');
-t.ok(await ev(`${G}.S.sanity`) < 99 && await ev(`${G}.S.organs.length`) === 1, 'M6 오답: 틀린 자리에 놓으면 정신력 -5, 장기는 돌아온다');
+t.ok(await ev(`${G}.S.sanity`) < 99 && await ev(`${G}.S.items.includes('heart')`), 'M6 오답: 틀린 자리에 놓으면 정신력 -5, 장기는 돌아온다');
 await key('Space'); for (const k of ['ArrowRight', 'ArrowRight', 'ArrowRight', 'Space', 'KeyX']) await key(k); await says();
 t.ok(await ev(`${G}.S.placed[0]`) === 'heart', 'M6 정답: 심장이 제자리에 들어간다');
 await save();
@@ -213,7 +220,7 @@ const labToChase = async () => {
 };
 await use(15, 1, 'up'); t.ok(await flag('lab_open') === 1, '4장: 실험실 열쇠로 문을 연다');
 await labToChase();
-t.ok(await flag('lab_in') === 1 && await flag('m7_lung') === 1 && await ev(`${G}.S.organs.includes('lung')`) && await ev(`${G}.W.p.x`) === 8, 'M7-1: 윤하의 장난에 세 번 물러나다 전시장에 부딪혀 폐를 얻는다');
+t.ok(await flag('lab_in') === 1 && await flag('m7_lung') === 1 && await ev(`${G}.S.items.includes('lung')`) && await ev(`${G}.W.p.x`) === 8, 'M7-1: 윤하의 장난에 세 번 물러나다 전시장에 부딪혀 폐를 얻는다');
 await use(9, 9, 'down'); t.ok(!await flag('m7_acid') && await ev(`${G}.S.map`) === 'lab', 'M7: 형체가 나오기 전에는 문이 꿈쩍도 하지 않는다');
 await use(8, 1, 'up');
 t.ok(await flag('m7_chase') === 1 && await ev(`${G}.S.notes.includes('diary1')`), 'M7-2: <제물의 일기장>을 읽고 닫으면 붉은 형체가 나온다'); await snap('m7-red');
@@ -250,7 +257,7 @@ await ev(`${G}.settings.holdMash = false`);
 await key('Space'); await sleep(800); await says();
 t.ok(await flag('m8_done') === 1 && await ev(`${G}.W.p.x`) === 31, 'M8 성공: (길게 누르기 옵션) 게이지를 채우고 윤하의 손을 잡아 빠져나온다');
 await put(30, 1, 'left'); await key('Space'); await says(); await key('Space'); await says();
-t.ok(await ev(`${G}.S.organs.includes('intestine')`), 'M8: 촉수를 당겨 창자를 얻는다');
+t.ok(await ev(`${G}.S.items.includes('intestine')`), 'M8: 촉수를 당겨 창자를 얻는다 (일반 소지품에 들어간다)');
 await put(38, 1, 'right'); await walkTo('ArrowRight', `${G}.S.map === 'auditorium'`); await says();
 t.ok(await flag('c5_in') === 1, '4장 끝: 환풍구를 지나 강당에 도착한다');
 t.ok(await ev(`${G}.S.rules.length`) >= 1 && await ev(`${G}.S.puzzles.includes('m6')`), '일기장에 규칙과 진행 중인 단서가 남아 있다');

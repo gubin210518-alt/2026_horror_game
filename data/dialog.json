@@ -1,41 +1,45 @@
 {
   "intro": {
     "loginTitle": "사용자 로그인",
-    "loginHint": "이름을 입력하세요",
-    "loginButton": "확인",
+    "loginHint": "이름을 입력하고 Enter",
+    "loginButton": "로그인",
     "namePlaceholder": "이름",
     "defaultName": "나",
-    "start": "시작",
+    "start": "검색",
     "clock": "오후 11:58",
-    "icons": [
-      "내 컴퓨터",
-      "내 문서",
-      "휴지통",
-      "새 폴더",
-      "인터넷"
-    ],
-    "emptyTitle": "폴더",
-    "empty": "이 폴더는 비어 있습니다.",
-    "emptyHint": "(아무 데나 누르면 닫힙니다)",
     "browserTitle": "인터넷 - 괴담 게시판",
     "boardTitle": "괴담 게시판",
     "posts": [
       {
         "title": "우리 학교 3층 화장실 얘기 아는 사람",
-        "date": "11.02"
+        "date": "11.02",
+        "by": "ㅇㅇ",
+        "views": 412
       },
       {
         "title": "[자료] 2009년에 개발 중단된 쯔꾸르 게임 찾았다",
         "date": "11.09",
+        "by": "익명",
+        "views": 2009,
         "open": true
       },
       {
         "title": "새벽에 엘리베이터 혼자 타지 마라",
-        "date": "11.10"
+        "date": "11.10",
+        "by": "괴담러",
+        "views": 1337
       },
       {
         "title": "이거 실화임? (사진 있음)",
-        "date": "11.10"
+        "date": "11.10",
+        "by": "야자충",
+        "views": 88
+      },
+      {
+        "title": "밤 12시에 학교 가 본 사람 있냐",
+        "date": "11.11",
+        "by": "ㅇㅇ",
+        "views": 12
       }
     ],
     "deadPost": "삭제된 글입니다.",
@@ -53,7 +57,184 @@
     "extracting": "압축 푸는 중...",
     "running": "비현실.exe 실행 중...",
     "gameSub": "2009 · 미완성",
-    "pressStart": "아무 곳이나 누르면 시작"
+    "pressStart": "아무 곳이나 누르면 시작",
+    "wallpaper": "assets/pics/wallpaper.png",
+    "exeName": "비현실.exe",
+    "desktop": {
+      "date": "2026-11-11",
+      "icons": [
+        {
+          "label": "휴지통",
+          "kind": "bin",
+          "open": "bin"
+        },
+        {
+          "label": "내 PC",
+          "kind": "pc",
+          "open": "pc"
+        },
+        {
+          "label": "문서",
+          "kind": "folder",
+          "open": "docs"
+        },
+        {
+          "label": "사진",
+          "kind": "folder",
+          "open": "photos"
+        },
+        {
+          "label": "게임",
+          "kind": "folder",
+          "open": "games"
+        },
+        {
+          "label": "과제.txt",
+          "kind": "txt",
+          "open": "file:homework"
+        },
+        {
+          "label": "수행평가.hwp",
+          "kind": "doc",
+          "open": "noapp"
+        },
+        {
+          "label": "인터넷",
+          "kind": "net",
+          "open": "browser"
+        }
+      ],
+      "folders": {
+        "bin": {
+          "title": "휴지통",
+          "files": [],
+          "empty": "휴지통이 비어 있습니다."
+        },
+        "docs": {
+          "title": "문서",
+          "files": [
+            {
+              "name": "일기.txt",
+              "kind": "txt",
+              "open": "file:diary"
+            },
+            {
+              "name": "시간표.txt",
+              "kind": "txt",
+              "open": "file:timetable"
+            },
+            {
+              "name": "수행평가_진짜최종.hwp",
+              "kind": "doc",
+              "open": "noapp"
+            },
+            {
+              "name": "할 일.txt",
+              "kind": "txt",
+              "open": "file:todo"
+            }
+          ]
+        },
+        "photos": {
+          "title": "사진",
+          "files": [
+            {
+              "name": "우리학교_밤.jpg",
+              "kind": "img",
+              "open": "photo:school"
+            },
+            {
+              "name": "IMG_0412.jpg",
+              "kind": "img",
+              "open": "photo:broken"
+            }
+          ]
+        },
+        "games": {
+          "title": "게임",
+          "files": [],
+          "empty": "설치된 게임이 없습니다."
+        }
+      },
+      "files": {
+        "homework": {
+          "title": "과제.txt",
+          "text": "과학 수행평가\n- 인체 모형 관찰 보고서 (금요일까지)\n- 장기 이름이랑 위치 외우기\n\n...하기 싫다."
+        },
+        "diary": {
+          "title": "일기.txt",
+          "text": "11월 11일\n오늘도 야자 째고 공포게임 실황만 봤다.\n요즘은 뭘 봐도 안 무섭다.\n진짜 무서운 게임 어디 없나."
+        },
+        "timetable": {
+          "title": "시간표.txt",
+          "text": "월: 수학 국어 영어 과학 체육 음악 자습\n화: 영어 수학 미술 미술 국어 사회 자습\n수: 국어 과학 수학 체육 영어 기술 자습\n목: 국어 영어 수학 체육 과학 미술 자습\n금: 사회 수학 영어 국어 과학 창체 창체"
+        },
+        "todo": {
+          "title": "할 일.txt",
+          "text": "[ ] 수행평가\n[ ] 방 청소\n[x] 괴담 게시판 정주행\n[ ] 그 게임 찾기"
+        }
+      },
+      "photos": {
+        "school": {
+          "title": "우리학교_밤.jpg",
+          "image": "assets/pics/title.png",
+          "text": "야자 끝나고 찍은 학교. 창문 하나만 불이 켜져 있다."
+        },
+        "broken": {
+          "title": "IMG_0412.jpg",
+          "text": "이 사진은 표시할 수 없습니다."
+        }
+      },
+      "noappTitle": "열 수 없음",
+      "noapp": "이 파일을 열 수 있는 앱이 없습니다.",
+      "pcTitle": "내 PC",
+      "pc": [
+        "프로세서   3.2GHz 6코어",
+        "메모리   16.0GB",
+        "로컬 디스크 (C:)   211GB 중 87GB 사용 가능"
+      ],
+      "cpu": "CPU 사용량",
+      "notepad": "메모장",
+      "noteMenu": "파일   편집   보기",
+      "startApps": [
+        {
+          "label": "메모장",
+          "kind": "txt",
+          "open": "file:todo"
+        },
+        {
+          "label": "파일 탐색기",
+          "kind": "folder",
+          "open": "docs"
+        },
+        {
+          "label": "인터넷",
+          "kind": "net",
+          "open": "browser"
+        }
+      ],
+      "pinned": "고정됨",
+      "power": "지금은 끌 수 없습니다.",
+      "url": "goedam-board.kr/horror",
+      "boardHead": "제목                                                                                              글쓴이        날짜      조회",
+      "author": "익명",
+      "postDate": "2009.07.14 → 11.09 끌올",
+      "viewsLabel": "조회",
+      "comments": [
+        [
+          "ㅇㅇ",
+          "이거 받았다가 컴 맛 간 사람 있다던데"
+        ],
+        [
+          "괴담러",
+          "파일 아직 살아 있네 ㄷㄷ"
+        ],
+        [
+          "야자충",
+          "받는다 ㅅㄱ"
+        ]
+      ]
+    }
   },
   "c1": {
     "wake": [
@@ -143,7 +324,15 @@
       "석고상이 쩍 갈라지며 무너졌다. 망치도 자루가 부러져 버렸다.",
       "부서진 석고 조각 사이에 열쇠가 하나 떨어져 있다."
     ],
-    "hammer": "바닥에 망치가 떨어져 있다. 자루에 금이 가 있어서 오래 쓰지는 못할 것 같다."
+    "hammer": "바닥에 망치가 떨어져 있다. 자루에 금이 가 있어서 오래 쓰지는 못할 것 같다.",
+    "lookPrompt": "그림 속 자매들이 이쪽을 보고 있다",
+    "stabAsk": "물감칼을 든 손이 떨린다. 이 인물을 찌를까?",
+    "wrongLaugh": [
+      "칼이 캔버스에 박혔다.",
+      "…그림 속 자매들이 일제히 웃기 시작했다."
+    ],
+    "timeupAsk": "누구를 죽이겠습니까?",
+    "again": "액자를 다시 조사하면 그림을 자세히 들여다볼 수 있다. 피는 계속 차오르고 있다."
   },
   "c3": {
     "meet": [

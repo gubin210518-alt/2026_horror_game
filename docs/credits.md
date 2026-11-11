@@ -10,9 +10,11 @@
 | `assets/pics/title.png` | 같음 | 타이틀 배경 |
 | `assets/pics/yunha_window.png`, `guard_face.png`, `red_glass.png` | 같음 (2026-11-12 생성) | 컷신용 그림 |
 | `assets/pics/organs.png`, `model.png` | 같음 (2026-11-12 생성) | 장기 아이콘 9종, 인체 모형 |
+| `assets/pics/items.png`, `wallpaper.png` | 같음 (2026-11-12 생성) | 아이템 아이콘 12종, 인트로 바탕화면 배경 |
+| `assets/pics/sisters_blood1~3.png`, `sisters_blood_full.png`, `sisters_1~4_dead.png` | 연님이 나노바나나(Gemini)로 생성 | 피가 차오르는 단계와 찔린 모습. 오른쪽 아래의 생성 도구 표시는 액자 무늬로 덮음 |
 | 타일, 물건, 문 | 코드로 직접 그림 (`src/engine/art.js`) | 외부 소스 없음 |
 
-AI로 만든 그림입니다. 공개 배포 전에 Higgsfield 이용 약관의 상업적 이용 조건(무료 플랜 기준)을 확인해야 합니다.
+AI로 만든 그림입니다. 공개 배포 전에 Higgsfield와 Gemini 이용 약관의 상업적 이용 조건(무료 플랜 기준)을 확인하고, AI로 만든 그림임을 밝히는 것이 좋습니다.
 
 ## 소리
 

@@ -42,6 +42,7 @@ async function one(c) {
     const fn = minigames[c.minigame];
     const r = fn ? await fn(c) : (console.error('없는 미니게임', c.minigame), true);
     if (r == null) return;
+    if (c.cases) return exec(c.cases[r] || []); // 고른 번호에 따라 갈라진다 (0부터)
     return exec((r ? c.then : c.else) || []);
   }
   if ('say' in c) { for (const l of [].concat(c.say).flatMap(T)) await sayLine(l, c.who); return; }
@@ -54,15 +55,17 @@ async function one(c) {
     if (c.give === 'ink') { S.ink += n; sfx('get'); if (!c.quiet) await say(`잉크를 얻었다. (잉크 ${S.ink}개)`); return; }
     if (c.give === 'coin') { S.coins += n; sfx('get'); toast(`동전 ${n}개를 주웠다. (${S.coins}개)`); return; }
     const it = D.items[c.give];
-    if (S.items.length >= (D.game.slots || 8)) { sfx('bad'); await say('더 이상 들 수 없다. 소지품을 정리하자.'); throw new Abort(); }
+    if (S.items.length >= (D.game.slots || 16)) { sfx('bad'); await say('더 이상 들 수 없다. 소지품을 정리하자.'); throw new Abort(); }
     S.items.push(c.give); sfx('get');
     if (!c.quiet) await say(`${josa(it.name, '을', '를')} 얻었다.`);
     return;
   }
   if ('take' in c) { const i = S.items.indexOf(c.take); if (i >= 0) S.items.splice(i, 1); return; }
-  if ('organ' in c) {
-    if (!S.organs.includes(c.organ)) S.organs.push(c.organ);
-    sfx('get'); await say(`<${D.items[c.organ].name}>${josa(D.items[c.organ].name, '을', '를').slice(-1)} 장기 주머니에 넣었다.`);
+  if ('organ' in c) { // 장기도 일반 소지품에 들어간다
+    if (S.items.includes(c.organ) || S.placed.includes(c.organ)) return;
+    if (S.items.length >= (D.game.slots || 16)) { sfx('bad'); await say('더 이상 들 수 없다. 소지품을 정리하자.'); throw new Abort(); }
+    S.items.push(c.organ); sfx('get');
+    await say('<' + D.items[c.organ].name + '>' + josa(D.items[c.organ].name, '을', '를').slice(-1) + ' 얻었다.');
     return;
   }
   if ('set' in c) { S.flags[c.set] = c.to ?? 1; return; }
@@ -92,7 +95,7 @@ async function one(c) {
   }
   if ('face' in c) { const a = c.face === 'player' ? W.p : npcById(c.face); if (a) a.dir = c.dir; return; }
   if ('run' in c) return exec(c.run);
-  if ('timer' in c) { W.timer = { left: c.timer, total: c.timer, label: T(c.label) || '남은 시간', end: c.end }; return; }
+  if ('timer' in c) { W.timer = { left: c.timer, total: c.timer, label: T(c.label) || '남은 시간', end: c.end, style: c.style }; return; }
   if ('timerStop' in c) { W.timer = null; return; }
   if ('picture' in c) { W.picture = c.picture || null; W.pictureT = 0; W.pictureZoom = !!c.zoom; return; } // 화면 가운데에 큰 그림을 띄우거나(경로) 지운다(null)
   if ('readNote' in c) return say(D.notes[c.readNote].text || '(아무것도 적혀 있지 않다.)');

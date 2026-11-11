@@ -19,7 +19,52 @@
     "hints": [
       "피 글씨를 다시 읽어 봐. \"고르라\"가 아니라 \"죽여라\"였어.",
       "미술실에 날붙이가 있었던 것 같아.",
-      "물감칼로 이네스를 찔러."
+      "물감칼을 들고 액자를 조사해서, 그림 속 맨 오른쪽 이네스를 눌러 찔러."
+    ],
+    "images": {
+      "base": "assets/pics/sisters.png",
+      "blood": [
+        "assets/pics/sisters_blood1.png",
+        "assets/pics/sisters_blood2.png",
+        "assets/pics/sisters_blood3.png"
+      ],
+      "full": "assets/pics/sisters_blood_full.png",
+      "dead": [
+        "assets/pics/sisters_1_dead.png",
+        "assets/pics/sisters_2_dead.png",
+        "assets/pics/sisters_3_dead.png",
+        "assets/pics/sisters_4_dead.png"
+      ]
+    },
+    "regions": [
+      {
+        "name": "엘레나",
+        "x0": 0.155,
+        "x1": 0.35,
+        "y0": 0.17,
+        "y1": 0.83
+      },
+      {
+        "name": "마리",
+        "x0": 0.35,
+        "x1": 0.51,
+        "y0": 0.17,
+        "y1": 0.83
+      },
+      {
+        "name": "로제",
+        "x0": 0.51,
+        "x1": 0.7,
+        "y0": 0.17,
+        "y1": 0.83
+      },
+      {
+        "name": "이네스",
+        "x0": 0.7,
+        "x1": 0.86,
+        "y0": 0.17,
+        "y1": 0.83
+      }
     ]
   },
   "m4": {

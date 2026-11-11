@@ -25,7 +25,7 @@ await warp('art', 1, 5, 'left', { m2_fled: 1, ink1: 1 }); await shot('07-art-sis
 await warp('storage', 5, 3, 'right'); await shot('08-storage');
 await warp('library', 11, 5, 'right', { light: 1 }); await shot('09-library');
 await warp('science', 12, 6, 'up'); await shot('10-science');
-await ev(`${G}.S.organs = ['heart','lung','intestine']; ${G}.S.placed = []`);
+await ev(`${G}.S.items = ['candy','flashlight','key_library','paintknife','hammer','heart','lung','intestine']; ${G}.S.placed = []`);
 await warp('science', 17, 2, 'right'); await key('Space'); await sleep(400); await key('Space'); await sleep(600); await shot('11-organs-empty');
 for (const k of ['Space', 'ArrowRight', 'ArrowRight', 'ArrowRight', 'Space']) await key(k); // 심장 넣기
 await sleep(400); await shot('12-organs-heart');

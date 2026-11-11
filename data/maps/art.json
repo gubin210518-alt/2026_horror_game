@@ -55,7 +55,8 @@
   "events": {
     "intro": [
       {
-        "picture": "assets/pics/sisters.png"
+        "picture": "assets/pics/sisters.png",
+        "zoom": true
       },
       "@c2.intro",
       {
@@ -75,37 +76,67 @@
       },
       {
         "timer": 60,
-        "label": "피가 차오른다",
+        "label": "액자에 피가 차오른다",
+        "style": "label",
         "end": "timeup"
-      }
+      },
+      "@c2.again"
     ],
     "timeup": [
+      {
+        "picture": "assets/pics/sisters_blood_full.png"
+      },
       "@c2.timeup",
       {
-        "choice": [
-          "엘레나",
-          "마리",
-          "로제",
-          "이네스"
-        ],
-        "title": "누구를 죽이겠습니까?",
-        "then": [
+        "picture": null
+      },
+      {
+        "minigame": "painting",
+        "puzzle": "m2",
+        "image": "assets/pics/sisters_blood_full.png",
+        "must": true,
+        "title": "@c2.timeupAsk",
+        "cases": [
           [
+            {
+              "sfx": "laugh"
+            },
+            {
+              "wait": 1.1
+            },
             {
               "die": "@c2.chosen"
             }
           ],
           [
             {
-              "die": "@c2.chosen"
-            }
-          ],
-          [
+              "sfx": "laugh"
+            },
+            {
+              "wait": 1.1
+            },
             {
               "die": "@c2.chosen"
             }
           ],
           [
+            {
+              "sfx": "laugh"
+            },
+            {
+              "wait": 1.1
+            },
+            {
+              "die": "@c2.chosen"
+            }
+          ],
+          [
+            {
+              "sfx": "laugh"
+            },
+            {
+              "wait": 1.1
+            },
             {
               "die": "@c2.chosen"
             }
@@ -113,33 +144,171 @@
         ]
       }
     ],
-    "wrong": [
+    "look": [
       {
-        "die": "@c2.wrong"
+        "minigame": "painting",
+        "puzzle": "m2",
+        "title": "@c2.lookPrompt",
+        "cases": [
+          [
+            {
+              "set": "m2_pick",
+              "to": 1
+            },
+            {
+              "run": "pick"
+            }
+          ],
+          [
+            {
+              "set": "m2_pick",
+              "to": 2
+            },
+            {
+              "run": "pick"
+            }
+          ],
+          [
+            {
+              "set": "m2_pick",
+              "to": 3
+            },
+            {
+              "run": "pick"
+            }
+          ],
+          [
+            {
+              "set": "m2_pick",
+              "to": 4
+            },
+            {
+              "run": "pick"
+            }
+          ]
+        ]
       }
     ],
-    "stab": [
+    "pick": [
+      {
+        "if": "has:paintknife",
+        "then": [
+          {
+            "choice": [
+              "물감칼로 찌른다",
+              "그만둔다"
+            ],
+            "title": "@c2.stabAsk",
+            "then": [
+              [
+                {
+                  "run": "stabbed"
+                }
+              ],
+              []
+            ]
+          }
+        ],
+        "else": [
+          {
+            "if": "m2_pick==1",
+            "then": [
+              "@c2.elena"
+            ]
+          },
+          {
+            "if": "m2_pick==2",
+            "then": [
+              "@c2.marie"
+            ]
+          },
+          {
+            "if": "m2_pick==3",
+            "then": [
+              "@c2.rose"
+            ]
+          },
+          {
+            "if": "m2_pick==4",
+            "then": [
+              "@c2.ines"
+            ]
+          }
+        ]
+      }
+    ],
+    "stabbed": [
       {
         "timerStop": 1
       },
       {
-        "sfx": "scream"
-      },
-      {
-        "scare": "#fff"
-      },
-      "@c2.success",
-      {
-        "set": "m2_done"
-      },
-      {
-        "puzzleDone": "m2"
-      },
-      {
-        "sfx": "door"
-      },
-      {
-        "goal": "비품실을 살펴본다"
+        "if": "m2_pick==4",
+        "then": [
+          {
+            "picture": "assets/pics/sisters_4_dead.png"
+          },
+          {
+            "sfx": "scream"
+          },
+          {
+            "scare": "#fff"
+          },
+          "@c2.success",
+          {
+            "picture": null
+          },
+          {
+            "set": "m2_done"
+          },
+          {
+            "puzzleDone": "m2"
+          },
+          {
+            "sfx": "door"
+          },
+          {
+            "goal": "비품실을 살펴본다"
+          }
+        ],
+        "else": [
+          {
+            "if": "m2_pick==1",
+            "then": [
+              {
+                "picture": "assets/pics/sisters_1_dead.png"
+              }
+            ]
+          },
+          {
+            "if": "m2_pick==2",
+            "then": [
+              {
+                "picture": "assets/pics/sisters_2_dead.png"
+              }
+            ]
+          },
+          {
+            "if": "m2_pick==3",
+            "then": [
+              {
+                "picture": "assets/pics/sisters_3_dead.png"
+              }
+            ]
+          },
+          {
+            "scare": "#a00"
+          },
+          "@c2.wrongLaugh",
+          {
+            "sfx": "laugh"
+          },
+          {
+            "wait": 1.2
+          },
+          {
+            "die": "@c2.wrong"
+          }
+        ]
       }
     ]
   },
@@ -322,27 +491,7 @@
               ],
               "else": [
                 {
-                  "if": "has:paintknife",
-                  "then": [
-                    {
-                      "choice": [
-                        "찌른다",
-                        "그만둔다"
-                      ],
-                      "title": "물감칼로 엘레나를 찌를까?",
-                      "then": [
-                        [
-                          {
-                            "run": "wrong"
-                          }
-                        ],
-                        []
-                      ]
-                    }
-                  ],
-                  "else": [
-                    "@c2.elena"
-                  ]
+                  "run": "look"
                 }
               ]
             }
@@ -372,27 +521,7 @@
               ],
               "else": [
                 {
-                  "if": "has:paintknife",
-                  "then": [
-                    {
-                      "choice": [
-                        "찌른다",
-                        "그만둔다"
-                      ],
-                      "title": "물감칼로 마리를 찌를까?",
-                      "then": [
-                        [
-                          {
-                            "run": "wrong"
-                          }
-                        ],
-                        []
-                      ]
-                    }
-                  ],
-                  "else": [
-                    "@c2.marie"
-                  ]
+                  "run": "look"
                 }
               ]
             }
@@ -422,27 +551,7 @@
               ],
               "else": [
                 {
-                  "if": "has:paintknife",
-                  "then": [
-                    {
-                      "choice": [
-                        "찌른다",
-                        "그만둔다"
-                      ],
-                      "title": "물감칼로 로제를 찌를까?",
-                      "then": [
-                        [
-                          {
-                            "run": "wrong"
-                          }
-                        ],
-                        []
-                      ]
-                    }
-                  ],
-                  "else": [
-                    "@c2.rose"
-                  ]
+                  "run": "look"
                 }
               ]
             }
@@ -472,27 +581,7 @@
               ],
               "else": [
                 {
-                  "if": "has:paintknife",
-                  "then": [
-                    {
-                      "choice": [
-                        "찌른다",
-                        "그만둔다"
-                      ],
-                      "title": "물감칼로 이네스를 찌를까?",
-                      "then": [
-                        [
-                          {
-                            "run": "stab"
-                          }
-                        ],
-                        []
-                      ]
-                    }
-                  ],
-                  "else": [
-                    "@c2.ines"
-                  ]
+                  "run": "look"
                 }
               ]
             }

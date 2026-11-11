@@ -334,6 +334,8 @@ function facing() {
   return e && !cond(e.if) ? { text: '잠긴 문', x: fx, y: fy } : null;
 }
 
+const onTable = o => !o.w && !o.h && 'TA'.includes(W.map.tiles[o.y]?.[o.x]);
+
 // ---------- 그리기 ----------
 let darkCv;
 export function drawWorld(ctx) {
@@ -355,7 +357,7 @@ export function drawWorld(ctx) {
     if (img) { // 그림 파일이 있는 물건: 높이 ih 타일에 맞춰 줄이고 바닥을 맞춘다
       const dh = (o.ih || 1.5) * TILE, dw = img.width * dh / img.height;
       ctx.imageSmoothingEnabled = true; ctx.drawImage(img, o.x * TILE + (w - dw) / 2, o.y * TILE + h - dh, dw, dh); ctx.imageSmoothingEnabled = false;
-    } else if (spr) ctx.drawImage(spr, o.x * TILE, o.y * TILE);
+    } else if (spr) ctx.drawImage(spr, o.x * TILE, o.y * TILE + (onTable(o) ? -9 : 0)); // 실험대나 작업대 위의 물건은 상판 높이에 맞춘다
     else { // 그림이 없는 종류는 색 상자와 글자로
       ctx.fillStyle = o.color || '#7a6048'; ctx.fillRect(o.x * TILE + 3, o.y * TILE + 3, w - 6, h - 6);
       if (o.label) { ctx.fillStyle = '#fff'; ctx.fillText(o.label, o.x * TILE + w / 2, o.y * TILE + h / 2 + 4); }
@@ -433,7 +435,7 @@ export function drawWorld(ctx) {
   }
   if (W.timer) { // 제한 시간: 화면 아래에서부터 붉게 차오른다
     const k = 1 - W.timer.left / W.timer.total;
-    ctx.fillStyle = 'rgba(150,0,10,.3)'; ctx.fillRect(0, VH * (1 - k), VW, VH * k);
+    if (W.timer.style !== 'label') { ctx.fillStyle = 'rgba(150,0,10,.3)'; ctx.fillRect(0, VH * (1 - k), VW, VH * k); } // style: 'label' 이면 글자만
     font(ctx, 13, true); ctx.textAlign = 'center'; ctx.fillStyle = '#ff8080';
     ctx.fillText(`${W.timer.label} ${Math.ceil(W.timer.left)}초`, VW / 2, 20); ctx.textAlign = 'left';
   }

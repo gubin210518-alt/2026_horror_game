@@ -13,7 +13,7 @@ export const S = {};
 export function resetState(name) {
   for (const k of Object.keys(S)) delete S[k];
   Object.assign(S, {
-    name: name || '나', map: null, x: 0, y: 0, dir: 'down', flags: {}, items: [], organs: [], placed: [],
+    name: name || '나', map: null, x: 0, y: 0, dir: 'down', flags: {}, items: [], placed: [],
     ink: 0, coins: 0, sanity: 100, goal: '', notes: [], rules: [], puzzles: [], hints: {},
     hintsUsed: 0, deaths: 0, saves: 0, companion: null, hide: { id: null, n: 0 }, pos: {},
   });
@@ -30,16 +30,20 @@ export function loadSave() {
   if (!d || !d.map) return false;
   resetState(d.name);
   Object.assign(S, d);
+  if (S.organs) { S.items.push(...S.organs.filter(o => !S.items.includes(o))); delete S.organs; } // 예전 세이브의 장기 주머니를 소지품으로 옮긴다
   return true;
 }
+
+// 지금 들고 있는 장기들 (소지품 중 isOrgan 인 것)
+export const heldOrgans = () => S.items.filter(i => D.items[i]?.isOrgan);
 
 // 조건식: "flag", "!flag", "has:아이템", "organ:장기", "count>=3", "a & b", "a | b"
 function val(k) {
   if (k.startsWith('has:')) return S.items.includes(k.slice(4));
-  if (k.startsWith('organ:')) return S.organs.includes(k.slice(6)) || S.placed.includes(k.slice(6));
+  if (k.startsWith('organ:')) return S.items.includes(k.slice(6)) || S.placed.includes(k.slice(6));
   if (k.startsWith('placed:')) return S.placed.includes(k.slice(7));
   if (k.startsWith('rule:')) return S.rules.includes(k.slice(5));
-  if (k === 'organs') return S.organs.length;
+  if (k === 'organs') return heldOrgans().length;
   if (k === 'placed') return S.placed.length;
   if (['ink', 'coins', 'sanity', 'companion', 'saves'].includes(k)) return S[k];
   return S.flags[k] || 0;

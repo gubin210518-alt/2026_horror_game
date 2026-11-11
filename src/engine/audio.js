@@ -19,10 +19,24 @@ const P = {
   scream: ['sawtooth', 500, 1400, 0.7, 0.45],
 };
 
+// 여럿이 키득거리는 소리: 짧게 끊어지는 높은 음이 조금씩 내려간다
+function laugh(vol) {
+  const t0 = ac.currentTime;
+  for (let voice = 0; voice < 3; voice++) for (let i = 0; i < 9; i++) {
+    const t = t0 + voice * 0.07 + i * (0.105 + voice * 0.012), f = (760 - i * 28) * (1 + voice * 0.12);
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = voice === 1 ? 'triangle' : 'square';
+    o.frequency.setValueAtTime(f * 1.15, t); o.frequency.exponentialRampToValueAtTime(f * 0.8, t + 0.08);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.11 * vol * settings.sfx, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.085);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + 0.09);
+  }
+}
+
 export function sfx(name, vol = 1) {
   try {
     ac ||= new AudioContext();
     if (ac.state === 'suspended') ac.resume();
+    if (name === 'laugh') return laugh(vol);
     const [type, f0, f1, dur, v] = P[name] || P.blip;
     const t = ac.currentTime, g = ac.createGain();
     g.gain.setValueAtTime(v * vol * settings.sfx, t);

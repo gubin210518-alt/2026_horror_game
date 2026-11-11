@@ -10,7 +10,7 @@ const errors = [];
 const err = (where, msg) => errors.push(`${where}: ${msg}`);
 const COMMANDS = ['if', 'say', 'choice', 'give', 'take', 'organ', 'set', 'add', 'sanity', 'goal', 'note', 'rule', 'puzzle', 'puzzleDone', 'goto', 'sfx',
   'toast', 'wait', 'shake', 'flash', 'scare', 'companion', 'npc', 'move', 'face', 'run', 'minigame', 'die', 'timer', 'timerStop', 'waitKey', 'readNote', 'resetPush', 'ending', 'picture'];
-const MINIGAMES = ['grid', 'timing', 'order', 'mash', 'organs', 'photo', 'mix', 'rollcall', 'tapes', 'screen', 'piano', 'lock', 'valves', 'rules'];
+const MINIGAMES = ['grid', 'timing', 'order', 'mash', 'organs', 'painting', 'photo', 'mix', 'rollcall', 'tapes', 'screen', 'piano', 'lock', 'valves', 'rules'];
 
 const dialog = key => key.slice(1).split('.').reduce((v, k) => v?.[k], D.dialog);
 function text(where, s) {
@@ -56,6 +56,7 @@ function walk(where, cmds, events) {
       if (!MINIGAMES.includes(c.minigame)) err(where, `없는 미니게임 ${c.minigame}`);
       if (c.puzzle && !D.puzzles[c.puzzle]) err(where, `없는 퍼즐 ${c.puzzle}`);
       walk(where, c.then || [], events); walk(where, c.else || [], events);
+      for (const k of c.cases || []) walk(where, k, events);
     }
   }
 }

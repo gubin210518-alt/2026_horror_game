@@ -52,7 +52,7 @@ for (const [x, flag] of [[2, 'diary'], [4, 't_ink'], [6, 't_candy'], [8, 't_ligh
   await put(x, 2, 'up'); await page.key('Space'); await closeAll();
   if (!await ev(`${G}.S.flags.${flag}`)) t.ok(false, '줍기 실패: ' + flag);
 }
-t.ok(await ev(`${G}.S.ink`) === 1 && await ev(`${G}.S.items.length`) === 5 && await ev(`${G}.S.organs[0]`) === 'heart', '잉크, 아이템 5개, 장기를 얻는다');
+t.ok(await ev(`${G}.S.ink`) === 1 && await ev(`${G}.S.items.length`) === 6 && await ev(`${G}.S.items.includes('heart')`), '잉크와 아이템 6개(장기 포함)를 얻는다');
 
 // 상태창, 인벤토리
 await page.key('Tab'); t.ok(await modal() === 1, '상태창이 열린다'); await snap('3-status'); await page.key('Tab');
@@ -62,7 +62,7 @@ await page.key('KeyI'); await snap('4-inventory');
 await page.key('Space'); await page.key('ArrowDown'); await page.key('Space'); // 사탕 → 사용
 await closeAll();
 t.ok(await ev(`${G}.S.sanity`) >= 70 && !await ev(`${G}.S.items.includes('candy')`), '사탕을 쓰면 정신력이 오르고 사라진다');
-await page.key('KeyI'); await page.key('ArrowDown'); await page.key('Space'); // 테이프
+await page.key('KeyI'); await page.key('ArrowRight'); await page.key('Space'); // 테이프 (칸이 격자라서 옆으로)
 await page.key('ArrowDown'); await page.key('ArrowDown'); await page.key('Space'); // 조합
 await page.key('ArrowDown'); await page.key('Space'); // 종이 선택
 await closeAll(); await closeMenus();

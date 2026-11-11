@@ -13,7 +13,8 @@
         "sfx": "get"
       },
       "사탕을 먹었다. 조금 진정된다."
-    ]
+    ],
+    "icon": "items:0"
   },
   "flashlight": {
     "name": "손전등",
@@ -36,37 +37,44 @@
           "손전등을 켰다."
         ]
       }
-    ]
+    ],
+    "icon": "items:1"
   },
   "key_front": {
     "name": "교실 앞문 열쇠",
     "desc": "사물함에 들어 있던 열쇠. \"2-1 앞문\"이라고 적혀 있다.",
-    "key": true
+    "key": true,
+    "icon": "items:2"
   },
   "key_library": {
     "name": "도서관 열쇠",
     "desc": "비품실에 걸려 있던 열쇠. 책 모양 고리가 달려 있다.",
-    "key": true
+    "key": true,
+    "icon": "items:2"
   },
   "key_science": {
     "name": "과학실 열쇠",
     "desc": "경비의 열쇠 꾸러미에서 떨어진 열쇠.",
-    "key": true
+    "key": true,
+    "icon": "items:2"
   },
   "key_lab": {
     "name": "실험실 열쇠",
     "desc": "비커 바닥에 가라앉아 있던 작은 열쇠.",
-    "key": true
+    "key": true,
+    "icon": "items:3"
   },
   "paintknife": {
     "name": "물감칼",
     "desc": "물감을 섞는 데 쓰는 칼. 끝이 생각보다 날카롭다.",
-    "key": true
+    "key": true,
+    "icon": "items:4"
   },
   "acid": {
     "name": "휴대용 황산",
     "desc": "두꺼운 유리병에 든 황산. 쇠도 녹일 것 같다.",
-    "key": true
+    "key": true,
+    "icon": "items:5"
   },
   "deathbook": {
     "name": "<읽으면 죽는 책>",
@@ -88,27 +96,32 @@
           []
         ]
       }
-    ]
+    ],
+    "icon": "items:6"
   },
   "heart": {
     "name": "심장",
-    "desc": "인체 모형의 심장.",
-    "icon": 0
+    "desc": "인체 모형의 심장. 과학실 모형의 가슴 한가운데에 들어간다.",
+    "icon": "organs:0",
+    "isOrgan": true
   },
   "lung": {
     "name": "폐",
-    "desc": "인체 모형의 폐.",
-    "icon": 1
+    "desc": "인체 모형의 폐. 한 쌍이 붙어 있다.",
+    "icon": "organs:1",
+    "isOrgan": true
   },
   "intestine": {
     "name": "창자",
-    "desc": "인체 모형의 창자.",
-    "icon": 2
+    "desc": "인체 모형의 창자. 촉수 끝에 딸려 나왔다.",
+    "icon": "organs:2",
+    "isOrgan": true
   },
   "key_test": {
     "name": "시험용 열쇠",
     "desc": "(엔진 시험장 전용) 옆방 문에 맞는 열쇠.",
-    "key": true
+    "key": true,
+    "icon": "items:3"
   },
   "tape": {
     "name": "테이프",
@@ -128,6 +141,7 @@
   "hammer": {
     "name": "금 간 망치",
     "desc": "자루에 금이 간 낡은 망치. 한 번 내리치면 부서질 것 같다.",
-    "key": true
+    "key": true,
+    "icon": "items:7"
   }
 }
