@@ -293,6 +293,21 @@ export async function openPause() {
   if (c === 2 && await choose(['돌아간다', '그만둔다'], { title: '일기에 쓰지 않은 진행은 사라진다.' }) === 0) UI.hooks.title();
 }
 
+// 특정 키를 누를 때까지 안내 문구를 띄우고 기다린다
+export function waitKey(key, text) {
+  return new Promise(res => {
+    const m = push({
+      update() { if (pressed(key)) { eat(key); pop(m); res(); } },
+      draw(ctx) {
+        font(ctx, 14, true); ctx.textAlign = 'center';
+        const w = ctx.measureText(text).width + 40;
+        box(ctx, (VW - w) / 2, VH - 60, w, 34);
+        ctx.fillStyle = blink() ? '#fff' : '#ffd27a'; ctx.fillText(text, VW / 2, VH - 38); ctx.textAlign = 'left';
+      },
+    });
+  });
+}
+
 export function gameOver(text) {
   return new Promise(res => {
     let t = 0;

@@ -13,6 +13,9 @@ const WALK = 4, RUN = 7; // 초당 타일 수
 export const W = {
   map: null, id: null, objs: [], npcs: [], p: null, busy: 0, hidden: null, chasing: false,
   t: 0, shake: 0, flash: 0, flashColor: '#fff', fade: 0, speedMul: 1, breath: false, breathFail: 0,
+  timer: null,   // 제한 시간 { left, total, label, end }
+  holdObj: null, // 지금 길게 눌러 채우는 물건
+  pushCd: 0,
 };
 
 const actor = o => Object.assign({ dir: 'down', moving: false, prog: 0, fx: o.x, fy: o.y, anim: 0, spd: WALK }, o);
@@ -46,6 +49,11 @@ export async function enterMap(id, x, y, dir) {
   m.h = m.tiles.length; m.w = Math.max(...m.tiles.map(r => r.length));
   Object.assign(W, { map: m, id, objs: m.objects || [], hidden: null, speedMul: m.speed || 1, fade: 0.35, breath: false });
   W.npcs = (m.npcs || []).map(n => actor({ ...n, home: [n.x, n.y] }));
+  S.pos ||= {};
+  for (const o of W.objs) if (o.push) { // 밀 수 있는 물건은 옮겨 둔 자리를 기억한다
+    o.ox ??= o.x; o.oy ??= o.y;
+    [o.x, o.y] = S.pos[id + ':' + o.id] || [o.ox, o.oy];
+  }
   W.p = actor({ x, y, dir: dir || S.dir || 'down', sprite: 'player' });
   Object.assign(S, { map: id, x, y, dir: W.p.dir });
   syncCompanion();
@@ -93,14 +101,28 @@ function followPath(a) {
 export function updateWorld(dt, input) {
   const p = W.p, free = input && !W.busy;
   W.t += dt;
-  for (const k of ['shake', 'flash', 'fade']) W[k] = Math.max(0, W[k] - dt);
+  for (const k of ['shake', 'flash', 'fade', 'pushCd']) W[k] = Math.max(0, W[k] - dt);
+
+  if (W.timer && !W.busy && (W.timer.left -= dt) <= 0) { const end = W.timer.end; W.timer = null; run(end); }
+
+  // 길게 누르기 게이지: 물건 앞에서 조사 버튼을 누르고 있는 동안만 찬다. 떼도 줄지 않는다
+  W.holdObj = null;
+  if (free && !p.moving && !W.hidden) {
+    const [dx, dy] = DIRS[p.dir], o = W.objs.find(o => o.hold && vis(o) && cond(o.hold.if) && inside(o, p.x + dx, p.y + dy));
+    if (o) {
+      W.holdObj = o;
+      const f = o.hold.flag, sec = o.hold.sec * (settings.timingWide ? 0.75 : 1);
+      if (down('ok') && (S.flags[f] || 0) < 1 && (S.flags[f] = (S.flags[f] || 0) + dt / sec) >= 1) { S.flags[f] = 1; run(o.hold.done); }
+    }
+  }
 
   // 걷는 도중에 누른 키도 놓치지 않는다: 메뉴는 바로 열고, 조사는 잠깐 기억해 둔다
   if (free && !p.path && !W.hidden && menuKeys()) return;
   if (free && pressed('ok') && !W.hidden) { consume('ok'); W.okBuf = 0.25; }
   W.okBuf = Math.max(0, (W.okBuf || 0) - dt);
   if (stepActor(p, dt) && !p.path) arrive();
-  if (!p.moving && !followPath(p) && free) { if (W.hidden) hiddenInput(); else control(); }
+  // 방금 밟은 칸에서 이벤트가 시작됐으면(W.busy) 이번 프레임에는 더 움직이지 않는다
+  if (!p.moving && !followPath(p) && free && !W.busy) { if (W.hidden) hiddenInput(); else control(); }
 
   for (const n of W.npcs) {
     if (!vis(n)) continue;
@@ -153,25 +175,39 @@ function control() {
   if (!d) return;
   p.dir = d;
   const [dx, dy] = DIRS[d];
-  if (blocked(p.x + dx, p.y + dy, p)) return;
+  if (blocked(p.x + dx, p.y + dy, p)) return tryPush(p.x + dx, p.y + dy, dx, dy);
   p.running = down('run') && !W.map.noRun;
   const from = [p.x, p.y];
-  startMove(p, d, (p.running ? RUN : WALK) * W.speedMul);
+  startMove(p, d, (p.running ? RUN : WALK) * W.speedMul * (tileAt(p.x, p.y).slow || 1));
   if (p.running) sfx('step'); // 달리기는 소리가 난다
   for (const n of W.npcs) if (n.ai === 'follow') n.queue.push(from);
 }
 
+// 쯔꾸르식 밀기: 밀 수 있는 물건 쪽으로 걸으면 한 칸 밀린다
+function tryPush(x, y, dx, dy) {
+  const o = W.objs.find(o => o.push && vis(o) && inside(o, x, y));
+  if (!o || W.pushCd > 0 || blocked(x + dx, y + dy, o)) return;
+  o.x += dx; o.y += dy; W.pushCd = 0.25; sfx('step');
+  S.pos[W.id + ':' + o.id] = [o.x, o.y];
+  S.flags[o.id + '_x'] = o.x; S.flags[o.id + '_y'] = o.y; // 조건식에서 "책상_x==3" 처럼 쓸 수 있게
+  if (W.map.onPush) run(W.map.onPush);
+}
+
 function interact() {
   const p = W.p, [dx, dy] = DIRS[p.dir], fx = p.x + dx, fy = p.y + dy;
-  const n = W.npcs.find(n => vis(n) && n.event && ((n.x === fx && n.y === fy) || (n.ghost && n.x === p.x && n.y === p.y)));
-  if (n) { if (!n.ghost || n.x !== p.x || n.y !== p.y) n.dir = dirOf(-dx, -dy); return void run(n.event); }
+  // 눈앞의 인물 → 눈앞의 물건 → 발밑의 물건 → 잠긴 문 → 같은 칸에 겹친 동행 순서로 찾는다
+  const n = W.npcs.find(n => vis(n) && n.event && n.x === fx && n.y === fy);
+  if (n) { n.dir = dirOf(-dx, -dy); return void run(n.event); }
   const o = W.objs.find(o => vis(o) && inside(o, fx, fy)) || W.objs.find(o => vis(o) && o.solid === false && inside(o, p.x, p.y));
   if (o) {
     if (o.hide) return hide(o);
+    if (o.hold && cond(o.hold.if)) return; // 길게 누르는 물건은 게이지로 처리
     if (o.event) return void run(o.event);
   }
   const e = exitAt(fx, fy);
-  if (e && !cond(e.if)) { sfx('locked'); run(e.event || [e.locked || '잠겨 있다.']); }
+  if (e && !cond(e.if)) { sfx('locked'); return void run(e.event || [e.locked || '잠겨 있다.']); }
+  const g = W.npcs.find(n => vis(n) && n.event && n.ghost && n.x === p.x && n.y === p.y);
+  if (g) run(g.event);
 }
 
 function hide(o) {
@@ -349,6 +385,19 @@ export function drawWorld(ctx) {
   if (W.flash > 0) { ctx.globalAlpha = Math.min(1, W.flash * 3); ctx.fillStyle = W.flashColor; ctx.fillRect(0, 0, VW, VH); ctx.globalAlpha = 1; }
   if (W.fade > 0) { ctx.globalAlpha = Math.min(1, W.fade / 0.35); ctx.fillStyle = '#000'; ctx.fillRect(0, 0, VW, VH); ctx.globalAlpha = 1; }
 
+  if (W.timer) { // 제한 시간: 화면 아래에서부터 붉게 차오른다
+    const k = 1 - W.timer.left / W.timer.total;
+    ctx.fillStyle = 'rgba(150,0,10,.3)'; ctx.fillRect(0, VH * (1 - k), VW, VH * k);
+    font(ctx, 13, true); ctx.textAlign = 'center'; ctx.fillStyle = '#ff8080';
+    ctx.fillText(`${W.timer.label} ${Math.ceil(W.timer.left)}초`, VW / 2, 20); ctx.textAlign = 'left';
+  }
+  if (W.holdObj) {
+    const h = W.holdObj.hold, v = S.flags[h.flag] || 0;
+    font(ctx, 13, true); ctx.textAlign = 'center'; ctx.fillStyle = '#eee';
+    ctx.fillText(`${h.label} (Space를 누르고 있기)`, VW / 2, VH - 44); ctx.textAlign = 'left';
+    ctx.fillStyle = '#222'; ctx.fillRect(VW / 2 - 100, VH - 34, 200, 10);
+    ctx.fillStyle = '#9ad84a'; ctx.fillRect(VW / 2 - 100, VH - 34, 200 * v, 10);
+  }
   if (W.hidden) {
     font(ctx, 13, true); ctx.textAlign = 'center';
     if (W.breath) {

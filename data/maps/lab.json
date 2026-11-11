@@ -1,0 +1,239 @@
+{
+  "name": "실험실",
+  "lit": true,
+  "tiles": [
+    "############",
+    "#..........#",
+    "#..........#",
+    "#TTTTTTTT..#",
+    "#..........#",
+    "#..........#",
+    "#..TTTTTTTT#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "############"
+  ],
+  "onEnter": [
+    {
+      "if": "!lab_in",
+      "then": [
+        {
+          "set": "lab_in"
+        },
+        {
+          "sfx": "locked"
+        },
+        "@c4.lock",
+        {
+          "puzzle": "m7"
+        },
+        {
+          "goal": "실험실에서 나갈 방법을 찾는다"
+        }
+      ]
+    }
+  ],
+  "exits": [],
+  "objects": [
+    {
+      "x": 9,
+      "y": 10,
+      "color": "#7a5a2a",
+      "label": "문",
+      "hold": {
+        "flag": "m7_melt",
+        "sec": 12,
+        "label": "문손잡이를 녹이는 중",
+        "if": "m7_acid",
+        "done": [
+          {
+            "sfx": "door"
+          },
+          {
+            "set": "m7_done"
+          },
+          {
+            "puzzleDone": "m7"
+          },
+          {
+            "goto": "science",
+            "x": 10,
+            "y": 1,
+            "dir": "down"
+          }
+        ]
+      },
+      "event": [
+        {
+          "if": "!m7_chase",
+          "then": [
+            "잠겨 있다. 손잡이가 꿈쩍도 하지 않는다."
+          ],
+          "else": [
+            {
+              "if": "has:acid",
+              "then": [
+                {
+                  "take": "acid"
+                },
+                {
+                  "set": "m7_acid"
+                },
+                "@c4.acid"
+              ],
+              "else": [
+                "@c4.noAcid"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "x": 1,
+      "y": 8,
+      "color": "#8a9aa0",
+      "label": "개수대",
+      "event": [
+        {
+          "if": "has:acid | m7_acid | m7_spare",
+          "then": [
+            "개수대 아래는 비어 있다."
+          ],
+          "else": [
+            "개수대 아래에 황산 병이 하나 굴러다닌다.",
+            {
+              "give": "acid"
+            },
+            {
+              "set": "m7_spare"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "color": "#6a8a6a",
+      "label": "표본",
+      "event": [
+        {
+          "if": "m7_lung",
+          "then": [
+            "포르말린 병들이 늘어서 있다. 개구리, 쥐, 그리고 알 수 없는 것들."
+          ],
+          "else": [
+            "@c4.prank1",
+            {
+              "waitKey": "right",
+              "prompt": "→ 를 눌러 뒤로 물러난다"
+            },
+            {
+              "move": "player",
+              "path": "r"
+            },
+            "@c4.prank2",
+            {
+              "waitKey": "right",
+              "prompt": "→ 를 눌러 뒤로 물러난다"
+            },
+            {
+              "move": "player",
+              "path": "r"
+            },
+            "@c4.prank3",
+            {
+              "waitKey": "right",
+              "prompt": "→ 를 눌러 뒤로 물러난다"
+            },
+            {
+              "move": "player",
+              "path": "r"
+            },
+            {
+              "shake": 0.5
+            },
+            {
+              "sfx": "scare"
+            },
+            "@c4.lung",
+            {
+              "organ": "lung"
+            },
+            {
+              "set": "m7_lung"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "x": 9,
+      "y": 1,
+      "color": "#7a9aa8",
+      "label": "전시장",
+      "event": [
+        "유리 전시장. 안은 비어 있다."
+      ]
+    },
+    {
+      "x": 8,
+      "y": 0,
+      "color": "#7a2a2a",
+      "label": "전시장",
+      "if": "!m7_chase",
+      "event": [
+        {
+          "if": "!m7_lung",
+          "then": [
+            "@c4.redLook"
+          ],
+          "else": [
+            "@c4.redLook",
+            "@c4.redRead",
+            {
+              "note": "diary1"
+            },
+            {
+              "readNote": "diary1"
+            },
+            {
+              "scare": "#a00"
+            },
+            "@c4.redBreak",
+            {
+              "move": "player",
+              "path": "d",
+              "speed": 8
+            },
+            {
+              "set": "m7_chase"
+            },
+            {
+              "goal": "황산으로 문손잡이를 녹이고 탈출한다"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "red",
+      "x": 8,
+      "y": 1,
+      "ai": "hunter",
+      "speed": 1.5,
+      "stun": 2.5,
+      "fear": 6,
+      "if": "m7_chase",
+      "onCatch": [
+        {
+          "die": "붉은 형체에게 붙잡혔다."
+        }
+      ]
+    }
+  ]
+}

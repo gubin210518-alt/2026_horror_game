@@ -1,7 +1,7 @@
 // JSON 이벤트 명령 해석기. 맵과 아이템의 "event" 목록을 순서대로 실행한다.
 import { D, S, settings, cond, T, josa, loadSave, resetState } from './core.js';
 import { W, enterMap, npcById, walk, syncCompanion } from './world.js';
-import { say, choose, gameOver, toast } from './ui.js';
+import { say, choose, gameOver, toast, waitKey } from './ui.js';
 import { sfx } from './audio.js';
 
 class Abort {} // 스크립트를 중간에 끝낼 때 던진다 (사망, 가방 가득 참)
@@ -17,6 +17,7 @@ export async function run(cmds) {
 
 export async function startGame(name) {
   resetState(name);
+  W.timer = null;
   const s = D.game.start;
   await enterMap(s.map, s.x, s.y, s.dir);
   run(D.game.onStart);
@@ -36,6 +37,13 @@ const wait = s => new Promise(r => setTimeout(r, s * 1000));
 async function one(c) {
   if (typeof c === 'string') c = { say: c };
   if ('if' in c) return exec(cond(c.if) ? c.then || [] : c.else || []);
+  // 미니게임은 puzzle, id 같은 항목을 같이 쓰므로 다른 명령보다 먼저 본다
+  if ('minigame' in c) {
+    const fn = minigames[c.minigame];
+    const r = fn ? await fn(c) : (console.error('없는 미니게임', c.minigame), true);
+    if (r == null) return;
+    return exec((r ? c.then : c.else) || []);
+  }
   if ('say' in c) { for (const l of [].concat(c.say).flatMap(T)) await sayLine(l, c.who); return; }
   if ('choice' in c) {
     const i = await choose(c.choice.map(T), { title: c.title, cancel: false });
@@ -84,11 +92,17 @@ async function one(c) {
   }
   if ('face' in c) { const a = c.face === 'player' ? W.p : npcById(c.face); if (a) a.dir = c.dir; return; }
   if ('run' in c) return exec(c.run);
-  if ('minigame' in c) {
-    const fn = minigames[c.minigame];
-    const r = fn ? await fn(c) : (console.warn('없는 미니게임', c.minigame), true);
-    return exec((r ? c.then : c.else) || []);
+  if ('timer' in c) { W.timer = { left: c.timer, total: c.timer, label: T(c.label) || '남은 시간', end: c.end }; return; }
+  if ('timerStop' in c) { W.timer = null; return; }
+  if ('readNote' in c) return say(D.notes[c.readNote].text || '(아무것도 적혀 있지 않다.)');
+  if ('resetPush' in c) { // 밀어 둔 물건을 처음 자리로
+    for (const id of [].concat(c.resetPush)) {
+      const o = W.objs.find(o => o.id === id);
+      if (o) { o.x = o.ox; o.y = o.oy; delete S.pos[W.id + ':' + id]; delete S.flags[id + '_x']; delete S.flags[id + '_y']; }
+    }
+    return;
   }
+  if ('waitKey' in c) return waitKey(c.waitKey, T(c.prompt));
   if ('die' in c) return die(c.die);
   console.warn('모르는 명령', c);
 }
@@ -98,6 +112,7 @@ async function die(text) {
   sfx('die');
   const keep = { name: S.name, deaths: S.deaths + 1, hintsUsed: S.hintsUsed };
   await gameOver(T(text) || '죽었다.');
+  W.timer = null;
   if (loadSave()) {
     S.deaths = keep.deaths; S.hintsUsed = Math.max(S.hintsUsed, keep.hintsUsed);
     await enterMap(S.map, S.x, S.y, S.dir);

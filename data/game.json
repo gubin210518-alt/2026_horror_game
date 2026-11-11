@@ -1,21 +1,50 @@
 {
   "title": "비현실",
   "slots": 8,
-  "start": { "map": "test", "x": 12, "y": 7, "dir": "down" },
+  "intro": true,
+  "start": {
+    "map": "classroom",
+    "x": 4,
+    "y": 4,
+    "dir": "down"
+  },
   "actors": {
-    "player": { "name": "나", "color": "#4a78c8", "sheet": null },
-    "yunha": { "name": "윤하", "color": "#c85a7a", "sheet": null },
-    "guard": { "name": "경비", "color": "#2a3a6a", "sheet": null },
-    "red": { "name": "붉은 형체", "color": "#a02020", "sheet": null }
+    "player": {
+      "name": "나",
+      "color": "#4a78c8",
+      "sheet": null
+    },
+    "yunha": {
+      "name": "윤하",
+      "color": "#c85a7a",
+      "sheet": null
+    },
+    "guard": {
+      "name": "경비",
+      "color": "#2a3a6a",
+      "sheet": null
+    },
+    "red": {
+      "name": "붉은 형체",
+      "color": "#a02020",
+      "sheet": null
+    }
   },
   "onStart": [
-    { "goal": "엔진 시험장을 둘러본다" },
-    "@test.start"
+    {
+      "goal": "교실에서 나간다"
+    },
+    {
+      "puzzle": "m1"
+    },
+    "@c1.wake"
   ],
   "companionTalk": {
     "yunha": [
-      "윤하|왜? 무서워?",
-      { "sanity": 5 }
+      "@yunha.talk",
+      {
+        "sanity": 3
+      }
     ]
   }
 }

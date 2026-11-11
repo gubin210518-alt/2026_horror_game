@@ -15,7 +15,7 @@ export function resetState(name) {
   Object.assign(S, {
     name: name || '나', map: null, x: 0, y: 0, dir: 'down', flags: {}, items: [], organs: [], placed: [],
     ink: 0, coins: 0, sanity: 100, goal: '', notes: [], rules: [], puzzles: [], hints: {},
-    hintsUsed: 0, deaths: 0, saves: 0, companion: null, hide: { id: null, n: 0 },
+    hintsUsed: 0, deaths: 0, saves: 0, companion: null, hide: { id: null, n: 0 }, pos: {},
   });
 }
 resetState();

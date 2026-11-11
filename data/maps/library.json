@@ -1,0 +1,249 @@
+{
+  "name": "도서관",
+  "dark": true,
+  "tiles": [
+    "##########################",
+    "#........................#",
+    "#.BBBBBB..BBBBBB..BBBBBB.#",
+    "#........................#",
+    "#.BBBBBB..BBBBBB..BBBBBB.#",
+    "#........................#",
+    "#.BBBBBB..BBBBBB..BBBBBB.#",
+    "#........................#",
+    "#.BBBBBB..BBBBBB..BBBBBB.#",
+    "#........................#",
+    "#........................#",
+    "##########################"
+  ],
+  "onEnter": [
+    {
+      "if": "!lib_seen",
+      "then": [
+        {
+          "set": "lib_seen"
+        },
+        "책꽂이가 천장이 보이지 않을 만큼 높다. 공간도 밖에서 본 것보다 훨씬 넓다."
+      ]
+    },
+    {
+      "if": "m4_done & !m5_start",
+      "then": [
+        {
+          "run": "m5"
+        }
+      ]
+    }
+  ],
+  "events": {
+    "m5": [
+      {
+        "set": "m5_start"
+      },
+      {
+        "scare": "#002"
+      },
+      "@c3.guard",
+      {
+        "move": "guard",
+        "path": "dddd",
+        "speed": 3,
+        "nowait": true
+      },
+      {
+        "move": "player",
+        "path": "dddd",
+        "speed": 3
+      },
+      "@c3.drag",
+      {
+        "shake": 0.8
+      },
+      {
+        "sfx": "scare"
+      },
+      {
+        "flash": "#fff",
+        "t": 0.3
+      },
+      "@c3.collapse",
+      {
+        "give": "key_science"
+      },
+      {
+        "companion": "yunha"
+      },
+      "@c3.run",
+      {
+        "goal": "경비를 피해 과학실로 도망친다"
+      },
+      {
+        "goto": "chase",
+        "x": 4,
+        "y": 2,
+        "dir": "right"
+      }
+    ]
+  },
+  "exits": [
+    {
+      "x": 0,
+      "y": 9,
+      "to": "hall",
+      "tx": 5,
+      "ty": 20,
+      "dir": "left"
+    }
+  ],
+  "objects": [
+    {
+      "x": 3,
+      "y": 0,
+      "color": "#c8c0a0",
+      "label": "게시",
+      "event": [
+        "벽에 학교 규칙이 붙어 있다. \"도서관의 책을 함부로 뽑지 마시오\"",
+        {
+          "rule": "library"
+        }
+      ]
+    },
+    {
+      "x": 20,
+      "y": 2,
+      "color": "#a03a3a",
+      "label": "책",
+      "event": [
+        {
+          "if": "m3_found",
+          "then": [
+            "거꾸로 꽂혀 있던 책. 이제 평범한 책처럼 보인다."
+          ],
+          "else": [
+            {
+              "if": "c3_met",
+              "then": [
+                "@c3.book",
+                {
+                  "shake": 0.6
+                },
+                {
+                  "sfx": "door"
+                },
+                {
+                  "set": "m3_found"
+                },
+                {
+                  "goal": "비밀서고의 문을 연다"
+                }
+              ],
+              "else": [
+                "@c3.bookAlone"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "x": 19,
+      "y": 0,
+      "color": "#7a5a2a",
+      "label": "제1",
+      "if": "m3_found",
+      "event": [
+        {
+          "if": "m4_done",
+          "then": [
+            "[제1비밀서고] 다시 들어갈 이유는 없다."
+          ],
+          "else": [
+            "[제1비밀서고]",
+            {
+              "choice": [
+                "윤하에게 신호를 보낸다",
+                "그만둔다"
+              ],
+              "then": [
+                [
+                  "@c3.signal",
+                  {
+                    "minigame": "timing",
+                    "title": "윤하",
+                    "then": [
+                      "@c3.opened",
+                      {
+                        "companion": null
+                      },
+                      {
+                        "goto": "archive",
+                        "x": 4,
+                        "y": 6,
+                        "dir": "up"
+                      }
+                    ],
+                    "else": [
+                      "@c3.tooFast"
+                    ]
+                  }
+                ],
+                []
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "x": 22,
+      "y": 0,
+      "color": "#7a5a2a",
+      "label": "제2",
+      "if": "m3_found",
+      "event": [
+        "@c3.door2"
+      ]
+    },
+    {
+      "x": 24,
+      "y": 1,
+      "color": "#b01030",
+      "label": "잉크",
+      "if": "m3_found & !ink2",
+      "event": [
+        {
+          "give": "ink"
+        },
+        {
+          "set": "ink2"
+        }
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "yunha",
+      "x": 12,
+      "y": 5,
+      "if": "!c3_met",
+      "event": [
+        "@c3.meet",
+        {
+          "set": "c3_met"
+        },
+        {
+          "companion": "yunha"
+        },
+        {
+          "goal": "윤하와 함께 도서관을 살펴본다"
+        }
+      ]
+    },
+    {
+      "id": "guard",
+      "x": 17,
+      "y": 3,
+      "dir": "up",
+      "if": "m4_done & !m5_done"
+    }
+  ]
+}

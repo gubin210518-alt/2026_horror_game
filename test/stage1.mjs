@@ -15,6 +15,8 @@ const snap = async name => { if (shots) { await page.shot(`${shots}/${name}.png`
 
 await page.until('window.__game?.UI.stack.length === 1', 15000); // 타이틀이 뜰 때까지 기다린다
 await ev('localStorage.clear()');
+// 실제 게임 대신 엔진 시험장 맵에서 시작하게 한다 (인트로 생략)
+await ev(`Object.assign(${G}.D.game, { intro: false, start: { map: 'test', x: 12, y: 7, dir: 'down' }, onStart: [{ goal: '엔진 시험장을 둘러본다' }, '@test.start'] })`);
 t.ok(await modal() === 1, '타이틀 메뉴가 뜬다');
 await snap('1-title');
 await page.key('Space');
