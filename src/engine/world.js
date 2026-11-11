@@ -5,7 +5,7 @@ import { run } from './events.js';
 import { sfx } from './audio.js';
 import { sheet, pic } from './gfx.js';
 import { mapLayer, door, objectSprite } from './art.js';
-import { openStatus, openInventory, openJournal, openPause, toast, font } from './ui.js';
+import { openStatus, openInventory, openJournal, openPause, openMap, toast, font } from './ui.js';
 
 export const DIRS = { down: [0, 1], left: [-1, 0], right: [1, 0], up: [0, -1] };
 const ROW = { down: 0, left: 1, right: 2, up: 3 };
@@ -163,7 +163,8 @@ function arrive() {
 }
 
 function menuKeys() {
-  const open = pressed('status') ? openStatus : pressed('inv') ? openInventory : pressed('journal') ? openJournal : pressed('cancel') ? openPause : null;
+  const open = pressed('status') ? openStatus : pressed('inv') ? openInventory : pressed('journal') ? openJournal : pressed('cancel') ? openPause
+    : pressed('map') && S.flags.map ? openMap : null;
   if (open) open();
   return !!open;
 }
@@ -285,6 +286,10 @@ function think(n, dt) {
   if (n.ai === 'hunter') {
     if (!W.hidden || n.sawHide) n.last = [p.x, p.y];
     if (d <= 1 && (!W.hidden || n.sawHide)) return caught(n);
+    if (n.clumsy) { // 넘어진 의자가 바로 앞에 있으면 부딪혀서 잠깐 멈춘다
+      const [dx, dy] = DIRS[n.dir], k = (n.x + dx) + ',' + (n.y + dy);
+      if (W.map.tiles[n.y + dy]?.[n.x + dx] === 'c' && n.bumped !== k) { n.bumped = k; n.stun = 0.5; sfx('step'); W.shake = 0.15; return; }
+    }
     if (n.last) goTo(n, n.last[0], n.last[1], walkSpd);
     return;
   }
@@ -346,8 +351,11 @@ export function drawWorld(ctx) {
   font(ctx, 10); ctx.textAlign = 'center';
   for (const o of W.objs) {
     if (!vis(o) || o.invisible) continue;
-    const w = (o.w || 1) * TILE, h = (o.h || 1) * TILE, spr = objectSprite(o);
-    if (spr) ctx.drawImage(spr, o.x * TILE, o.y * TILE);
+    const w = (o.w || 1) * TILE, h = (o.h || 1) * TILE, img = o.img && pic(o.img), spr = img ? null : objectSprite(o);
+    if (img) { // 그림 파일이 있는 물건: 높이 ih 타일에 맞춰 줄이고 바닥을 맞춘다
+      const dh = (o.ih || 1.5) * TILE, dw = img.width * dh / img.height;
+      ctx.imageSmoothingEnabled = true; ctx.drawImage(img, o.x * TILE + (w - dw) / 2, o.y * TILE + h - dh, dw, dh); ctx.imageSmoothingEnabled = false;
+    } else if (spr) ctx.drawImage(spr, o.x * TILE, o.y * TILE);
     else { // 그림이 없는 종류는 색 상자와 글자로
       ctx.fillStyle = o.color || '#7a6048'; ctx.fillRect(o.x * TILE + 3, o.y * TILE + 3, w - 6, h - 6);
       if (o.label) { ctx.fillStyle = '#fff'; ctx.fillText(o.label, o.x * TILE + w / 2, o.y * TILE + h / 2 + 4); }
@@ -361,6 +369,11 @@ export function drawWorld(ctx) {
     for (let i = 0; i < 3; i++) {
       const x = (seed * 7 + i * 13) % m.w, y = (seed * 5 + i * 11) % m.h;
       if (!staticBlocked(x, y)) { ctx.fillStyle = i ? '#b01030' : '#d8c070'; ctx.fillRect(x * TILE + 11, y * TILE + 11, 10, 10); }
+    }
+    const words = D.dialog.fake || []; // 가짜 낙서
+    if (words.length) {
+      font(ctx, 12, true); ctx.fillStyle = 'rgba(170,20,30,.75)';
+      for (let i = 0; i < 2; i++) ctx.fillText(words[(seed + i * 3) % words.length], ((seed * 11 + i * 17) % Math.max(1, m.w - 3)) * TILE, ((seed * 3 + i * 7) % m.h) * TILE + 20);
     }
   }
 
@@ -378,7 +391,8 @@ export function drawWorld(ctx) {
     darkCv ||= Object.assign(document.createElement('canvas'), { width: VW, height: VH });
     const g = darkCv.getContext('2d');
     const [alpha, r] = m.dark ? [0.96, S.flags.light ? 150 : 56] : m.lit ? [0.5, 250] : [0.7, 170];
-    const flick = m.flicker && Math.sin(W.t * 23) * Math.sin(W.t * 7.3) > 0.55 ? 0.12 : 0; // 깜빡이는 형광등
+    const f = m.flicker, nearLamp = f === true || (f && Math.abs(p.x - f.x) + Math.abs(p.y - f.y) <= f.r);
+    const flick = nearLamp && Math.sin(W.t * 23) * Math.sin(W.t * 7.3) > 0.4 ? 0.16 : 0; // 깜빡이는 형광등 (그 근처에서만)
     g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, VW, VH);
     g.fillStyle = `rgba(4,6,18,${alpha + flick})`; g.fillRect(0, 0, VW, VH);
     g.globalCompositeOperation = 'destination-out';

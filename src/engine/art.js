@@ -38,7 +38,7 @@ function metal(g, px, py, x, y, tint) {
   }
 }
 function wall(g, px, py, x, y, m) {
-  const isWall = (xx, yy) => (m.tiles[yy]?.[xx] ?? '#') === '#';
+  const isWall = (xx, yy) => '#w'.includes(m.tiles[yy]?.[xx] ?? '#');
   if (y + 1 < m.h && !isWall(x, y + 1)) { // 아래가 방이면 벽의 앞면이 보인다
     R(g, '#59625a', px, py, T, T);
     for (let i = 0; i < 6; i++) R(g, 'rgba(0,0,0,.06)', px + rnd(x, y, i) * 28, py + rnd(y, x, i) * 16, 4, 2);
@@ -53,11 +53,24 @@ function wall(g, px, py, x, y, m) {
   }
 }
 const FLOOR = { '.': wood, ',': lino, s: lino, _: metal, '~': metal, '%': metal };
-const UNDER = { d: '.', B: '.', T: '.', c: ',', '=': '.' };
+const UNDER = { d: '.', B: '.', T: '.', c: ',', '=': '.', A: '.' };
 
 function tile(g, ch, x, y, m) {
   const px = x * T, py = y * T;
   if (ch === '#' || ch === ' ') return ch === '#' ? wall(g, px, py, x, y, m) : R(g, '#000', px, py, T, T);
+  if (ch === 'w') { // 창문이 난 벽. 벽 앞면이 보이면 가로 창, 윗면만 보이면 세로로 긴 유리
+    wall(g, px, py, x, y, m);
+    const face = y + 1 < m.h && !'#w'.includes(m.tiles[y + 1]?.[x] ?? '#');
+    if (face) { R(g, '#1c2228', px + 3, py + 3, 26, 15); R(g, '#0b1322', px + 5, py + 5, 22, 11); R(g, 'rgba(140,170,220,.2)', px + 5, py + 5, 4, 11); R(g, '#1c2228', px + 15, py + 5, 2, 11); }
+    else { R(g, '#0b1322', px + 11, py, 10, T); R(g, 'rgba(140,170,220,.25)', px + 12, py, 2, T); }
+    return;
+  }
+  if (ch === 'g' || ch === 't') { // 창밖 중정. 어두운 잔디와 나무
+    R(g, '#0d1a14', px, py, T, T);
+    for (let i = 0; i < 6; i++) R(g, 'rgba(60,110,70,.18)', px + rnd(x, y, i) * 30, py + rnd(y, x, i) * 30, 2, 3);
+    if (ch === 't') { g.fillStyle = '#081009'; g.beginPath(); g.arc(px + 16, py + 14, 15, 0, 7); g.fill(); g.fillStyle = '#0f1d12'; g.beginPath(); g.arc(px + 12, py + 10, 8, 0, 7); g.fill(); }
+    return;
+  }
   (FLOOR[UNDER[ch] || ch] || wood)(g, px, py, x, y, ch === '~' ? 'rgba(90,120,50,.45)' : ch === '%' ? 'rgba(110,150,40,.75)' : null);
   if (ch === 's') for (let i = 0; i < 4; i++) { R(g, '#555b62', px + i * 8, py, 7, T); R(g, '#23272b', px + i * 8 + 7, py, 1, T); }
   if (ch === 'd') { // 학생 책상
@@ -72,6 +85,10 @@ function tile(g, ch, x, y, m) {
   if (ch === 'T') { // 실험대
     R(g, '#2a2e33', px, py + 4, T, 26); R(g, '#6d757d', px, py + 2, T, 18); R(g, '#88919a', px, py + 2, T, 2); R(g, '#454b52', px, py + 20, T, 2);
     if (rnd(x, y) > 0.55) { R(g, '#b8d8e0', px + 12, py + 6, 6, 9); R(g, '#6ab0c0', px + 13, py + 10, 4, 4); }
+  }
+  if (ch === 'A') { // 미술실 작업대. 물감 얼룩이 있다
+    R(g, '#3a2c1c', px, py + 4, T, 26); R(g, '#8a6a44', px, py + 1, T, 22); R(g, '#a0804e', px, py + 1, T, 2); R(g, '#5a4228', px, py + 23, T, 3);
+    for (let i = 0; i < 3; i++) R(g, ['#8a3030', '#30508a', '#b0a040', '#407a4a'][Math.floor(rnd(x, y, i) * 4)], px + 3 + rnd(x, y, i + 4) * 24, py + 5 + rnd(y, x, i) * 14, 3, 2);
   }
   if (ch === 'B') { // 책장
     R(g, '#2a1c12', px, py, T, T); R(g, '#3d2a1a', px, py, T, 2);
@@ -117,6 +134,8 @@ const KIND = {
   이젤: 'easel', 물감통: 'paintbox', 책장: 'shelf', 책: 'book', 커튼: 'curtain', 스탠드: 'lamp', 쓰레기: 'trash', 액자: 'frame', 의자: 'chair',
   모형: 'model', 비커: 'beaker', 약품: 'chem', 전시장: 'case', 표본: 'jars', 개수대: 'sink', 환풍구: 'ventcover', 촉수: 'tentacle',
   문: 'doorobj', 제1: 'doorobj', 제2: 'doorobj', 엘레나: 'sister', 마리: 'sister', 로제: 'sister', 이네스: 'sister', 사탕: 'candy', 심장: 'organ',
+  작품: 'artboard', 주기율표: 'artboard', 정물: 'still', 화판: 'canvas', 캔버스: 'canvas', 건조대: 'rack', 도구함: 'cabinet', 보관함: 'cabinet',
+  망치: 'hammer', 선반: 'shelfbox', 상자: 'crate', 청소도구: 'mop', 조각: 'rubble', 현미경: 'scope', 알코올램프: 'burner', 골격: 'skeleton', 석고상: 'bust', 셔터: 'shutter',
   얼룩: 'stain', 벨: 'bell', 발판: 'plate', 일기장: 'book', 테이프: 'paper', 종이: 'paper', 전등: 'flashlight',
 };
 const shadow = (g, w, h) => R(g, 'rgba(0,0,0,.28)', 4, h - 6, w - 8, 5);
@@ -150,6 +169,23 @@ const DRAW = {
   doorobj(g) { R(g, '#0a0a0e', 2, 2, 28, 30); R(g, '#5a4020', 5, 5, 22, 27); R(g, '#74542a', 5, 5, 22, 2); R(g, '#3a2812', 8, 9, 16, 8); R(g, '#c8b060', 21, 20, 3, 3); },
   candy(g) { R(g, 'rgba(0,0,0,.25)', 9, 22, 14, 3); g.fillStyle = '#e06a9a'; g.beginPath(); g.arc(16, 17, 5, 0, 7); g.fill(); R(g, '#f0a0c0', 8, 15, 4, 4); R(g, '#f0a0c0', 20, 15, 4, 4); R(g, '#fff', 14, 14, 2, 2); },
   organ(g) { R(g, 'rgba(0,0,0,.3)', 9, 23, 14, 3); g.fillStyle = '#9a2020'; g.beginPath(); g.arc(13, 15, 5, 0, 7); g.arc(19, 15, 5, 0, 7); g.fill(); g.beginPath(); g.moveTo(8, 17); g.lineTo(16, 26); g.lineTo(24, 17); g.fill(); R(g, '#c84040', 11, 12, 2, 2); },
+  shutter(g, w, h) { R(g, '#3a3e44', 0, 0, w, h); for (let y = 2; y < h; y += 5) { R(g, '#55595f', 0, y, w, 2); R(g, '#23262a', 0, y + 2, w, 1); } R(g, '#b8a040', w / 2 - 3, h - 8, 6, 5); },
+  wallpatch(g, w, h) { R(g, '#14161c', 0, 0, w, h); R(g, '#262a33', 0, 0, 2, h); },
+  bust(g) { R(g, 'rgba(0,0,0,.3)', 7, 27, 18, 3); R(g, '#8a8478', 9, 23, 14, 5); R(g, '#d8d2c4', 11, 15, 10, 9); g.fillStyle = '#e4dfd2'; g.beginPath(); g.arc(16, 10, 6, 0, 7); g.fill(); R(g, '#b8b2a4', 13, 9, 2, 2); R(g, '#b8b2a4', 17, 9, 2, 2); R(g, '#c8c2b4', 15, 12, 2, 2); R(g, '#f4f0e6', 12, 5, 4, 2); },
+  bustshelf(g, w, h) { R(g, '#3a2c1c', 0, 20, w, 4); for (let x = 6; x < w - 8; x += 20) { R(g, '#d8d2c4', x + 3, 12, 8, 8); g.fillStyle = '#e4dfd2'; g.beginPath(); g.arc(x + 7, 8, 5, 0, 7); g.fill(); R(g, '#b0aa9c', x + 5, 7, 1, 2); R(g, '#b0aa9c', x + 8, 7, 1, 2); } },
+  artboard(g, w, h) { R(g, '#6a5630', 2, 4, w - 4, 22); R(g, '#b8ac88', 4, 6, w - 8, 18); for (let x = 7; x < w - 12; x += 14) { R(g, ['#8a5a5a', '#5a6a8a', '#7a8a5a', '#8a7a5a'][(x / 14 | 0) % 4], x, 9, 10, 12); R(g, '#1a1a1a', x + 3, 11, 4, 4); } },
+  still(g) { R(g, '#e8e0d0', 6, 16, 20, 3); g.fillStyle = '#a03030'; g.beginPath(); g.arc(12, 13, 4, 0, 7); g.fill(); g.fillStyle = '#b89030'; g.beginPath(); g.arc(19, 13, 4, 0, 7); g.fill(); R(g, '#4a6a9a', 14, 4, 5, 9); R(g, '#6a8aba', 14, 4, 2, 9); },
+  canvas(g) { R(g, 'rgba(0,0,0,.3)', 5, 26, 22, 3); R(g, '#8a7450', 6, 8, 18, 19); R(g, '#d8ceb4', 8, 6, 18, 19); R(g, '#b0a688', 8, 6, 18, 1); R(g, '#8a7a7a', 12, 11, 9, 8); },
+  rack(g, w, h) { R(g, '#4a4034', 2, 4, w - 4, 24); for (let y = 7; y < 26; y += 5) { R(g, '#2a241c', 4, y + 3, w - 8, 1); R(g, '#c8bea4', 6, y, w - 14, 3); } },
+  cabinet(g, w, h) { R(g, '#3a4650', 2, 3, w - 4, 26); R(g, '#52606c', 2, 3, w - 4, 2); for (let x = 2; x < w - 4; x += (w - 4) / 2) { R(g, '#46545f', x + 2, 7, (w - 4) / 2 - 4, 20); R(g, '#b8b080', x + (w - 4) / 2 - 6, 16, 2, 4); } R(g, '#1a2026', w / 2 - 0.5, 5, 1, 24); },
+  hammer(g) { R(g, 'rgba(0,0,0,.3)', 7, 22, 18, 3); g.save(); g.translate(16, 16); g.rotate(-0.6); R(g, '#7a5a3a', -2, -9, 4, 20); R(g, '#3a2a1a', -1, -2, 2, 1); R(g, '#3a2a1a', 0, 2, 2, 1); R(g, '#6a7078', -7, -13, 14, 6); R(g, '#8a9098', -7, -13, 14, 2); g.restore(); },
+  shelfbox(g, w, h) { R(g, '#3a2c1c', 0, 3, w, 26); R(g, '#241a10', 0, 15, w, 2); for (let x = 3; x < w - 10; x += 14) { R(g, '#7a6440', x, 6, 11, 9); R(g, '#5a4a2e', x, 6, 11, 2); R(g, '#6a5838', x + 2, 19, 10, 8); } },
+  crate(g) { R(g, 'rgba(0,0,0,.3)', 4, 27, 24, 3); R(g, '#6a5030', 5, 9, 22, 19); R(g, '#86663e', 5, 9, 22, 3); R(g, '#4a3820', 5, 17, 22, 1); R(g, '#4a3820', 15, 9, 1, 19); },
+  mop(g) { R(g, 'rgba(0,0,0,.3)', 6, 27, 20, 3); R(g, '#5a6a72', 8, 17, 12, 11); R(g, '#7a8a92', 8, 17, 12, 2); R(g, '#3a1414', 10, 20, 8, 6); R(g, '#8a7450', 21, 3, 2, 22); R(g, '#b8b0a0', 18, 23, 8, 5); },
+  rubble(g) { R(g, 'rgba(0,0,0,.25)', 5, 25, 22, 4); for (const [x, y, w2, h2] of [[7, 20, 7, 6], [15, 18, 8, 8], [11, 14, 6, 5], [20, 23, 5, 4]]) { R(g, '#d8d2c4', x, y, w2, h2); R(g, '#a8a294', x, y + h2 - 2, w2, 2); } R(g, '#1a1a1a', 16, 20, 5, 4); },
+  scope(g) { R(g, '#2a2e33', 9, 24, 14, 3); R(g, '#3a3e44', 14, 8, 4, 16); R(g, '#55595f', 11, 6, 6, 5); R(g, '#8a9098', 12, 18, 9, 2); R(g, '#b8d8e0', 13, 20, 6, 2); },
+  burner(g) { R(g, 'rgba(180,200,220,.5)', 10, 14, 12, 11); R(g, '#6a8ab0', 11, 19, 10, 5); R(g, '#555', 13, 11, 6, 4); R(g, '#e8a040', 15, 6, 2, 5); R(g, '#f8e080', 15, 8, 2, 2); },
+  skeleton(g) { R(g, 'rgba(0,0,0,.3)', 8, 28, 16, 3); R(g, '#555', 15, 4, 2, 25); g.fillStyle = '#e0dccc'; g.beginPath(); g.arc(16, 7, 5, 0, 7); g.fill(); R(g, '#1a1a1a', 13, 6, 2, 2); R(g, '#1a1a1a', 17, 6, 2, 2); for (let i = 0; i < 4; i++) R(g, '#e0dccc', 10, 13 + i * 3, 12, 2); R(g, '#e0dccc', 7, 13, 2, 12); R(g, '#e0dccc', 23, 13, 2, 12); R(g, '#e0dccc', 12, 25, 3, 5); R(g, '#e0dccc', 17, 25, 3, 5); },
   stain(g) { g.fillStyle = '#4a0c0c'; g.beginPath(); g.ellipse(16, 18, 11, 7, 0.3, 0, 7); g.fill(); g.fillStyle = '#2a0606'; g.beginPath(); g.ellipse(13, 17, 5, 3, 0, 0, 7); g.fill(); },
   bell(g) { R(g, '#806020', 11, 10, 10, 10); R(g, '#c0a040', 13, 8, 6, 3); R(g, '#3a2a10', 15, 20, 2, 3); },
   plate(g) { R(g, '#2a4a2a', 4, 4, 24, 24); R(g, '#3a6a3a', 6, 6, 20, 20); },

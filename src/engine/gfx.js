@@ -68,3 +68,25 @@ function fitSheet(src) {
   });
   return out;
 }
+
+// 여러 그림이 격자로 든 시트에서 i번째 칸을 잘라 낸다 (여백 제거). 아직 못 읽었으면 null
+const cellCache = {};
+export function cell(url, cols, rows, i) {
+  const key = url + '#' + i;
+  if (key in cellCache) return cellCache[key];
+  const src = pic(url);
+  if (!src) return null;
+  const cw = Math.floor(src.width / cols), ch = Math.floor(src.height / rows), ox = (i % cols) * cw, oy = Math.floor(i / cols) * ch;
+  const p = src.getContext('2d').getImageData(ox, oy, cw, ch).data;
+  let x0 = cw, y0 = ch, x1 = 0, y1 = 0;
+  for (let y = 0; y < ch; y += 2) for (let x = 0; x < cw; x += 2) {
+    if (p[(y * cw + x) * 4 + 3] < 40) continue;
+    if (x < x0) x0 = x;
+    if (x > x1) x1 = x;
+    if (y < y0) y0 = y;
+    if (y > y1) y1 = y;
+  }
+  const c = canvas(Math.max(1, x1 - x0), Math.max(1, y1 - y0));
+  c.getContext('2d').drawImage(src, ox + x0, oy + y0, c.width, c.height, 0, 0, c.width, c.height);
+  return (cellCache[key] = c);
+}

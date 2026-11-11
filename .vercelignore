@@ -1,0 +1,9 @@
+# Vercel 배포에서 제외 (게임 실행에 필요 없고, 공개되면 안 되는 개발용 파일)
+.claude
+docs
+design
+test
+CLAUDE.md
+project.yaml
+README.md
+server.js
