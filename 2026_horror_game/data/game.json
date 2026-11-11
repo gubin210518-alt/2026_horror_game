@@ -1,0 +1,66 @@
+{
+  "title": "비현실",
+  "slots": 8,
+  "intro": true,
+  "start": {
+    "map": "classroom",
+    "x": 4,
+    "y": 4,
+    "dir": "down"
+  },
+  "actors": {
+    "player": {
+      "name": "나",
+      "color": "#4a78c8",
+      "sheet": "assets/chars/player.png",
+      "style": "boy",
+      "hair": "#1c1a1a",
+      "top": "#2c3a5e",
+      "bottom": "#23252e"
+    },
+    "yunha": {
+      "name": "윤하",
+      "color": "#c85a7a",
+      "sheet": "assets/chars/yunha.png",
+      "style": "girl",
+      "hair": "#2a1a20",
+      "top": "#e8e4dc",
+      "bottom": "#2a3050",
+      "portrait": "assets/portraits/yunha.png"
+    },
+    "guard": {
+      "name": "경비",
+      "color": "#2a3a6a",
+      "sheet": "assets/chars/guard.png",
+      "style": "guard",
+      "hair": "#1a1a1a",
+      "top": "#2a4a8a",
+      "bottom": "#1c2a4a",
+      "portrait": "assets/portraits/guard.png"
+    },
+    "red": {
+      "name": "붉은 형체",
+      "color": "#a02020",
+      "sheet": "assets/chars/red.png",
+      "style": "red"
+    }
+  },
+  "onStart": [
+    {
+      "goal": "교실에서 나간다"
+    },
+    {
+      "puzzle": "m1"
+    },
+    "@c1.wake"
+  ],
+  "companionTalk": {
+    "yunha": [
+      "@yunha.talk",
+      {
+        "sanity": 3
+      }
+    ]
+  },
+  "titleImage": "assets/pics/title.png"
+}

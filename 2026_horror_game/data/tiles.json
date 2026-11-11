@@ -1,0 +1,50 @@
+{
+  " ": {
+    "solid": true,
+    "color": "#000000"
+  },
+  "#": {
+    "solid": true,
+    "color": "#23232e"
+  },
+  ".": {
+    "color": "#4a4438"
+  },
+  ",": {
+    "color": "#3a3f4a"
+  },
+  "d": {
+    "solid": true,
+    "color": "#6a4a2a"
+  },
+  "B": {
+    "solid": true,
+    "color": "#3a2a1c"
+  },
+  "T": {
+    "solid": true,
+    "color": "#5a6068"
+  },
+  "c": {
+    "solid": true,
+    "color": "#7a5a3a"
+  },
+  "=": {
+    "solid": true,
+    "color": "#5a7a8a"
+  },
+  "s": {
+    "color": "#55504a"
+  },
+  "_": {
+    "color": "#34383c"
+  },
+  "~": {
+    "color": "#3e4a34",
+    "slow": 0.7
+  },
+  "%": {
+    "color": "#4a5a2a",
+    "slow": 0.45
+  }
+}

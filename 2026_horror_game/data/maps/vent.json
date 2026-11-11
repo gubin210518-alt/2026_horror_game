@@ -1,0 +1,130 @@
+{
+  "name": "환풍구",
+  "dark": true,
+  "noRun": true,
+  "speed": 0.5,
+  "tiles": [
+    "########################################",
+    "#____________~~~~~~~~%%%%%%%%%_________#",
+    "########################################"
+  ],
+  "onEnter": [
+    {
+      "if": "!vent_in",
+      "then": [
+        {
+          "set": "vent_in"
+        },
+        "좁다. 엎드려서 기어가야 한다."
+      ]
+    }
+  ],
+  "exits": [
+    {
+      "x": 0,
+      "y": 1,
+      "to": "science",
+      "tx": 14,
+      "ty": 5,
+      "dir": "left"
+    },
+    {
+      "x": 39,
+      "y": 1,
+      "to": "auditorium",
+      "tx": 2,
+      "ty": 5,
+      "dir": "right",
+      "if": "c4_int",
+      "locked": "축 늘어진 촉수가 신경 쓰인다. 저걸 그냥 두고 갈 수는 없다."
+    }
+  ],
+  "objects": [
+    {
+      "x": 14,
+      "y": 1,
+      "solid": false,
+      "touch": true,
+      "invisible": true,
+      "if": "!vent_sticky",
+      "event": [
+        {
+          "set": "vent_sticky"
+        },
+        "@c4.sticky"
+      ]
+    },
+    {
+      "x": 28,
+      "y": 1,
+      "solid": false,
+      "touch": true,
+      "invisible": true,
+      "if": "!m8_done",
+      "event": [
+        "@c4.tentacle",
+        {
+          "scare": "#030"
+        },
+        {
+          "minigame": "mash",
+          "label": "촉수에서 빠져나오기",
+          "sec": 12,
+          "then": [
+            "@c4.hand",
+            {
+              "waitKey": "ok",
+              "prompt": "Space: 윤하의 손을 잡는다"
+            },
+            {
+              "move": "player",
+              "path": "rrr",
+              "speed": 7
+            },
+            "@c4.out",
+            {
+              "set": "m8_done"
+            }
+          ],
+          "else": [
+            {
+              "die": "촉수에 끌려갔다."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "x": 29,
+      "y": 1,
+      "solid": false,
+      "color": "#4a6a2a",
+      "label": "촉수",
+      "if": "m8_done & !c4_int",
+      "event": [
+        "축 늘어진 촉수가 바닥에 널브러져 있다.",
+        {
+          "choice": [
+            "당긴다",
+            "건드리지 않는다"
+          ],
+          "then": [
+            [
+              "@c4.pull",
+              {
+                "organ": "intestine"
+              },
+              {
+                "set": "c4_int"
+              },
+              {
+                "goal": "환풍구 끝까지 간다"
+              }
+            ],
+            []
+          ]
+        }
+      ]
+    }
+  ]
+}
