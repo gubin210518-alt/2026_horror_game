@@ -2,3 +2,13 @@
 .env.*
 node_modules/
 *.log
+
+# Claude Code 로컬 설정과 세션 기록 (템플릿에서 가져옴)
+.claude/settings.local.json
+CLAUDE.local.md
+project.local.yaml
+production/session-logs/
+production/session-state/
+.scratch/
+.claude/agent-memory/
+.claude/worktrees/
