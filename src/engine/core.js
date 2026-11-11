@@ -71,7 +71,7 @@ export function T(s) {
     if (v == null) return s;
     s = v;
   }
-  return typeof s === 'string' ? s.replaceAll('{name}', S.name) : s.map(T);
+  return typeof s === 'string' ? s.replaceAll('{name}', S.name).replace(/\{f:(\w+)\}/g, (_, k) => S.flags[k] || 0) : s.map(T);
 }
 
 // 받침에 따라 조사 고르기: josa('잉크','을','를') → '잉크를'

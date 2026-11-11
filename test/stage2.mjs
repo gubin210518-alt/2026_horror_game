@@ -79,13 +79,15 @@ await key('Space'); await snap('m1-lockers');
 for (const k of ['ArrowRight', 'ArrowRight', 'ArrowRight', 'ArrowDown', 'ArrowDown', 'Space']) await key(k);
 await says();
 t.ok(await ev(`${G}.S.items.includes('key_front')`), 'M1: 목요일 3교시 사물함에서 앞문 열쇠가 나온다');
-await use(18, 2, 'right');
+await use(2, 9, 'down');
 t.ok(await flag('c1_open') === 1, 'M1: 열쇠로 앞문을 연다');
-await walkTo('ArrowRight', `${G}.S.map === 'hall'`); await says();
-await use(5, 10, 'right');
+await walkTo('ArrowDown', `${G}.S.map === 'floor2'`); await says();
+await use(9, 1, 'up');
 t.ok(await ev(`${G}.S.rules[0]`) === 'hall', '복도: 학교 규칙이 일기장에 기록된다');
-await use(5, 5, 'right'); t.ok(await ev(`${G}.S.map`) === 'hall', '복도: 다른 문은 잠겨 있다');
-await put(1, 13, 'left'); await walkTo('ArrowLeft', `${G}.S.map === 'class2'`);
+await use(12, 1, 'up'); t.ok(await ev(`${G}.S.map`) === 'floor2', '복도: 다른 문은 잠겨 있다');
+await use(2, 5, 'down'); t.ok(await ev(`${G}.W.p.y`) === 5, '복도: 특별동 쪽은 셔터로 막혀 있다');
+await put(8, 2, 'right'); await walkTo('ArrowRight', `${G}.W.p.x >= 14`); t.ok(true, '복도: 중정을 둘러싼 복도를 자유롭게 걸을 수 있다');
+await put(18, 1, 'up'); await walkTo('ArrowUp', `${G}.S.map === 'class2'`);
 await key('KeyJ'); await says(); t.ok(await ev(`${G}.UI.stack.length`) === 0, '1장: 일기장을 얻기 전에는 열 수 없다');
 await use(9, 4, 'down');
 t.ok(await flag('diary') === 1 && await ev(`${G}.S.goal`) === '여기서 나가야 한다', '1장: 옆 교실 서랍에서 일기장을 얻고 목표가 적힌다');
@@ -93,39 +95,48 @@ await key('KeyJ'); await key('Space'); await says(); await menus();
 t.ok(await ev(`${G}.S.saves`) === 0, '1장: 잉크가 없어서 아직 일기를 못 쓴다');
 
 // ---------- 2장: M2 가란델가의 자매들 ----------
-await warp('art', 2, 1); await snap('c2-art');
-await use(10, 4, 'right');
-t.ok(await flag('m2_fled') === 1, '2장: 창문을 조사하면 윤하가 달아난다');
-await use(12, 4, 'right');
+await warp('floor2', 44, 11, 'right'); await snap('c2-window');
+await use(44, 11, 'right');
+t.ok(await flag('m2_fled') === 1, '2장: 복도에서 미술실 창문을 조사하면 안에 서 있던 윤하가 달아난다');
+await put(44, 8, 'right'); await walkTo('ArrowRight', `${G}.S.map === 'art'`); await says(); await snap('c2-art');
+await use(2, 4, 'left');
 t.ok(await ev(`${G}.S.ink`) === 1 && await flag('ink1') === 1, '2장: 윤하가 서 있던 자리에서 첫 잉크를 얻고 창문이 액자로 바뀐다');
 await save();
 t.ok(await ev(`${G}.S.saves`) === 1 && await ev(`${G}.S.ink`) === 0, '2장: 잉크로 일기를 쓴다');
 
-await use(12, 4, 'left');
+await use(1, 4, 'left');
 t.ok(await flag('m2_started') === 1 && await ev(`${G}.W.timer.total`) === 60, 'M2: 자매들이 말한 뒤 60초 제한 시간이 시작된다'); await snap('m2-blood');
-await put(12, 8, 'down'); await key('ArrowDown'); t.ok(await ev(`${G}.W.p.y`) >= 8, 'M2: 피가 차오르는 동안에도 움직일 수 있다');
+await put(10, 6, 'down'); await key('ArrowDown'); t.ok(await ev(`${G}.W.p.y`) >= 6, 'M2: 피가 차오르는 동안에도 움직일 수 있다');
 await ev(`${G}.W.timer.left = 0.3`); await page.until(`${G}.UI.stack.length > 0`);
 await retry(async () => { await says(); await key('Space'); }, `${G}.UI.modal?.kind === 'gameover'`);
 await died('M2 실패: 시간이 다 되면 누구를 골라도 죽는다');
 t.ok(!await flag('m2_started') && await ev(`${G}.S.map`) === 'art', 'M2: 죽으면 일기를 쓴 곳(미술실)에서 다시 시작한다');
 
-await use(12, 4, 'left'); await use(4, 4, 'up');
+await use(1, 4, 'left'); await use(16, 4, 'up');
 t.ok(await ev(`${G}.S.items.includes('paintknife')`), 'M2: 물감통에서 물감칼을 얻는다');
-await put(12, 3, 'left'); await key('Space');
+await put(1, 3, 'left'); await key('Space');
 await retry(() => key('Space'), `${G}.UI.modal?.kind === 'gameover'`);
 await died('M2 실패: 이네스가 아닌 인물을 찌르면 죽는다');
 
-await use(12, 4, 'left'); await use(4, 4, 'up');
-await put(12, 6, 'left'); await key('Space'); await key('Space'); await says();
+await use(1, 4, 'left'); await use(16, 4, 'up');
+await put(1, 6, 'left'); await key('Space'); await key('Space'); await says();
 t.ok(await flag('m2_done') === 1 && await ev(`${G}.W.timer`) === null, 'M2 정답: 물감칼로 이네스를 찌르면 피가 빠지고 비품실이 열린다');
 await put(18, 5, 'right'); await walkTo('ArrowRight', `${G}.S.map === 'storage'`);
-await use(3, 2, 'up'); await use(7, 2, 'up'); await use(5, 1, 'up');
-t.ok(await ev(`['flashlight','key_library'].every(i=>${G}.S.items.includes(i)) && ${G}.S.notes.includes('school_map')`), '비품실: 손전등, 도서관 열쇠, 안내도를 얻는다');
+await snap('c2-storage');
+await use(3, 1, 'up'); await use(7, 1, 'up');
+t.ok(await ev(`${G}.S.items.includes('flashlight')`) && await flag('map') === 1, '비품실: 선반에서 손전등을, 벽에서 안내도를 얻는다');
+await key('KeyM'); t.ok(await ev(`${G}.UI.stack.length`) === 1, '비품실: M 키로 안내도(지도)를 펼친다'); await snap('map'); await key('KeyM');
+await use(9, 3, 'right');
+t.ok(await ev(`${G}.S.puzzles.includes('m2b')`) && !await flag('c2_libkey'), '비품실: 온기가 느껴지는 석고상은 맨손으로는 깰 수 없다');
+await use(6, 5, 'up'); t.ok(await ev(`${G}.S.items.includes('hammer')`), '비품실: 바닥의 금 간 망치를 줍는다');
+await use(9, 1, 'right'); t.ok(await ev(`${G}.S.items.includes('hammer')`), '비품실: 차가운 석고상에는 망치를 쓰지 않는다 (망치가 낭비되지 않음)');
+await put(9, 3, 'right'); await key('Space'); await says(); await key('Space'); await says();
+t.ok(await ev(`${G}.S.items.includes('key_library') && !${G}.S.items.includes('hammer')`), '비품실: 따뜻한 석고상을 망치로 깨면 도서관 열쇠가 나오고 망치는 부서진다');
 
 // ---------- 3장: 도서관, M3, M4, M5 ----------
-await warp('hall', 5, 20, 'right'); await key('Space'); await says();
+await warp('floor2', 30, 26, 'down'); await key('Space'); await says();
 t.ok(await flag('lib_open') === 1, '3장: 도서관 열쇠로 문을 연다');
-await walkTo('ArrowRight', `${G}.S.map === 'library'`); await says();
+await walkTo('ArrowDown', `${G}.S.map === 'library'`); await says();
 await ev(`${G}.S.sanity = 100`); await sleep(1500); t.ok(await ev(`${G}.S.sanity`) < 100, '3장: 도서관은 어두워서 손전등 없이는 정신력이 줄어든다');
 await ev(`${G}.S.flags.light = 1; ${G}.S.sanity = 100`);
 await use(20, 1, 'down'); t.ok(!await flag('m3_found'), 'M3: 윤하를 만나기 전에는 거꾸로 꽂힌 책이 반응하지 않는다');
@@ -169,23 +180,25 @@ await save();
 
 const toChase = async () => {
   await put(1, 1, 'up'); await page.keyDown('ArrowUp');
-  for (let i = 0; i < 80 && await ev(`${G}.S.map`) !== 'chase'; i++) { await says(); await sleep(150); }
+  for (let i = 0; i < 120 && await ev(`${G}.S.map`) !== 'floor2'; i++) { await says(); await sleep(150); }
   await page.keyUp('ArrowUp');
 };
 await toChase();
-t.ok(await ev(`${G}.S.map`) === 'chase' && await ev(`${G}.S.items.includes('key_science')`), 'M5: 경비에게 끌려가다 풀려나며 과학실 열쇠를 얻고, 추격이 시작된다'); await snap('m5-chase');
-t.ok(await ev(`(()=>{const m=${G}.W.map,T=${G}.D.tiles,q=[[4,2]],seen=new Set(['4,2']); while(q.length){const [x,y]=q.shift(); if(x===58&&y===2) return true; for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const k=(x+dx)+','+(y+dy); if(seen.has(k)||T[m.tiles[y+dy]?.[x+dx]]?.solid!==undefined&&T[m.tiles[y+dy][x+dx]].solid) continue; if(!m.tiles[y+dy]?.[x+dx]) continue; seen.add(k); q.push([x+dx,y+dy]);}} return false;})()`), 'M5: 추격 복도에 과학실까지 가는 길이 있다');
+t.ok(await ev(`${G}.S.map`) === 'floor2' && await ev(`${G}.S.items.includes('key_science')`), 'M5: 경비에게 끌려가다 풀려나며 과학실 열쇠를 얻고, 복도에서 추격이 시작된다'); await snap('m5-chase');
+t.ok(await ev(`!${G}.W.objs.some(o => o.label === '셔터' && !${G}.S.flags.m5_start)`), 'M5: 특별동으로 가는 셔터가 열려 있다');
+t.ok(await ev(`(()=>{const m=${G}.W.map,T=${G}.D.tiles,q=[[27,26]],seen=new Set(['27,26']); while(q.length){const [x,y]=q.shift(); if(x===1&&y===14) return true; for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy,k=nx+','+ny,c=m.tiles[ny]?.[nx]; if(!c||seen.has(k)||T[c].solid) continue; seen.add(k); q.push([nx,ny]);}} return false;})()`), 'M5: 넘어진 의자를 피해 과학실 문까지 가는 길이 있다');
 await died('M5 실패: 가만히 있으면 경비에게 붙잡힌다');
 t.ok(await ev(`${G}.S.map`) === 'archive', 'M5: 죽으면 비밀서고에서 다시 시작한다');
 await toChase();
-await put(52, 2, 'right'); await page.keyDown('ShiftLeft'); await walkTo('ArrowRight', `${G}.S.map === 'science'`); await page.keyUp('ShiftLeft');
+await put(1, 14, 'left'); await walkTo('ArrowLeft', `${G}.S.map === 'science'`);
 await says();
 t.ok(await flag('m5_done') === 1 && await ev(`${G}.W.chasing`) === false, 'M5 성공: 과학실에 들어가면 추격이 끝난다');
 
 // ---------- 4장: 과학실 M6, 실험실 M7, 환풍구 M8 ----------
-await use(3, 2, 'up'); await use(6, 2, 'up'); await use(12, 2, 'up'); await use(9, 9, 'down');
+await snap('c4-science');
+await use(7, 3, 'up'); await use(3, 10, 'down'); await use(10, 4, 'down'); await use(15, 7, 'down');
 t.ok(await ev(`${G}.S.organs.includes('heart') && ['acid','key_lab'].every(i=>${G}.S.items.includes(i))`) && await flag('ink3') === 1, '4장: 심장, 황산, 실험실 열쇠, 세 번째 잉크를 얻는다');
-await put(16, 2, 'up'); await key('Space'); await says(); await snap('m6-model');
+await put(17, 2, 'right'); await key('Space'); await says(); await snap('m6-model');
 await ev(`${G}.S.sanity = 100`); await key('Space'); await key('Space');
 t.ok(await ev(`${G}.S.sanity`) < 99 && await ev(`${G}.S.organs.length`) === 1, 'M6 오답: 틀린 자리에 놓으면 정신력 -5, 장기는 돌아온다');
 await key('Space'); for (const k of ['ArrowRight', 'ArrowRight', 'ArrowRight', 'Space', 'KeyX']) await key(k); await says();
@@ -198,7 +211,7 @@ const labToChase = async () => {
   for (let i = 0; i < 3; i++) { await says(); await key('ArrowRight'); await sleep(350); }
   await says();
 };
-await use(10, 1, 'up'); t.ok(await flag('lab_open') === 1, '4장: 실험실 열쇠로 문을 연다');
+await use(15, 1, 'up'); t.ok(await flag('lab_open') === 1, '4장: 실험실 열쇠로 문을 연다');
 await labToChase();
 t.ok(await flag('lab_in') === 1 && await flag('m7_lung') === 1 && await ev(`${G}.S.organs.includes('lung')`) && await ev(`${G}.W.p.x`) === 8, 'M7-1: 윤하의 장난에 세 번 물러나다 전시장에 부딪혀 폐를 얻는다');
 await use(9, 9, 'down'); t.ok(!await flag('m7_acid') && await ev(`${G}.S.map`) === 'lab', 'M7: 형체가 나오기 전에는 문이 꿈쩍도 하지 않는다');
@@ -217,7 +230,7 @@ const g1 = await flag('m7_melt'); await sleep(600);
 t.ok(g1 > 0.05 && Math.abs(await flag('m7_melt') - g1) < 0.01, 'M7-3: 누르고 있는 동안만 게이지가 차고, 떼도 줄지 않는다'); await snap('m7-melt');
 await page.keyDown('Space'); await page.until(`${G}.S.map === 'science'`, 30000); await page.keyUp('Space'); await says();
 t.ok(await flag('m7_end') === 1 && await ev(`${G}.W.chasing`) === false, 'M7 성공: 문이 녹아 열리고, 과학실로 돌아오면 추격이 끝난다');
-await put(16, 2, 'up'); await key('Space'); await says(); await key('Space'); for (const k of ['ArrowRight', 'ArrowRight', 'Space', 'KeyX']) await key(k); await says();
+await put(17, 2, 'right'); await key('Space'); await says(); await key('Space'); for (const k of ['Space', 'KeyX']) await key(k); await says();
 t.ok(await ev(`${G}.S.placed.includes('lung')`), 'M6: 폐도 제자리에 들어간다');
 await save();
 
@@ -225,7 +238,7 @@ const toTentacle = async () => {
   await warp('vent', 27, 1, 'right'); await says();
   await walkTo('ArrowRight', `${G}.UI.stack.length > 0`); await says();
 };
-await use(15, 6, 'up'); await key('Space'); await page.until(`${G}.S.map === 'vent'`); await says();
+await use(2, 10, 'left'); await key('Space'); await page.until(`${G}.S.map === 'vent'`); await says();
 t.ok(await ev(`${G}.W.speedMul`) === 0.5, 'M8: 환풍구에서는 기어가서 속도가 절반이다');
 await use(38, 1, 'right'); t.ok(await ev(`${G}.S.map`) === 'vent', 'M8 막힘 방지: 창자를 얻기 전에는 환풍구 끝으로 나갈 수 없다');
 await toTentacle(); await snap('m8-mash');

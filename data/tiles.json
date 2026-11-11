@@ -46,5 +46,21 @@
   "%": {
     "color": "#4a5a2a",
     "slow": 0.45
+  },
+  "g": {
+    "solid": true,
+    "color": "#12201a"
+  },
+  "t": {
+    "solid": true,
+    "color": "#0c1812"
+  },
+  "w": {
+    "solid": true,
+    "color": "#23232e"
+  },
+  "A": {
+    "solid": true,
+    "color": "#7a5c3a"
   }
 }

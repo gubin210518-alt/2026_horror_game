@@ -3,7 +3,7 @@ import { VW, VH } from './core.js';
 
 const KEYS = {
   ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right',
-  Space: 'ok', Enter: 'ok', Escape: 'cancel', KeyX: 'cancel', Tab: 'status', KeyI: 'inv', KeyJ: 'journal',
+  Space: 'ok', Enter: 'ok', Escape: 'cancel', KeyX: 'cancel', Tab: 'status', KeyI: 'inv', KeyJ: 'journal', KeyM: 'map',
   ShiftLeft: 'run', ShiftRight: 'run',
 };
 const codes = new Set(), hit = new Set();

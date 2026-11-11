@@ -1,11 +1,12 @@
 // 여러 장면에서 같이 쓰는 미니게임. 정답과 수치는 data/puzzles.json 에 있다.
 // 결과: true 성공, false 실패, null 취소(아무 일도 일어나지 않음)
-import { D, S, settings, T, VW } from '../engine/core.js';
+import { D, S, settings, T, VW, josa } from '../engine/core.js';
 import { pressed, consume, down } from '../engine/input.js';
 import { push, pop, box, font, wrap } from '../engine/ui.js';
 import { minigames } from '../engine/events.js';
 import { sfx } from '../engine/audio.js';
 import { W } from '../engine/world.js';
+import { pic, cell } from '../engine/gfx.js';
 
 function open(build) {
   return new Promise(res => { const m = push(build(v => { pop(m); res(v); })); });
@@ -115,12 +116,15 @@ minigames.mash = c => open(done => {
   };
 });
 
-// 인체 모형 (M6). 가진 장기를 골라 맞는 자리에 놓는다. puzzles.m6.slots: [{ id, x, y }]
+// 인체 모형 (M6). 가진 장기를 골라 맞는 자리에 놓는다.
+// puzzles.m6: image(모형 그림), sheet(장기 아이콘 시트), slots [{ id, fx, fy, size }] (그림 안에서의 비율 위치)
 minigames.organs = () => open(done => {
-  const slots = D.puzzles.m6.slots, kind = id => D.items[id].organ || id;
-  let phase = 0, oi = 0, si = 0, msg = '', turned = 0;
+  const pz = D.puzzles.m6, slots = pz.slots, kind = id => D.items[id].organ || id;
+  const icon = id => cell(pz.sheet.url, pz.sheet.cols, pz.sheet.rows, D.items[id].icon ?? 0);
   // 같은 종류 자리가 여러 개면(신장 2개) 넣은 개수만큼 앞에서부터 찬 것으로 본다
-  const filled = s => S.placed.filter(p => kind(p) === s.id).length > slots.filter(t => t.id === s.id).indexOf(s);
+  const placedIn = s => S.placed.filter(p => kind(p) === s.id)[slots.filter(t => t.id === s.id).indexOf(s)];
+  const IH = 304, IY = 28; // 모형 그림 높이와 위치
+  let phase = 0, oi = 0, si = 0, msg = '', turned = 0;
   return {
     update(dt) {
       turned = Math.max(0, turned - dt);
@@ -138,9 +142,9 @@ minigames.organs = () => open(done => {
       if (pressed('ok')) {
         consume('ok');
         const id = S.organs[oi], s = slots[si];
-        if (kind(id) === s.id && !filled(s)) {
+        if (kind(id) === s.id && !placedIn(s)) {
           S.organs.splice(oi, 1); S.placed.push(id); oi = 0; phase = 0; sfx('get');
-          msg = `${D.items[id].name}이(가) 제자리에 들어갔다.`;
+          msg = josa(D.items[id].name, '이', '가') + ' 제자리에 들어갔다.';
         } else { // 틀린 자리: 모형이 이쪽을 본다
           S.sanity = Math.max(0, S.sanity - 5); turned = 1.5; phase = 0; sfx('bad');
           if (settings.scare) { W.flashColor = '#400'; W.flash = 0.2; }
@@ -149,28 +153,36 @@ minigames.organs = () => open(done => {
       }
     },
     draw(ctx) {
-      box(ctx, 40, 20, 560, 320);
-      font(ctx, 15, true); ctx.fillStyle = '#ffd27a'; ctx.fillText(`인체 모형 (${S.placed.length}/${slots.length})`, 60, 46);
-      // 몸
-      ctx.fillStyle = '#c8b8a0'; ctx.beginPath(); ctx.arc(430 + (turned ? 6 : 0), 80, 30, 0, 7); ctx.fill();
-      ctx.fillRect(385, 112, 90, 160); ctx.fillRect(360, 118, 22, 110); ctx.fillRect(478, 118, 22, 110);
-      if (turned) { ctx.fillStyle = '#200'; ctx.fillRect(432, 74, 6, 6); ctx.fillRect(448, 74, 6, 6); }
-      font(ctx, 11);
+      box(ctx, 30, 14, 580, 332);
+      font(ctx, 15, true); ctx.fillStyle = '#ffd27a'; ctx.fillText('인체 모형 (' + S.placed.length + '/' + slots.length + ')', 50, 40);
+      const img = pic(pz.image), iw = img ? img.width * IH / img.height : 200, ix = 600 - iw - 30 + (turned ? Math.sin(turned * 40) * 2 : 0);
+      ctx.fillStyle = '#12131a'; ctx.fillRect(600 - iw - 44, IY - 6, iw + 28, IH + 12);
+      ctx.imageSmoothingEnabled = true;
+      if (img) ctx.drawImage(img, ix, IY, iw, IH);
+      else { ctx.fillStyle = '#c8b8a0'; ctx.fillRect(ix + iw * 0.25, IY + 20, iw * 0.5, IH - 40); }
       slots.forEach((s, k) => {
-        const ok = filled(s), sel = phase && k === si;
-        ctx.fillStyle = ok ? '#a03030' : '#5a5048'; ctx.beginPath(); ctx.arc(s.x, s.y, 11, 0, 7); ctx.fill();
-        if (sel) { ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(s.x, s.y, 13, 0, 7); ctx.stroke(); ctx.lineWidth = 1; }
-        if (ok) { ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.fillText(D.items[S.placed.find(p => kind(p) === s.id)].name[0], s.x, s.y + 4); ctx.textAlign = 'left'; }
+        const cx = ix + s.fx * iw, cy = IY + s.fy * IH, sz = s.size * iw, id = placedIn(s), ic = id && icon(id);
+        if (ic) { const k2 = sz / Math.max(ic.width, ic.height); ctx.drawImage(ic, cx - ic.width * k2 / 2, cy - ic.height * k2 / 2, ic.width * k2, ic.height * k2); }
+        else if (id) { ctx.fillStyle = '#a03030'; ctx.beginPath(); ctx.arc(cx, cy, sz / 3, 0, 7); ctx.fill(); }
+        if (phase && k === si) { // 고르는 중인 자리
+          ctx.strokeStyle = (performance.now() / 250 | 0) % 2 ? '#fff' : '#ffd27a'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(cx, cy, Math.max(10, sz / 2), 0, 7); ctx.stroke(); ctx.lineWidth = 1;
+        }
       });
-      font(ctx, 14); ctx.fillStyle = '#ccc'; ctx.fillText('장기 주머니', 60, 80);
-      if (!S.organs.length) { ctx.fillStyle = '#888'; ctx.fillText('넣을 장기가 없다.', 60, 106); }
+      if (turned) { ctx.fillStyle = 'rgba(120,0,0,.25)'; ctx.fillRect(600 - iw - 44, IY - 6, iw + 28, IH + 12); }
+      font(ctx, 14); ctx.fillStyle = '#ccc'; ctx.fillText('장기 주머니', 50, 70);
+      if (!S.organs.length) { ctx.fillStyle = '#888'; ctx.fillText('넣을 장기가 없다.', 50, 98); }
       S.organs.forEach((id, k) => {
+        const y = 84 + k * 30, ic = icon(id);
+        if (k === oi) { ctx.fillStyle = 'rgba(255,210,122,.15)'; ctx.fillRect(46, y - 2, 230, 28); }
+        if (ic) { const k2 = 24 / Math.max(ic.width, ic.height); ctx.drawImage(ic, 62 - ic.width * k2 / 2, y + 12 - ic.height * k2 / 2, ic.width * k2, ic.height * k2); }
         ctx.fillStyle = k === oi ? '#fff' : '#999';
-        ctx.fillText((k === oi ? (phase ? '● ' : '▶ ') : '   ') + D.items[id].name, 60, 106 + k * 22);
+        ctx.fillText((k === oi ? (phase ? '● ' : '▶ ') : '   ') + D.items[id].name, 82, y + 17);
       });
-      font(ctx, 13); ctx.fillStyle = '#e0a0a0'; wrap(msg, 280, 13).forEach((l, k) => ctx.fillText(l, 60, 286 + k * 18));
+      ctx.imageSmoothingEnabled = false;
+      font(ctx, 13); ctx.fillStyle = '#e0a0a0'; wrap(msg, 250, 13).forEach((l, k) => ctx.fillText(l, 50, 292 + k * 18));
       font(ctx, 12); ctx.fillStyle = '#777';
-      ctx.fillText(phase ? '방향키: 자리 고르기   Space: 놓기   X: 뒤로' : 'Space: 장기 고르기   X: 닫기', 60, 328);
+      ctx.fillText(phase ? '방향키: 자리 고르기   Space: 놓기   X: 뒤로' : 'Space: 장기 고르기   X: 닫기', 50, 334);
     },
   };
 });

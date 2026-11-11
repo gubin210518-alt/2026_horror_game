@@ -39,6 +39,8 @@ node test/stage1.mjs       # 엔진 검사 (서버를 켠 상태에서)
 node test/stage2.mjs       # 인트로~4장 통과 검사
 ```
 
+`.claude/settings.json` 이 `rm -rf` 를 막는다. 임시 폴더를 지우는 대신 새 이름의 폴더를 쓴다.
+
 코드 문법 확인은 파일을 `.mjs` 로 복사해 `node --check` 한다. `.js` 그대로는 모듈 문법 오류를 놓친다.
 
 ---

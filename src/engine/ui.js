@@ -303,6 +303,37 @@ export function openOptions() {
   });
 }
 
+// 학교 안내도 (M). data/schoolmap.json 을 그린다
+export function openMap() {
+  const M = D.schoolmap;
+  return panel(ctx => {
+    ctx.fillStyle = 'rgba(0,0,0,.7)'; ctx.fillRect(0, 0, VW, VH);
+    ctx.fillStyle = '#cfc4a0'; ctx.fillRect(16, 12, VW - 32, VH - 24);          // 누런 종이
+    ctx.strokeStyle = '#6a5c3a'; ctx.strokeRect(16.5, 12.5, VW - 33, VH - 25);
+    for (let i = 0; i < 40; i++) { ctx.fillStyle = 'rgba(90,70,30,.06)'; ctx.fillRect(16 + (i * 53) % (VW - 40), 12 + (i * 97) % (VH - 30), 30, 2); }
+    font(ctx, 14, true); ctx.fillStyle = '#3a2c18'; ctx.fillText(M.title, 30, 32);
+    const c = M.corridor, th = c.thick;
+    ctx.fillStyle = '#a89c78'; ctx.fillRect(c.x, c.y, c.w, c.h);                  // 복도 (ㅁ자)
+    ctx.fillStyle = '#7a8a6a'; ctx.fillRect(c.x + th, c.y + th, c.w - th * 2, c.h - th * 2); // 중정
+    ctx.strokeStyle = '#4a3c20'; ctx.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1); ctx.strokeRect(c.x + th + 0.5, c.y + th + 0.5, c.w - th * 2 - 1, c.h - th * 2 - 1);
+    ctx.textAlign = 'center'; font(ctx, 13); ctx.fillStyle = '#3a4a30'; ctx.fillText(M.courtyard, c.x + c.w / 2, c.y + c.h / 2 + 4);
+    let here = null;
+    for (const r of M.rooms) {
+      const cur = r.map?.includes(S.map);
+      ctx.fillStyle = r.dark ? '#1a1612' : cur ? '#e8d890' : '#ddd2ae'; ctx.fillRect(r.x, r.y, r.w, r.h);
+      ctx.strokeStyle = '#4a3c20'; ctx.strokeRect(r.x + 0.5, r.y + 0.5, r.w - 1, r.h - 1);
+      font(ctx, 12, cur); ctx.fillStyle = r.dark ? '#1a1612' : '#2a2010'; ctx.fillText(r.label, r.x + r.w / 2, r.y + r.h / 2 + 4);
+      if (cur) here = [r.x + r.w / 2, r.y + r.h - 6];
+    }
+    font(ctx, 11); ctx.fillStyle = '#6a5c3a';
+    for (const g of M.wings) ctx.fillText(g.label, g.x + 32, g.y);
+    if (S.map === c.map) here = [c.x + (S.x / c.mapW) * c.w, c.y + (S.y / c.mapH) * c.h];
+    if (here && blink()) { ctx.fillStyle = '#b01020'; ctx.beginPath(); ctx.arc(here[0], here[1], 4, 0, 7); ctx.fill(); }
+    ctx.textAlign = 'left'; font(ctx, 11); ctx.fillStyle = '#5a4c2a';
+    ctx.fillText('● 현재 위치   ' + M.note, 30, VH - 22); ctx.fillText('M / X: 접기', VW - 100, VH - 22);
+  }, ['map', 'cancel', 'ok']);
+}
+
 export async function openPause() {
   const c = await choose(['계속하기', '옵션', '타이틀로'], { title: '일시 정지', pause: !W.chasing });
   if (c === 1) await openOptions();

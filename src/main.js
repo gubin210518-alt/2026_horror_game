@@ -78,7 +78,7 @@ function loop(t) {
 }
 
 async function boot() {
-  for (const k of ['game', 'tiles', 'items', 'dialog', 'puzzles', 'rules', 'notes']) {
+  for (const k of ['game', 'tiles', 'items', 'dialog', 'puzzles', 'rules', 'notes', 'schoolmap']) {
     D[k] = await (await fetch(`data/${k}.json`)).json();
   }
   initInput(cv);
