@@ -1,0 +1,17 @@
+{
+  "candy": {
+    "name": "사탕", "desc": "딸기맛 사탕. 먹으면 마음이 조금 가라앉는다. (정신력 +20)",
+    "use": [ { "take": "candy" }, { "sanity": 20 }, { "sfx": "get" }, "사탕을 먹었다. 조금 진정된다." ]
+  },
+  "flashlight": {
+    "name": "손전등", "desc": "낡은 손전등. 사용하면 켜고 끌 수 있다.", "key": true,
+    "use": [ { "if": "light", "then": [ { "set": "light", "to": 0 }, "손전등을 껐다." ], "else": [ { "set": "light" }, "손전등을 켰다." ] } ]
+  },
+  "key_test": { "name": "시험용 열쇠", "desc": "옆방 문에 맞을 것 같은 열쇠.", "key": true },
+  "tape": { "name": "테이프", "desc": "끈적한 투명 테이프.", "combine": { "paper": "taped_paper" } },
+  "paper": { "name": "찢어진 종이", "desc": "반으로 찢어진 종이. 붙이면 읽을 수 있을 것 같다." },
+  "taped_paper": { "name": "붙인 종이", "desc": "\"조합이 잘 된다\" 라고 적혀 있다." },
+  "heart": { "name": "심장", "desc": "인체 모형의 심장." },
+  "lung": { "name": "폐", "desc": "인체 모형의 폐." },
+  "intestine": { "name": "창자", "desc": "인체 모형의 창자." }
+}

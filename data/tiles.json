@@ -1,0 +1,6 @@
+{
+  " ": { "solid": true, "color": "#000000" },
+  "#": { "solid": true, "color": "#23232e" },
+  ".": { "color": "#4a4438" },
+  ",": { "color": "#3a3f4a" }
+}

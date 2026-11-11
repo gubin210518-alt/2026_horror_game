@@ -14,6 +14,14 @@
 | [docs/reference/original-notes.md](docs/reference/original-notes.md) | 참고 작품 정리 노트 |
 | [docs/archive/](docs/archive/) | 이전 버전 기획 문서 |
 
+## 실행
+
+```
+node server.js
+```
+
+브라우저에서 http://localhost:8080 을 엽니다. 검사는 서버를 켠 채로 `node test/stage1.mjs`.
+
 ## 표기 규칙
 
 - 확정: 연님이 정한 내용
@@ -25,7 +33,7 @@
 - [x] 미니게임 상세 초안
 - [ ] 정해야 할 것 확정 (`04-open-questions.md`)
 - [ ] 이미지 제작
-- [ ] 게임 엔진 뼈대 (이동, 대화창, 조사, 맵 전환)
+- [x] 게임 엔진 뼈대 (이동, 대화창, 조사, 맵 전환)
 - [ ] 1~4장 구현
 - [ ] 5장 이후 구현
 - [ ] 테스트

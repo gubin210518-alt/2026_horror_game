@@ -1,0 +1,4 @@
+{
+  "hall": { "text": "복도에서 뛰지 마시오", "real": true },
+  "library": { "text": "도서관의 책을 함부로 뽑지 마시오", "real": false }
+}
