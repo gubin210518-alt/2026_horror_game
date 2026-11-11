@@ -20,7 +20,17 @@
 node server.js
 ```
 
-브라우저에서 http://localhost:8080 을 엽니다. 검사는 서버를 켠 채로 `node test/stage1.mjs`.
+브라우저에서 http://localhost:8080 을 엽니다. (`py -m http.server 8080` 으로 켜도 됩니다)
+
+검사는 서버를 켠 채로:
+
+```
+node test/check-data.mjs   # 데이터 오타 검사 (서버 없이도 됨)
+node test/stage1.mjs       # 엔진 검사
+node test/stage2.mjs       # 인트로~4장 통과 검사
+```
+
+그림을 직접 만들어 넣으려면 [docs/asset-prompts.md](docs/asset-prompts.md) 를 보세요.
 
 ## 표기 규칙
 
@@ -34,6 +44,6 @@ node server.js
 - [ ] 정해야 할 것 확정 (`04-open-questions.md`)
 - [ ] 이미지 제작
 - [x] 게임 엔진 뼈대 (이동, 대화창, 조사, 맵 전환)
-- [ ] 1~4장 구현
+- [x] 1~4장 구현
 - [ ] 5장 이후 구현
 - [ ] 테스트

@@ -5,6 +5,7 @@ import { W, enterMap, updateWorld, drawWorld } from './engine/world.js';
 import { UI, choose, openOptions, drawUI, font } from './engine/ui.js';
 import { startGame } from './engine/events.js';
 import { intro } from './minigames/m0.js';
+import { music } from './engine/audio.js';
 import './minigames/index.js';
 
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
@@ -13,7 +14,7 @@ async function title() {
   UI.stack.length = 0; W.map = null; W.busy = 0;
   for (;;) {
     const opts = ['새 게임', ...(hasSave() ? ['이어하기'] : []), '옵션'];
-    const o = opts[await choose(opts, { title: D.game.title, cancel: false })];
+    const o = opts[await choose(opts, { cancel: false, y: 218 })];
     if (o === '옵션') { await openOptions(); continue; }
     if (o === '새 게임') await startGame(D.game.intro ? await intro() : S.name); // 인트로에서 이름을 입력받는다
     else if (loadSave()) await enterMap(S.map, S.x, S.y, S.dir);
@@ -21,6 +22,28 @@ async function title() {
   }
 }
 UI.hooks.title = title;
+
+// 타이틀 배경: 밤의 학교. 창문 하나만 불이 깜빡인다
+function titleBackdrop(t) {
+  const sky = ctx.createLinearGradient(0, 0, 0, VH);
+  sky.addColorStop(0, '#05060f'); sky.addColorStop(1, '#151a2e');
+  ctx.fillStyle = sky; ctx.fillRect(0, 0, VW, VH);
+  ctx.fillStyle = '#c8c4b0'; ctx.beginPath(); ctx.arc(520, 64, 22, 0, 7); ctx.fill();
+  ctx.fillStyle = '#05060f'; ctx.beginPath(); ctx.arc(511, 58, 20, 0, 7); ctx.fill(); // 초승달
+  for (let i = 0; i < 40; i++) { ctx.fillStyle = 'rgba(255,255,255,' + (0.2 + 0.3 * Math.abs(Math.sin(t * 0.5 + i))) + ')'; ctx.fillRect((i * 97) % VW, (i * 53) % 150, 1, 1); }
+  ctx.fillStyle = '#080a12'; ctx.fillRect(70, 190, 500, 170); ctx.fillRect(250, 160, 140, 30); // 본관과 중앙 현관
+  ctx.fillRect(310, 138, 20, 22);
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 14; c++) {
+    const lit = r === 1 && c === 10 && Math.sin(t * 9) * Math.sin(t * 2.3) > -0.3;
+    ctx.fillStyle = lit ? '#c8b060' : '#11141f'; ctx.fillRect(86 + c * 34, 206 + r * 44, 20, 26);
+  }
+  ctx.fillStyle = '#04050a'; ctx.fillRect(0, 340, VW, 20);
+  ctx.textAlign = 'center';
+  font(ctx, 64, true); ctx.shadowColor = '#a00010'; ctx.shadowBlur = 18 + 6 * Math.sin(t * 2);
+  ctx.fillStyle = '#b01020'; ctx.fillText(D.game.title, VW / 2, 108); ctx.shadowBlur = 0;
+  font(ctx, 12); ctx.fillStyle = '#777'; ctx.fillText('방향키: 고르기   Space: 선택', VW / 2, VH - 6);
+  ctx.textAlign = 'left';
+}
 
 let last = 0;
 function loop(t) {
@@ -33,7 +56,8 @@ function loop(t) {
 
   ctx.setTransform(cv.width / VW, 0, 0, cv.height / VH, 0, 0);
   if (W.map) drawWorld(ctx);
-  else { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, VW, VH); font(ctx, 12); ctx.fillStyle = '#444'; ctx.fillText('방향키: 이동  Space: 선택', 16, VH - 14); }
+  else titleBackdrop(t / 1000);
+  music(!!W.map && W.chasing);
   drawUI(ctx, dt);
   endFrame();
 }

@@ -34,6 +34,7 @@ const died = async name => { // 게임오버 화면이 뜨는지 확인하고 �
   t.ok(true, name);
   await sleep(1500); await key('Space'); await idle();
 };
+const retry = async (act, expr, ms = 20000) => { for (const end = Date.now() + ms; Date.now() < end;) { if (await ev(expr)) return; await act(); await sleep(200); } throw new Error('시간 초과: ' + expr); };
 const clickL = async (x, y) => { // 게임 좌표(640x360)로 클릭
   const [px, py] = await ev(`(()=>{const r=document.getElementById('c').getBoundingClientRect(); return [r.left+${x}*r.width/640, r.top+${y}*r.height/360];})()`);
   await page.click(px, py); await page.frames(3);
@@ -65,9 +66,8 @@ const b2 = await dlg();
 t.ok(Math.hypot(b2[0] - b[0], b2[1] - b[1]) > 10, 'M0: 그 뒤로 취소 버튼이 커서를 피해 도망간다');
 await clickL(b2[4], b2[5]);
 t.ok(await ev(`__intro().scene`) === 'download', 'M0: 다운로드를 누르면 진행 바가 나온다 (실제 다운로드 없음)');
-await page.until(`__intro().scene === 'title'`, 20000); await snap('m0-5-title'); await sleep(1300);
-await clickL(320, 180);
-await page.until(`${G}.W.map`, 10000);
+await page.until(`__intro().scene === 'title'`, 20000); await snap('m0-5-title');
+await retry(() => clickL(320, 180), `!!${G}.W.map`);
 t.ok(await ev(`${G}.S.name`) === '테스터' && await ev(`${G}.S.map`) === 'classroom', 'M0: 화면이 꺼지고 입력한 이름으로 1장이 시작된다');
 t.ok(await ev(`!document.querySelector('input') && !document.querySelector('a[download]')`), 'M0: 입력 상자가 사라지고 실제 다운로드 링크는 없다');
 
@@ -104,13 +104,15 @@ t.ok(await ev(`${G}.S.saves`) === 1 && await ev(`${G}.S.ink`) === 0, '2장: 잉�
 await use(12, 4, 'left');
 t.ok(await flag('m2_started') === 1 && await ev(`${G}.W.timer.total`) === 60, 'M2: 자매들이 말한 뒤 60초 제한 시간이 시작된다'); await snap('m2-blood');
 await put(12, 8, 'down'); await key('ArrowDown'); t.ok(await ev(`${G}.W.p.y`) >= 8, 'M2: 피가 차오르는 동안에도 움직일 수 있다');
-await ev(`${G}.W.timer.left = 0.3`); await page.until(`${G}.UI.stack.length > 0`); await says(); await key('Space');
+await ev(`${G}.W.timer.left = 0.3`); await page.until(`${G}.UI.stack.length > 0`);
+await retry(async () => { await says(); await key('Space'); }, `${G}.UI.modal?.kind === 'gameover'`);
 await died('M2 실패: 시간이 다 되면 누구를 골라도 죽는다');
 t.ok(!await flag('m2_started') && await ev(`${G}.S.map`) === 'art', 'M2: 죽으면 일기를 쓴 곳(미술실)에서 다시 시작한다');
 
 await use(12, 4, 'left'); await use(4, 4, 'up');
 t.ok(await ev(`${G}.S.items.includes('paintknife')`), 'M2: 물감통에서 물감칼을 얻는다');
-await put(12, 3, 'left'); await key('Space'); await key('Space');
+await put(12, 3, 'left'); await key('Space');
+await retry(() => key('Space'), `${G}.UI.modal?.kind === 'gameover'`);
 await died('M2 실패: 이네스가 아닌 인물을 찌르면 죽는다');
 
 await use(12, 4, 'left'); await use(4, 4, 'up');
@@ -151,7 +153,7 @@ await put(3, 1, 'up'); await key('Space'); await says(); for (const k of ['Arrow
 await use(8, 2, 'up'); await use(3, 7, 'down');
 await use(2, 5, 'down'); await use(5, 3, 'up'); await use(8, 4, 'down');
 t.ok(await flag('m4_clock') === 9 && await flag('m4_lamp') === 1 && await flag('m4_cl') === 1 && await flag('m4_trash') === 3, 'M4: 시계, 스탠드, 커튼, 쓰레기를 맞춘다');
-await put(6, 2, 'down'); await key('ArrowDown'); await sleep(400);
+await put(6, 2, 'down'); await retry(() => key('ArrowDown'), `${G}.S.flags.m4desk_y === 4`, 6000);
 t.ok(await flag('m4desk_y') === 4, 'M4: 책상을 걸어서 밀 수 있다');
 await put(9, 4, 'right'); await key('Space'); await says(); await key('ArrowDown'); await key('Space'); await says();
 t.ok(!await flag('m4desk_y'), 'M4: 가구를 처음 자리로 되돌릴 수 있다 (막힘 방지)');

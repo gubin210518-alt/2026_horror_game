@@ -4,6 +4,8 @@ import { pressed, consume } from './input.js';
 import { sfx } from './audio.js';
 import { W } from './world.js';
 import { run } from './events.js';
+import { sheet, pic } from './gfx.js';
+import { actorOf, portrait } from './art.js';
 
 const FONT = '"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif';
 const mc = document.createElement('canvas').getContext('2d'); // 글자 폭 재기용
@@ -14,8 +16,14 @@ export const pop = m => { const i = UI.stack.indexOf(m); if (i >= 0) UI.stack.sp
 
 export function font(ctx, px, bold) { ctx.font = `${bold ? 'bold ' : ''}${px}px ${FONT}`; }
 export function box(ctx, x, y, w, h) {
-  ctx.fillStyle = 'rgba(8,8,14,.93)'; ctx.fillRect(x, y, w, h);
-  ctx.strokeStyle = '#8a8a9a'; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+  const g = ctx.createLinearGradient(0, y, 0, y + h);
+  g.addColorStop(0, 'rgba(26,22,32,.96)'); g.addColorStop(1, 'rgba(8,8,14,.96)');
+  ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = '#0c0a08'; ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+  ctx.strokeStyle = '#a89a6a'; ctx.strokeRect(x + 2.5, y + 2.5, w - 5, h - 5);
+  ctx.fillStyle = '#d8c890'; // 모서리 장식
+  for (const [cx, cy] of [[x + 1, y + 1], [x + w - 4, y + 1], [x + 1, y + h - 4], [x + w - 4, y + h - 4]]) ctx.fillRect(cx, cy, 3, 3);
 }
 export function wrap(text, maxW, px = 14) {
   font(mc, px);
@@ -37,7 +45,8 @@ export function toast(text) { UI.toasts.push({ text, t: 3 }); }
 export function say(text, who) {
   text = T(text);
   return new Promise(res => {
-    const lines = wrap(text, VW - 96), total = lines.join('').length;
+    const face = who && actorOf(who), pad = face ? 76 : 0; // 아는 인물이면 초상화를 같이 그린다
+    const lines = wrap(text, VW - 96 - pad), total = lines.join('').length;
     let n = 0;
     const m = push({
       kind: 'say',
@@ -49,23 +58,30 @@ export function say(text, who) {
         }
       },
       draw(ctx) {
-        const h = Math.max(72, lines.length * 20 + 26), y = VH - h - 12;
+        const h = Math.max(face ? 84 : 72, lines.length * 20 + 26), y = VH - h - 12;
         box(ctx, 24, y, VW - 48, h);
+        if (face) {
+          const file = D.game.actors[face].portrait, img = file && pic(file), s = sheet(face), p = portrait(s);
+          ctx.fillStyle = '#1a1c26'; ctx.fillRect(34, y + 10, 64, 64);
+          ctx.imageSmoothingEnabled = false;
+          if (img) ctx.drawImage(img, 36, y + 12, 60, 60); else ctx.drawImage(s, p.sx, p.sy, p.sw, p.sh, 36, y + 12, 60, 60);
+          ctx.strokeStyle = '#a89a6a'; ctx.strokeRect(34.5, y + 10.5, 63, 63);
+        }
         if (who) {
           font(ctx, 13, true);
-          box(ctx, 24, y - 23, ctx.measureText(who).width + 20, 23);
-          ctx.fillStyle = '#ffd27a'; ctx.fillText(who, 34, y - 7);
+          box(ctx, 24, y - 24, ctx.measureText(who).width + 24, 24);
+          ctx.fillStyle = '#ffd27a'; ctx.fillText(who, 36, y - 7);
         }
         font(ctx, 14); ctx.fillStyle = '#eee';
         let left = Math.floor(n);
-        lines.forEach((l, i) => { if (left > 0) { ctx.fillText(l.slice(0, left), 44, y + 27 + i * 20); left -= l.length; } });
-        if (n >= total && blink()) ctx.fillText('▼', VW - 52, y + h - 10);
+        lines.forEach((l, i) => { if (left > 0) { ctx.fillText(l.slice(0, left), 44 + pad, y + 28 + i * 20); left -= l.length; } });
+        if (n >= total && blink()) { ctx.fillStyle = '#ffd27a'; ctx.fillText('▼', VW - 52, y + h - 12); }
       },
     });
   });
 }
 
-export function choose(opts, { title, cancel = true, pause = true } = {}) {
+export function choose(opts, { title, cancel = true, pause = true, y: fixedY } = {}) {
   return new Promise(res => {
     const tl = title ? wrap(T(title), VW - 160) : [];
     font(mc, 14);
@@ -81,7 +97,7 @@ export function choose(opts, { title, cancel = true, pause = true } = {}) {
         else if (cancel && pressed('cancel')) { eat('cancel'); pop(m); res(-1); }
       },
       draw(ctx) {
-        const x = (VW - w) / 2, y = (VH - h) / 2;
+        const x = (VW - w) / 2, y = fixedY ?? (VH - h) / 2;
         box(ctx, x, y, w, h);
         font(ctx, 14);
         let ty = y + 24;

@@ -4,6 +4,7 @@ import { down, pressed, consume, lastDir } from './input.js';
 import { run } from './events.js';
 import { sfx } from './audio.js';
 import { sheet } from './gfx.js';
+import { mapLayer, door, objectSprite } from './art.js';
 import { openStatus, openInventory, openJournal, openPause, toast, font } from './ui.js';
 
 export const DIRS = { down: [0, 1], left: [-1, 0], right: [1, 0], up: [0, -1] };
@@ -315,6 +316,19 @@ function think(n, dt) {
   }
 }
 
+// 플레이어가 바라보는 칸에 있는, 조사할 수 있는 것의 이름과 위치
+function facing() {
+  const p = W.p;
+  if (p.moving) return null;
+  const [dx, dy] = DIRS[p.dir], fx = p.x + dx, fy = p.y + dy;
+  const n = W.npcs.find(n => vis(n) && n.event && !n.ghost && n.x === fx && n.y === fy);
+  if (n) return { text: D.game.actors[n.sprite || n.id]?.name || '?', x: fx, y: fy - 1 };
+  const o = W.objs.find(o => vis(o) && !o.invisible && inside(o, fx, fy) && (o.event || o.hide || o.hold));
+  if (o && o.label) return { text: o.label + (o.hide ? ' (숨기)' : ''), x: fx, y: fy };
+  const e = exitAt(fx, fy);
+  return e && !cond(e.if) ? { text: '잠긴 문', x: fx, y: fy } : null;
+}
+
 // ---------- 그리기 ----------
 let darkCv;
 export function drawWorld(ctx) {
@@ -327,24 +341,17 @@ export function drawWorld(ctx) {
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, VW, VH);
   ctx.save(); ctx.translate(-cx, -cy); ctx.imageSmoothingEnabled = false;
 
-  const x0 = Math.max(0, (cx / TILE) | 0), x1 = Math.min(m.w - 1, ((cx + VW) / TILE) | 0);
-  const y0 = Math.max(0, (cy / TILE) | 0), y1 = Math.min(m.h - 1, ((cy + VH) / TILE) | 0);
-  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
-    const t = tileAt(x, y);
-    ctx.fillStyle = t.color || '#000'; ctx.fillRect(x * TILE, y * TILE, TILE, TILE);
-    if (!t.solid) { ctx.fillStyle = 'rgba(0,0,0,.08)'; ctx.fillRect(x * TILE, y * TILE, TILE, 1); ctx.fillRect(x * TILE, y * TILE, 1, TILE); }
-  }
-  for (const e of m.exits || []) {
-    ctx.fillStyle = cond(e.if) ? '#9a7038' : '#4a3020'; ctx.fillRect(e.x * TILE + 3, e.y * TILE + 2, TILE - 6, TILE - 4);
-    ctx.fillStyle = '#d8c070'; ctx.fillRect(e.x * TILE + 22, e.y * TILE + 16, 3, 3);
-  }
+  ctx.drawImage(mapLayer(m), 0, 0);
+  for (const e of m.exits || []) door(ctx, e, cond(e.if), m);
   font(ctx, 10); ctx.textAlign = 'center';
   for (const o of W.objs) {
     if (!vis(o) || o.invisible) continue;
-    const w = (o.w || 1) * TILE, h = (o.h || 1) * TILE;
-    ctx.fillStyle = o.color || '#7a6048'; ctx.fillRect(o.x * TILE + 3, o.y * TILE + 3, w - 6, h - 6);
-    if (o.hide) { ctx.strokeStyle = '#c8b070'; ctx.strokeRect(o.x * TILE + 3.5, o.y * TILE + 3.5, w - 7, h - 7); }
-    if (o.label) { ctx.fillStyle = '#fff'; ctx.fillText(o.label, o.x * TILE + w / 2, o.y * TILE + h / 2 + 4); }
+    const w = (o.w || 1) * TILE, h = (o.h || 1) * TILE, spr = objectSprite(o);
+    if (spr) ctx.drawImage(spr, o.x * TILE, o.y * TILE);
+    else { // 그림이 없는 종류는 색 상자와 글자로
+      ctx.fillStyle = o.color || '#7a6048'; ctx.fillRect(o.x * TILE + 3, o.y * TILE + 3, w - 6, h - 6);
+      if (o.label) { ctx.fillStyle = '#fff'; ctx.fillText(o.label, o.x * TILE + w / 2, o.y * TILE + h / 2 + 4); }
+    }
   }
   ctx.textAlign = 'left';
 
@@ -361,21 +368,37 @@ export function drawWorld(ctx) {
   for (const a of actors) {
     const s = sheet(a.sprite || a.id), fw = s.width / 3, fh = s.height / 4, [ax, ay] = pos(a);
     const col = a.moving ? [0, 1, 2, 1][(a.anim * 2 | 0) % 4] : 1;
-    ctx.drawImage(s, col * fw, ROW[a.dir] * fh, fw, fh, Math.round(ax * TILE + (TILE - fw) / 2), Math.round(ay * TILE + TILE - fh), fw, fh);
+    const dh = 48, dw = fw * dh / fh; // 그림 파일의 칸 크기가 달라도 키 48px로 맞춘다
+    ctx.drawImage(s, col * fw, ROW[a.dir] * fh, fw, fh, Math.round(ax * TILE + (TILE - dw) / 2), Math.round(ay * TILE + TILE - dh), dw, dh);
   }
   ctx.restore();
 
   const sx = ppx * TILE + 16 - cx, sy = ppy * TILE + 8 - cy;
-  if (m.dark) { // 어둠. 플레이어 주변만 보인다
+  { // 밤의 학교: 플레이어 주변만 밝고 멀수록 어둡다. dark 맵은 손전등 없이는 거의 안 보인다
     darkCv ||= Object.assign(document.createElement('canvas'), { width: VW, height: VH });
-    const g = darkCv.getContext('2d'), r = S.flags.light ? 150 : 56;
+    const g = darkCv.getContext('2d');
+    const [alpha, r] = m.dark ? [0.96, S.flags.light ? 150 : 56] : m.lit ? [0.5, 250] : [0.7, 170];
+    const flick = m.flicker && Math.sin(W.t * 23) * Math.sin(W.t * 7.3) > 0.55 ? 0.12 : 0; // 깜빡이는 형광등
     g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, VW, VH);
-    g.fillStyle = 'rgba(0,0,0,.95)'; g.fillRect(0, 0, VW, VH);
+    g.fillStyle = `rgba(4,6,18,${alpha + flick})`; g.fillRect(0, 0, VW, VH);
     g.globalCompositeOperation = 'destination-out';
-    const grad = g.createRadialGradient(sx, sy, r * 0.3, sx, sy, r);
+    const grad = g.createRadialGradient(sx, sy, r * 0.25, sx, sy, r);
     grad.addColorStop(0, 'rgba(0,0,0,1)'); grad.addColorStop(1, 'rgba(0,0,0,0)');
     g.fillStyle = grad; g.fillRect(0, 0, VW, VH);
     ctx.drawImage(darkCv, 0, 0);
+  }
+  if (W.chasing) { // 추격 중: 가장자리가 붉게 맥박친다
+    const grad = ctx.createRadialGradient(VW / 2, VH / 2, 120, VW / 2, VH / 2, 380);
+    grad.addColorStop(0, 'rgba(0,0,0,0)'); grad.addColorStop(1, `rgba(120,0,0,${0.25 + 0.15 * Math.sin(W.t * 6)})`);
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, VW, VH);
+  }
+  const tag = facing(); // 눈앞에 조사할 수 있는 것이 있으면 이름표를 띄운다
+  if (tag && !W.busy && !W.hidden) {
+    font(ctx, 11, true);
+    const tw = ctx.measureText(tag.text).width + 12, tx = Math.round(tag.x * TILE + 16 - cx - tw / 2), ty = Math.round(tag.y * TILE - cy - 16);
+    ctx.fillStyle = 'rgba(8,8,14,.85)'; ctx.fillRect(tx, ty, tw, 16);
+    ctx.strokeStyle = '#a89a6a'; ctx.strokeRect(tx + 0.5, ty + 0.5, tw - 1, 15);
+    ctx.fillStyle = '#f0e6c0'; ctx.fillText(tag.text, tx + 6, ty + 12);
   }
   if (S.sanity <= 40) { // 정신력 40 이하: 가장자리가 어두워진다
     const grad = ctx.createRadialGradient(VW / 2, VH / 2, 90, VW / 2, VH / 2, 360);

@@ -42,3 +42,34 @@ export function sfx(name, vol = 1) {
     src.start(t); src.stop(t + dur);
   } catch { /* 소리가 안 나도 게임은 계속 */ }
 }
+
+// 배경음: 낮게 웅웅거리는 소리와 바람. 추격 중에는 심장 박동이 겹친다. 모두 합성음
+let bgm;
+export function music(chasing) {
+  try {
+    if (!ac || ac.state !== 'running') return; // 첫 입력으로 소리가 켜진 뒤부터
+    const t = ac.currentTime;
+    if (!bgm) {
+      const master = ac.createGain(), pulse = ac.createGain();
+      master.gain.value = 0; pulse.gain.value = 0;
+      master.connect(ac.destination); pulse.connect(ac.destination);
+      for (const [f, v] of [[55, 0.5], [58.3, 0.4], [110.4, 0.12]]) { // 서로 조금 어긋난 낮은 음이 울렁거린다
+        const o = ac.createOscillator(), g = ac.createGain();
+        o.frequency.value = f; g.gain.value = v; o.connect(g); g.connect(master); o.start();
+      }
+      const buf = ac.createBuffer(1, ac.sampleRate * 2, ac.sampleRate), d = buf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const wind = ac.createBufferSource(), wf = ac.createBiquadFilter(), wg = ac.createGain();
+      wind.buffer = buf; wind.loop = true; wf.type = 'bandpass'; wf.frequency.value = 320; wf.Q.value = 0.8; wg.gain.value = 0.18;
+      wind.connect(wf); wf.connect(wg); wg.connect(master); wind.start();
+      const lfo = ac.createOscillator(), lg = ac.createGain(); // 바람이 세졌다 약해졌다
+      lfo.frequency.value = 0.07; lg.gain.value = 180; lfo.connect(lg); lg.connect(wf.frequency); lfo.start();
+      const heart = ac.createOscillator(), am = ac.createGain(), beat = ac.createOscillator(), bg = ac.createGain(); // 심장 박동
+      heart.frequency.value = 48; am.gain.value = 0; beat.type = 'square'; beat.frequency.value = 2.3; bg.gain.value = 1;
+      beat.connect(bg); bg.connect(am.gain); heart.connect(am); am.connect(pulse); heart.start(); beat.start();
+      bgm = { master, pulse };
+    }
+    bgm.master.gain.setTargetAtTime(settings.bgm * 0.16, t, 0.8);
+    bgm.pulse.gain.setTargetAtTime(chasing ? settings.bgm * 0.5 : 0, t, 0.3);
+  } catch { /* 소리가 안 나도 게임은 계속 */ }
+}
