@@ -96,3 +96,26 @@ Character portrait, head and shoulders, facing slightly toward the viewer, squar
 
 - 인체 모형 (과학실), 사물함 벽, 칠판, 책상, 전시장 등 물건 그림: 각각 `#00FF00` 배경의 정면 3/4 시점 한 장
 - 아이템 아이콘 (잉크병, 열쇠, 손전등, 물감칼, 황산병, <읽으면 죽는 책>, 장기 9종): 한 장에 격자로
+
+## 5. 게임 아이콘 (인트로 바탕화면의 `비현실.exe`)
+
+지금은 코드로 그린 창 모양 아이콘입니다. 아래 프롬프트로 한 장 만들어 `assets/pics/game_icon.png` 로 넣으면 바로 바뀝니다. 배경은 투명이거나 아무 색이어도 됩니다 (네모 그대로 그려집니다).
+
+```
+A small square app icon for an old unfinished 2009 indie RPG horror game, 16-bit pixel art, dark background, a dark school window with one faint red light, eerie and simple, strong silhouette readable at 32x32 pixels, no text, no letters. Square 1:1.
+```
+
+## 6. 윤하 목소리
+
+Higgsfield의 음성 합성(Qwen Audio TTS, 프리셋 목소리 Pixie, 음높이 1.2)으로 만들었습니다. 파일은 `assets/audio/v_*.mp3` 이고, 같은 이름으로 덮어쓰면 바뀝니다.
+
+| 파일 | 대사 | 쓰이는 곳 |
+|---|---|---|
+| `v_one.mp3`, `v_two.mp3`, `v_three.mp3` | 하나. / 둘. / 셋! | 비밀서고 문, 액자 뒤집기 |
+| `v_fast.mp3` | 너무 빨라! 다시. | 박자가 안 맞았을 때 |
+| `v_run.mp3` | 지금이야! 뛰어! | 경비에게서 풀려날 때, 붉은 형체가 나올 때 |
+| `v_frog.mp3`, `v_rat.mp3`, `v_dont.mp3` | 이것 봐라~ / 이번엔 쥐! / 도망가지 마~ | 실험실 장난 |
+| `v_first.mp3`, `v_caught.mp3` | 내가 먼저 가 볼게. / 잡았다. | 환풍구 |
+| `laugh.mp3` | (비웃는 소리, 효과음 생성) | 자매 그림에서 틀렸을 때 |
+
+목소리를 바꾸고 싶으면 원하는 느낌(예: 더 높게, 더 속삭이듯)을 알려 주세요. 다른 프리셋 목소리로 다시 만들 수 있습니다.

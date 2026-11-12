@@ -10,7 +10,8 @@
 | `assets/pics/title.png` | 같음 | 타이틀 배경 |
 | `assets/pics/yunha_window.png`, `guard_face.png`, `red_glass.png` | 같음 (2026-11-12 생성) | 컷신용 그림 |
 | `assets/pics/organs.png`, `model.png` | 같음 (2026-11-12 생성) | 장기 아이콘 9종, 인체 모형 |
-| `assets/pics/items.png`, `wallpaper.png` | 같음 (2026-11-12 생성) | 아이템 아이콘 12종, 인트로 바탕화면 배경 |
+| `assets/pics/items.png` | 같음 (2026-11-12 생성) | 아이템 아이콘 12종 |
+| `assets/pics/wallpaper.jpg` | 연님의 Windows 11 바탕화면 화면 캡처에서 아이콘이 없는 가운데 부분을 잘라 냄 | 인트로 배경. Windows 기본 배경 그림이라, 공개 배포할 때는 다른 그림으로 바꾸는 것이 안전함 |
 | `assets/pics/sisters_blood1~3.png`, `sisters_blood_full.png`, `sisters_1~4_dead.png` | 연님이 나노바나나(Gemini)로 생성 | 피가 차오르는 단계와 찔린 모습. 오른쪽 아래의 생성 도구 표시는 액자 무늬로 덮음 |
 | 타일, 물건, 문 | 코드로 직접 그림 (`src/engine/art.js`) | 외부 소스 없음 |
 
@@ -18,7 +19,14 @@ AI로 만든 그림입니다. 공개 배포 전에 Higgsfield와 Gemini 이용 �
 
 ## 소리
 
-모든 효과음과 배경음은 Web Audio로 직접 합성합니다 (`src/engine/audio.js`). 외부 음원은 쓰지 않았습니다.
+효과음과 배경음은 대부분 Web Audio로 직접 합성합니다 (`src/engine/audio.js`).
+
+| 파일 | 만든 방법 |
+|---|---|
+| `assets/audio/laugh.mp3` | Higgsfield MCP, Mirelo 효과음 생성 (2026-11-12) |
+| `assets/audio/v_*.mp3` (윤하 목소리 10줄) | Higgsfield MCP, Qwen Audio TTS, 프리셋 목소리 Pixie (2026-11-12) |
+
+파일이 없으면 합성음으로 대신하거나(비웃는 소리) 소리 없이 넘어갑니다(목소리).
 
 ## 참고 작품
 
