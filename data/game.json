@@ -67,6 +67,7 @@
     "archive",
     "art",
     "auditorium",
+    "byeolsil",
     "class2",
     "classroom",
     "floor2",
@@ -81,7 +82,8 @@
   "greenScreen": [
     "assets/pics/organs.webp",
     "assets/pics/model.webp",
-    "assets/pics/items.webp"
+    "assets/pics/items.webp",
+    "assets/pics/ch5.webp"
   ],
   "sheets": {
     "items": {
@@ -93,6 +95,11 @@
       "url": "assets/pics/organs.webp",
       "cols": 3,
       "rows": 3
+    },
+    "ch5": {
+      "url": "assets/pics/ch5.webp",
+      "cols": 2,
+      "rows": 2
     }
   },
   "sounds": {

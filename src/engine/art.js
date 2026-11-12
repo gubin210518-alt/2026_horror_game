@@ -140,10 +140,12 @@ const KIND = {
   문: 'doorobj', 제1: 'doorobj', 제2: 'doorobj', 엘레나: 'sister', 마리: 'sister', 로제: 'sister', 이네스: 'sister', 사탕: 'candy', 심장: 'organ',
   작품: 'artboard', 주기율표: 'artboard', 정물: 'still', 화판: 'canvas', 캔버스: 'canvas', 건조대: 'rack', 도구함: 'cabinet', 보관함: 'cabinet',
   망치: 'hammer', 선반: 'shelfbox', 상자: 'crate', 청소도구: 'mop', 조각: 'rubble', 현미경: 'scope', 알코올램프: 'burner', 골격: 'skeleton', 석고상: 'bust', 셔터: 'shutter',
-  얼룩: 'stain', 벨: 'bell', 발판: 'plate', 일기장: 'book', 테이프: 'paper', 종이: 'paper', 전등: 'flashlight',
+  시체: 'corpse', 머리: 'head', 얼룩: 'stain', 벨: 'bell', 발판: 'plate', 일기장: 'book', 테이프: 'paper', 종이: 'paper', 전등: 'flashlight',
 };
 const shadow = (g, w, h) => R(g, 'rgba(0,0,0,.28)', 4, h - 6, w - 8, 5);
 const DRAW = {
+  corpse(g, w, h) { R(g, 'rgba(60,0,6,.55)', 3, 4, 14, 9); R(g, 'rgba(0,0,0,.3)', 5, 25, 24, 4); R(g, '#1c2238', 8, 10, 18, 11); R(g, '#2a3252', 8, 10, 18, 2); R(g, '#d8d4cc', 8, 13, 3, 5); R(g, '#1c2238', 4, 12, 5, 4); R(g, '#c8a888', 3, 15, 3, 3); R(g, '#23252e', 24, 12, 6, 5); R(g, '#23252e', 24, 18, 6, 4); R(g, '#15151a', 29, 12, 2, 5); R(g, '#15151a', 29, 18, 2, 4); R(g, '#5a0a10', 6, 9, 4, 3); },
+  head(g) { R(g, 'rgba(60,0,6,.5)', 8, 22, 16, 5); g.fillStyle = '#c8a888'; g.beginPath(); g.arc(16, 17, 7, 0, 7); g.fill(); g.fillStyle = '#1c1a1a'; g.beginPath(); g.arc(16, 15, 7.5, Math.PI, 0); g.fill(); R(g, '#1c1a1a', 9, 14, 3, 5); R(g, '#3a2a22', 12, 18, 3, 1); R(g, '#3a2a22', 18, 18, 3, 1); R(g, '#5a0a10', 12, 23, 8, 2); },
   board(g, w, h) { R(g, '#5a4a30', 2, 5, w - 4, 20); R(g, '#1d4034', 4, 7, w - 8, 16); R(g, 'rgba(255,255,255,.12)', 8, 11, w * 0.4, 1); R(g, 'rgba(255,255,255,.1)', 10, 15, w * 0.25, 1); R(g, '#c8c8c0', w - 16, 21, 6, 2); },
   clock(g) { g.fillStyle = '#d8d4c0'; g.beginPath(); g.arc(16, 15, 9, 0, 7); g.fill(); g.strokeStyle = '#2a2a2a'; g.lineWidth = 1.5; g.stroke(); R(g, '#222', 15.5, 8, 1, 7); R(g, '#222', 15.5, 14.5, 5, 1); g.lineWidth = 1; },
   paper(g) { R(g, '#cfc7a8', 8, 6, 16, 19); R(g, '#a89f80', 8, 6, 16, 1); for (let i = 0; i < 5; i++) R(g, '#6a6450', 10, 10 + i * 3, 9 + (i % 2) * 3, 1); R(g, '#a02020', 15, 5, 2, 2); },

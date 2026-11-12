@@ -1,0 +1,349 @@
+{
+  "name": "별실",
+  "lit": true,
+  "tiles": [
+    "#######",
+    "#,.,.,#",
+    "#.,.,.#",
+    "#,.,.,#",
+    "#.,.,.#",
+    "#,.,.,#",
+    "#.,.,.#",
+    "#,.,.,#",
+    "#.,.,.#",
+    "#######"
+  ],
+  "events": {
+    "c5end": [
+      {
+        "flash": "#fff",
+        "t": 0.6
+      },
+      "@c5.shot",
+      {
+        "minigame": "bigpic",
+        "image": "assets/pics/gradphoto.webp",
+        "photo": "m9"
+      },
+      "@c5.printed",
+      {
+        "picture": "assets/pics/cam_in.webp",
+        "zoom": true
+      },
+      "@c5.inside",
+      {
+        "picture": null
+      },
+      {
+        "minigame": "terms",
+        "note": "ink_terms"
+      },
+      {
+        "picture": "assets/pics/cam_in.webp"
+      },
+      "@c5.yunhaFinds",
+      {
+        "note": "notice_bottom"
+      },
+      {
+        "readNote": "notice_bottom"
+      },
+      "@c5.yunhaTears",
+      {
+        "picture": null
+      },
+      {
+        "minigame": "bigpic",
+        "image": "assets/pics/cam_in.webp",
+        "tear": true
+      },
+      {
+        "flash": "#fff",
+        "t": 0.8
+      },
+      {
+        "set": "c5_done"
+      },
+      {
+        "companion": "yunha"
+      },
+      "@c5.out",
+      {
+        "if": "!organ:liver",
+        "then": [
+          "@c5.liverGive",
+          {
+            "organ": "liver"
+          },
+          {
+            "set": "c5_liver"
+          }
+        ]
+      },
+      {
+        "puzzleDone": "m9"
+      },
+      {
+        "goal": "@c5.goalEnd"
+      }
+    ]
+  },
+  "onEnter": [
+    {
+      "if": "!c5_in",
+      "then": [
+        {
+          "set": "c5_in"
+        },
+        {
+          "companion": null
+        },
+        "@c5.enter",
+        {
+          "goal": "@c5.goalLook"
+        }
+      ]
+    }
+  ],
+  "exits": [],
+  "npcs": [
+    {
+      "id": "yunha_b",
+      "sprite": "yunha",
+      "x": 4,
+      "y": 1,
+      "dir": "down",
+      "if": "!c5_done",
+      "event": [
+        {
+          "if": "c5_ink",
+          "then": [
+            "@c5.yunhaTalk2"
+          ],
+          "else": [
+            "@c5.yunhaTalk"
+          ]
+        }
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "x": 0,
+      "y": 3,
+      "label": "환풍구",
+      "art": "ventcover",
+      "event": [
+        "@c5.vent"
+      ]
+    },
+    {
+      "x": 6,
+      "y": 2,
+      "label": "앞문",
+      "art": "doorobj",
+      "event": [
+        {
+          "if": "c5_done",
+          "then": [
+            "@c5.doorAfter"
+          ],
+          "else": [
+            {
+              "sfx": "locked"
+            },
+            "@c5.door"
+          ]
+        }
+      ]
+    },
+    {
+      "x": 6,
+      "y": 8,
+      "label": "뒷문",
+      "art": "doorobj",
+      "event": [
+        {
+          "if": "c5_done",
+          "then": [
+            "@c5.doorAfter"
+          ],
+          "else": [
+            {
+              "sfx": "locked"
+            },
+            "@c5.door"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cam",
+      "x": 3,
+      "y": 1,
+      "solid": false,
+      "label": "사진기",
+      "img": "assets/pics/camera.webp",
+      "ih": 1.7,
+      "if": "!c5_done",
+      "event": [
+        "@c5.camera"
+      ]
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "solid": false,
+      "label": "사진기",
+      "img": "assets/pics/camera.webp",
+      "ih": 1.7,
+      "if": "c5_done",
+      "event": [
+        "@c5.cameraAfter"
+      ]
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "label": "시체",
+      "art": "corpse",
+      "event": [
+        "@c5.corpse"
+      ]
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "label": "머리",
+      "art": "head",
+      "if": "!c5_head",
+      "event": [
+        "@c5.head"
+      ]
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "solid": false,
+      "label": "간",
+      "art": "organ",
+      "if": "!c5_liver & !c5_liver_y",
+      "event": [
+        "@c5.liver",
+        {
+          "organ": "liver"
+        },
+        {
+          "set": "c5_liver"
+        }
+      ]
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "label": "특수 잉크",
+      "art": "ink",
+      "if": "!c5_ink",
+      "event": [
+        "@c5.ink",
+        {
+          "give": "special_ink"
+        },
+        {
+          "set": "c5_ink"
+        },
+        "@c5.inkLabel",
+        {
+          "minigame": "terms",
+          "note": "ink_terms"
+        },
+        {
+          "note": "ink_terms"
+        },
+        "@c5.joke1",
+        {
+          "picture": "assets/pics/camera_shot.webp",
+          "zoom": true
+        },
+        "@c5.joke2",
+        {
+          "sfx": "shutter"
+        },
+        {
+          "flash": "#fff",
+          "t": 0.5
+        },
+        "@c5.joke3",
+        {
+          "picture": null
+        },
+        "@c5.joke4",
+        {
+          "move": "yunha_b",
+          "path": "ddr",
+          "speed": 4
+        },
+        {
+          "face": "yunha_b",
+          "dir": "left"
+        },
+        "@c5.paperFalls",
+        {
+          "goal": "@c5.goalPaper"
+        }
+      ]
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "solid": false,
+      "touch": true,
+      "label": "종이",
+      "art": "paper",
+      "if": "c5_ink & !c5_start",
+      "event": [
+        {
+          "set": "c5_start"
+        },
+        {
+          "sfx": "get"
+        },
+        "@c5.paper",
+        {
+          "note": "notice_top"
+        },
+        {
+          "readNote": "notice_top"
+        },
+        "@c5.start",
+        {
+          "puzzle": "m9"
+        },
+        {
+          "goal": "@c5.goalCam"
+        },
+        {
+          "minigame": "photo",
+          "puzzle": "m9",
+          "cases": [
+            [
+              "@c5.sacrifice",
+              {
+                "sfx": "shutter"
+              },
+              {
+                "run": "c5end"
+              }
+            ],
+            [
+              "@c5.caught",
+              {
+                "run": "c5end"
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

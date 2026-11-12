@@ -31,9 +31,9 @@
     {
       "x": 39,
       "y": 1,
-      "to": "auditorium",
-      "tx": 2,
-      "ty": 5,
+      "to": "byeolsil",
+      "tx": 1,
+      "ty": 3,
       "dir": "right",
       "if": "c4_int",
       "locked": "축 늘어진 촉수가 신경 쓰인다. 저걸 그냥 두고 갈 수는 없다."

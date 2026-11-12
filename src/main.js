@@ -9,6 +9,7 @@ import { music, loadSounds } from './engine/audio.js';
 import { pic, preload } from './engine/gfx.js';
 import { initTouch, showTouch } from './engine/touch.js';
 import './minigames/index.js';
+import './minigames/ch5.js';
 
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 

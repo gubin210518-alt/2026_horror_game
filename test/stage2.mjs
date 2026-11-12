@@ -259,8 +259,8 @@ await key('Space'); await sleep(800); await says();
 t.ok(await flag('m8_done') === 1 && await ev(`${G}.W.p.x`) === 31, 'M8 성공: (길게 누르기 옵션) 게이지를 채우고 윤하의 손을 잡아 빠져나온다');
 await put(30, 1, 'left'); await key('Space'); await says(); await key('Space'); await says();
 t.ok(await ev(`${G}.S.items.includes('intestine')`), 'M8: 촉수를 당겨 창자를 얻는다 (일반 소지품에 들어간다)');
-await put(38, 1, 'right'); await walkTo('ArrowRight', `${G}.S.map === 'auditorium'`); await says();
-t.ok(await flag('c5_in') === 1, '4장 끝: 환풍구를 지나 강당에 도착한다');
+await put(38, 1, 'right'); await walkTo('ArrowRight', `${G}.S.map === 'byeolsil'`); await says();
+t.ok(await flag('c5_in') === 1, '4장 끝: 환풍구를 지나 별실에 도착한다');
 t.ok(await ev(`${G}.S.rules.length`) >= 1 && await ev(`${G}.S.puzzles.includes('m6')`), '일기장에 규칙과 진행 중인 단서가 남아 있다');
 await snap('end');
 

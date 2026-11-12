@@ -155,5 +155,23 @@
     "desc": "낡은 일기장.",
     "icon": "items:9",
     "hidden": true
+  },
+  "liver": {
+    "name": "간",
+    "desc": "인체 모형의 간. 별실 바닥에 놓여 있었다.",
+    "icon": "organs:5",
+    "isOrgan": true
+  },
+  "special_ink": {
+    "name": "특수 잉크",
+    "desc": "별실의 사진기 옆에 있던 붉은 잉크. 병 바닥에 약관이 붙어 있다. 일기를 쓰는 잉크와는 다르다.",
+    "key": true,
+    "icon": "ch5:1",
+    "use": [
+      {
+        "minigame": "terms",
+        "note": "ink_terms"
+      }
+    ]
   }
 }

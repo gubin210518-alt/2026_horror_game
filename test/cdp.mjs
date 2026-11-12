@@ -7,7 +7,7 @@ import { join } from 'node:path';
 const BROWSERS = [
   'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
-  '/usr/bin/google-chrome', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+  '/usr/bin/google-chrome', '/opt/pw-browsers/chromium', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
 ];
 export const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -16,7 +16,7 @@ export async function open(url, port = 9400 + Math.floor(Math.random() * 500)) {
   if (!exe) throw new Error('Edge 또는 Chrome을 찾지 못했습니다');
   const dir = mkdtempSync(join(tmpdir(), 'cdp-'));
   const proc = spawn(exe, ['--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${dir}`,
-    '--no-first-run', '--window-size=1280,720',
+    '--no-first-run', '--window-size=1280,720', ...(process.platform === 'linux' ? ['--no-sandbox'] : []),
     '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows', '--disable-background-timer-throttling', // 화면이 멈추지 않게
     '--autoplay-policy=no-user-gesture-required', 'about:blank']);
   // 윈도우에서는 브라우저가 프로세스를 여러 개 띄우므로, 이 검사용 폴더를 쓰는 프로세스를 모두 찾아 끝낸다
