@@ -28,6 +28,8 @@ const pos = a => (a.moving ? [a.fx + (a.x - a.fx) * a.prog, a.fy + (a.y - a.fy) 
 const tileAt = (x, y) => { const ch = W.map.tiles[y]?.[x] ?? ' '; return W.map.legend?.[ch] || D.tiles[ch] || D.tiles[' ']; };
 const exitAt = (x, y) => (W.map.exits || []).find(e => e.x === x && e.y === y);
 const spotId = o => W.id + ':' + (o.id || o.x + ',' + o.y);
+// 큰 그림 밑에 깔리는 움직이는 장면 (그림의 투명한 구멍으로 보인다). 이름 → (ctx, x, y, w, h, t). picture 명령의 scene
+export const scenes = {};
 export const npcById = id => W.npcs.find(n => n.id === id);
 
 function staticBlocked(x, y) {
@@ -463,7 +465,7 @@ export function drawWorld(ctx) {
     ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(0, 0, VW, VH);
     // zoom 을 켠 그림은 틀 안에서 천천히 다가간다 (컷신 느낌)
     const z = W.pictureZoom ? 1 + Math.min(0.12, (W.pictureT || 0) * 0.012) : 1, sw = big.width / z, sh = big.height / z;
-    ctx.imageSmoothingEnabled = true; ctx.drawImage(big, (big.width - sw) / 2, (big.height - sh) / 2, sw, sh, bx, by, bw, bh); ctx.imageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = true; scenes[W.pictureScene]?.(ctx, bx, by, bw, bh, W.pictureT || 0); ctx.drawImage(big, (big.width - sw) / 2, (big.height - sh) / 2, sw, sh, bx, by, bw, bh); ctx.imageSmoothingEnabled = false;
     ctx.strokeStyle = '#0c0a08'; ctx.strokeRect(bx - 0.5, by - 0.5, bw + 1, bh + 1);
   }
   { // 가방 단추 (왼쪽 위). 누르면 소지품이 열린다

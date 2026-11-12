@@ -349,6 +349,23 @@
           "then": [
             [
               {
+                "if": "!m8_done",
+                "then": [
+                  "@c4.ventFirst",
+                  {
+                    "sfx": "v_first"
+                  },
+                  {
+                    "picture": "assets/pics/vent_yunha.webp",
+                    "zoom": true
+                  },
+                  "@c4.ventCrawl",
+                  {
+                    "picture": null
+                  }
+                ]
+              },
+              {
                 "goto": "vent",
                 "x": 1,
                 "y": 1,

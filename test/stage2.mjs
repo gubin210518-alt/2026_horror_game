@@ -243,10 +243,11 @@ t.ok(await ev(`${G}.S.placed.includes('lung')`), 'M6: 폐도 제자리에 들어
 await save();
 
 const toTentacle = async () => {
-  await warp('vent', 27, 1, 'right'); await says();
+  await warp('vent', 24, 1, 'right'); await says();
   await walkTo('ArrowRight', `${G}.UI.stack.length > 0`); await says();
 };
-await use(2, 10, 'left'); await key('Space'); await page.until(`${G}.S.map === 'vent'`); await says();
+await use(2, 10, 'left'); await key('Space'); await sleep(300); await says(); await page.until(`${G}.S.map === 'vent'`); await says();
+t.ok(await ev(`(()=>{const n=${G}.W.npcs.find(n=>n.id==='yunha'); return n.x === 27 && n.ai !== 'follow';})()`), 'M8: 윤하가 먼저 들어가 막힌 곳 앞에서 기다린다');
 t.ok(await ev(`${G}.W.speedMul`) === 0.5, 'M8: 환풍구에서는 기어가서 속도가 절반이다');
 await use(38, 1, 'right'); t.ok(await ev(`${G}.S.map`) === 'vent', 'M8 막힘 방지: 창자를 얻기 전에는 환풍구 끝으로 나갈 수 없다');
 await toTentacle(); await snap('m8-mash');

@@ -13,6 +13,10 @@
 - API 키, 토큰, 비밀번호는 커밋하지 않는다
 - M0 인트로는 전부 게임 안에서 그린 가짜 화면이다. 실제 파일 다운로드나 브라우저 alert를 쓰지 않는다
 
+## 이어 받는 세션은 먼저 읽기
+
+@docs/handoff.md
+
 ## Technology Stack
 
 - **Engine**: Web — 직접 만든 HTML5 Canvas 엔진 (`src/engine/`). 쯔꾸르풍이지만 RPG Maker가 아니다

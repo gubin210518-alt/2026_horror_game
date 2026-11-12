@@ -5,8 +5,30 @@ import { pressed, consume, lastDir } from '../engine/input.js';
 import { push, pop, box, font, wrap, say, drawIcon } from '../engine/ui.js';
 import { minigames } from '../engine/events.js';
 import { sfx } from '../engine/audio.js';
-import { W, DIRS, blocked, walk, npcById } from '../engine/world.js';
+import { W, DIRS, blocked, walk, npcById, scenes } from '../engine/world.js';
 import { pic } from '../engine/gfx.js';
+
+// 흰 방의 타원 창 너머 (cam_frame 그림의 투명한 타원 밑에 깔린다): 별실 배경 위에 윤하를 얹는다.
+// stare 빤히 들여다봄, away 옆으로 걸어 나감, back 돌아옴. 자리와 크기는 puzzles.m9.window
+function camWindow(phase) {
+  return (ctx, x, y, w, h, t) => {
+    const o = D.puzzles.m9.window, room = pic(o.room), yun = pic(o.yunha);
+    const ox = x + w * o.box[0], oy = y + h * o.box[1], ow = w * o.box[2], oh = h * o.box[3];
+    ctx.save(); ctx.beginPath(); ctx.rect(ox, oy, ow, oh); ctx.clip();
+    ctx.fillStyle = '#0a0c12'; ctx.fillRect(ox, oy, ow, oh);
+    if (room) { const k = Math.max(ow / room.width, oh / room.height); ctx.drawImage(room, ox + (ow - room.width * k) / 2, oy + (oh - room.height * k) / 2, room.width * k, room.height * k); }
+    if (yun) {
+      const e = k => k * k * (3 - 2 * k), go = Math.min(1, t / o.walk); // 걸어 나가거나 들어오는 정도
+      const off = phase === 'away' ? e(go) : phase === 'back' ? 1 - e(go) : 0, walking = phase !== 'stare' && go < 1;
+      const lean = phase === 'stare' ? Math.min(1, t / 6) * 0.06 : 0; // 들여다볼수록 조금씩 다가온다
+      const yh = oh * o.size * (1 + lean - off * 0.25), yw = yh * yun.width / yun.height;
+      const bob = walking ? Math.abs(Math.sin(t * 7)) * oh * 0.03 : Math.sin(t * 1.6) * oh * 0.006;
+      if (off < 1) ctx.drawImage(yun, ox + ow / 2 - yw / 2 + off * ow * 1.1, oy + oh * o.top - lean * oh * 0.3 + off * oh * 0.12 + bob, yw, yh);
+    }
+    ctx.restore();
+  };
+}
+for (const p of ['stare', 'away', 'back']) scenes[p] = camWindow(p);
 
 function open(build) {
   return new Promise(res => { const m = push(build(v => { pop(m); res(v); })); });
@@ -83,7 +105,7 @@ minigames.bigpic = c => open(done => {
   function compose(img) { // 그림에 글자를 얹어 한 장으로 만든다
     const k = Math.min((VW - 20) / img.width, (VH - 16) / img.height), w = Math.round(img.width * k), h = Math.round(img.height * k);
     const cc = Object.assign(document.createElement('canvas'), { width: w * 2, height: h * 2 }), g = cc.getContext('2d');
-    g.scale(2, 2); g.imageSmoothingQuality = 'high'; g.drawImage(img, 0, 0, w, h);
+    g.scale(2, 2); g.imageSmoothingQuality = 'high'; scenes[c.scene]?.(g, 0, 0, w, h, 99); g.drawImage(img, 0, 0, w, h);
     if (ph) { // 가운데 사진 아래에 주인공 이름. 다른 학생들의 이름은 그림에 번진 채로 들어 있다
       g.textAlign = 'center'; g.fillStyle = '#26242a';
       font(g, Math.round(h * ph.nameSize), true); g.fillText(S.name, w * ph.name[0], h * ph.name[1]);

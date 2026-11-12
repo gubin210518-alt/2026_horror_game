@@ -267,6 +267,19 @@
         0.628
       ],
       "nameSize": 0.034
+    },
+    "window": {
+      "room": "assets/pics/cam_room.webp",
+      "yunha": "assets/pics/cam_yunha.webp",
+      "box": [
+        0.33,
+        0,
+        0.34,
+        0.76
+      ],
+      "size": 1.1,
+      "top": 0,
+      "walk": 1.8
     }
   }
 }

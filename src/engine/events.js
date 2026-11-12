@@ -98,7 +98,7 @@ async function one(c) {
   if ('timer' in c) { W.timer = { left: c.timer, total: c.timer, label: T(c.label) || '남은 시간', end: c.end, style: c.style }; return; }
   if ('timerStop' in c) { W.timer = null; return; }
   if ('fx' in c) { sfx('get'); return itemFx(c.fx, T(c.text) || josa(D.items[c.fx].name, '을', '를') + ' 얻었다.'); } // 아이템 그림이 크게 떴다가 가방으로 들어가는 효과
-  if ('picture' in c) { W.picture = c.picture || null; W.pictureT = 0; W.pictureZoom = !!c.zoom; return; } // 화면 가운데에 큰 그림을 띄우거나(경로) 지운다(null)
+  if ('picture' in c) { W.picture = c.picture || null; W.pictureT = 0; W.pictureZoom = !!c.zoom; W.pictureScene = c.scene || null; return; } // 화면 가운데에 큰 그림을 띄우거나(경로) 지운다(null)
   if ('readNote' in c) return say(D.notes[c.readNote].text || '(아무것도 적혀 있지 않다.)');
   if ('resetPush' in c) { // 밀어 둔 물건을 처음 자리로
     for (const id of [].concat(c.resetPush)) {

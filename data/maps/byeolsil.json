@@ -27,8 +27,8 @@
       },
       "@c5.printed",
       {
-        "picture": "assets/pics/cam_in.webp",
-        "zoom": true
+        "picture": "assets/pics/cam_frame.webp",
+        "scene": "stare"
       },
       "@c5.inside",
       {
@@ -40,7 +40,18 @@
         "recall": true
       },
       {
-        "picture": "assets/pics/cam_in.webp"
+        "picture": "assets/pics/cam_frame.webp",
+        "scene": "stare"
+      },
+      "@c5.yunhaLooks",
+      {
+        "picture": "assets/pics/cam_frame.webp",
+        "scene": "away"
+      },
+      "@c5.yunhaAway",
+      {
+        "picture": "assets/pics/cam_frame.webp",
+        "scene": "back"
       },
       "@c5.yunhaFinds",
       {
@@ -49,13 +60,18 @@
       {
         "readNote": "notice_bottom"
       },
+      {
+        "picture": "assets/pics/cam_frame.webp",
+        "scene": "stare"
+      },
       "@c5.yunhaTears",
       {
         "picture": null
       },
       {
         "minigame": "bigpic",
-        "image": "assets/pics/cam_in.webp",
+        "image": "assets/pics/cam_frame.webp",
+        "scene": "stare",
         "tear": true
       },
       {
@@ -129,6 +145,31 @@
     }
   ],
   "objects": [
+    {
+      "x": 2,
+      "y": 0,
+      "w": 3,
+      "label": "커튼",
+      "event": [
+        "사진 배경으로 쓰던 암막 커튼. 먼지가 두껍게 앉아 있다."
+      ]
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "label": "액자",
+      "event": [
+        "오래된 졸업사진이 걸려 있다. 얼굴마다 눈이 검게 번져 있다."
+      ]
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "label": "액자",
+      "event": [
+        "빈 액자. 사진이 들어갈 자리만 타원 모양으로 뚫려 있다."
+      ]
+    },
     {
       "x": 0,
       "y": 3,
