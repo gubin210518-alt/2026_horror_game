@@ -72,7 +72,11 @@ function loop(t) {
   if (W.map && !(m && m.pause !== false)) updateWorld(dt, !m);
 
   ctx.setTransform(cv.width / VW, 0, 0, cv.height / VH, 0, 0);
-  if (W.map) { if (W.picture && UI.modal) W.pictureT = (W.pictureT || 0) + dt; drawWorld(ctx); }
+  if (W.map) {
+    W.fade = Math.max(0, W.fade - dt); W.flash = Math.max(0, W.flash - dt); // 대화창이 떠 있어도 화면은 밝아진다
+    if (W.picture && UI.modal) W.pictureT = (W.pictureT || 0) + dt;
+    drawWorld(ctx);
+  }
   else if (loading) { // 불러오는 중
     ctx.fillStyle = '#000'; ctx.fillRect(0, 0, VW, VH);
     font(ctx, 13); ctx.fillStyle = '#888'; ctx.textAlign = 'center'; ctx.fillText('불러오는 중…', VW / 2, VH / 2 - 10);
@@ -81,7 +85,8 @@ function loop(t) {
   } else titleBackdrop(t / 1000);
   music(!!W.map && W.chasing);
   drawUI(ctx, dt);
-  showTouch(UI.modal?.kind !== 'intro'); // 인트로는 화면을 직접 누르는 장면이라 단추를 숨긴다
+  const k = UI.modal?.kind; // 터치 단추: 인트로, 대화, 게임오버에서는 숨기고(화면을 누르면 된다), 다른 창에서는 방향과 A/B만
+  showTouch(!W.map || k === 'intro' || k === 'say' || k === 'gameover' ? 'none' : UI.modal ? 'menu' : 'all');
   endFrame();
 }
 

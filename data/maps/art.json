@@ -37,7 +37,7 @@
   "events": {
     "intro": [
       {
-        "picture": "assets/pics/sisters.png",
+        "picture": "assets/pics/sisters.webp",
         "zoom": true
       },
       "@c2.intro",
@@ -66,7 +66,7 @@
     ],
     "timeup": [
       {
-        "picture": "assets/pics/sisters_blood_full.png"
+        "picture": "assets/pics/sisters_blood_full.webp"
       },
       "@c2.timeup",
       {
@@ -75,7 +75,7 @@
       {
         "minigame": "painting",
         "puzzle": "m2",
-        "image": "assets/pics/sisters_blood_full.png",
+        "image": "assets/pics/sisters_blood_full.webp",
         "must": true,
         "title": "@c2.timeupAsk",
         "cases": [
@@ -227,7 +227,7 @@
         "if": "m2_pick==4",
         "then": [
           {
-            "picture": "assets/pics/sisters_4_dead.png"
+            "picture": "assets/pics/sisters_4_dead.webp"
           },
           {
             "sfx": "scream"
@@ -257,7 +257,7 @@
             "if": "m2_pick==1",
             "then": [
               {
-                "picture": "assets/pics/sisters_1_dead.png"
+                "picture": "assets/pics/sisters_1_dead.webp"
               }
             ]
           },
@@ -265,7 +265,7 @@
             "if": "m2_pick==2",
             "then": [
               {
-                "picture": "assets/pics/sisters_2_dead.png"
+                "picture": "assets/pics/sisters_2_dead.webp"
               }
             ]
           },
@@ -273,7 +273,7 @@
             "if": "m2_pick==3",
             "then": [
               {
-                "picture": "assets/pics/sisters_3_dead.png"
+                "picture": "assets/pics/sisters_3_dead.webp"
               }
             ]
           },
@@ -344,7 +344,7 @@
       "h": 2,
       "color": "#6a5226",
       "label": "액자",
-      "img": "assets/pics/sisters.png",
+      "img": "assets/pics/sisters.webp",
       "fit": true,
       "if": "ink1",
       "event": [

@@ -104,7 +104,7 @@ function followPath(a) {
 export function updateWorld(dt, input) {
   const p = W.p, free = input && !W.busy;
   W.t += dt; W.pictureT = (W.pictureT || 0) + dt;
-  for (const k of ['shake', 'flash', 'fade', 'pushCd']) W[k] = Math.max(0, W[k] - dt);
+  for (const k of ['shake', 'pushCd']) W[k] = Math.max(0, W[k] - dt);
 
   if (W.timer && !W.busy && (W.timer.left -= dt) <= 0) { const end = W.timer.end; W.timer = null; run(end); }
 

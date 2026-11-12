@@ -108,3 +108,6 @@ export async function loadSounds(map = {}) {
     } catch { /* 파일이 없거나 못 읽으면 합성음 */ }
   }));
 }
+
+// 첫 입력에 소리를 켠다
+for (const ev of ['pointerdown', 'keydown', 'touchend']) addEventListener(ev, () => { try { ac ||= new AudioContext(); if (ac.state === 'suspended') ac.resume(); } catch { /* 무시 */ } }, { passive: true });

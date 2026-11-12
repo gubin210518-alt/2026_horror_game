@@ -22,18 +22,18 @@
       "물감칼을 들고 액자를 조사해서, 그림 속 맨 오른쪽 이네스를 눌러 찔러."
     ],
     "images": {
-      "base": "assets/pics/sisters.png",
+      "base": "assets/pics/sisters.webp",
       "blood": [
-        "assets/pics/sisters_blood1.png",
-        "assets/pics/sisters_blood2.png",
-        "assets/pics/sisters_blood3.png"
+        "assets/pics/sisters_blood1.webp",
+        "assets/pics/sisters_blood2.webp",
+        "assets/pics/sisters_blood3.webp"
       ],
-      "full": "assets/pics/sisters_blood_full.png",
+      "full": "assets/pics/sisters_blood_full.webp",
       "dead": [
-        "assets/pics/sisters_1_dead.png",
-        "assets/pics/sisters_2_dead.png",
-        "assets/pics/sisters_3_dead.png",
-        "assets/pics/sisters_4_dead.png"
+        "assets/pics/sisters_1_dead.webp",
+        "assets/pics/sisters_2_dead.webp",
+        "assets/pics/sisters_3_dead.webp",
+        "assets/pics/sisters_4_dead.webp"
       ]
     },
     "regions": [
@@ -162,9 +162,9 @@
         "size": 0.27
       }
     ],
-    "image": "assets/pics/model.png",
+    "image": "assets/pics/model.webp",
     "sheet": {
-      "url": "assets/pics/organs.png",
+      "url": "assets/pics/organs.webp",
       "cols": 3,
       "rows": 3
     }

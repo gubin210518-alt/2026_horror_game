@@ -43,7 +43,7 @@
         "scare": "#002"
       },
       {
-        "picture": "assets/pics/guard_face.png",
+        "picture": "assets/pics/guard_face.webp",
         "zoom": true
       },
       "@c3.guard",

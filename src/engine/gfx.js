@@ -7,7 +7,7 @@ const canvas = (w, h) => Object.assign(document.createElement('canvas'), { width
 const pics = {}, sheets = {}, cellCache = {};
 
 // 초록 배경(#00FF00)을 지워야 하는 그림인지: 인물, 초상화, game.json 의 greenScreen 목록
-const keyed = url => /assets\/(chars|portraits)\//.test(url) || (D.game.greenScreen || []).includes(url);
+const keyed = url => /assets\/(chars|portraits)\//.test(url) || (D.game.greenScreen || []).some(u => u.replace(/\.\w+$/, '') === url.replace(/\.\w+$/, ''));
 
 function loadImage(url) {
   return new Promise((res, rej) => { const img = new Image(); img.onload = () => res(img); img.onerror = rej; img.src = url; });
@@ -18,6 +18,7 @@ async function loadKeyed(url) {
   const img = await loadImage(url);
   const c = canvas(img.width, img.height), g = c.getContext('2d');
   g.drawImage(img, 0, 0);
+  if (url.endsWith('.webp')) return c; // 용량을 줄여 둔 그림은 배경을 미리 지워 두었다
   const d = g.getImageData(0, 0, c.width, c.height), p = d.data;
   for (let i = 0; i < p.length; i += 4) {
     const r = p[i], gr = p[i + 1], b = p[i + 2];
@@ -28,8 +29,14 @@ async function loadKeyed(url) {
   return c;
 }
 
+// 한 장 불러오기. webp 가 없으면 같은 이름의 png (초록 배경은 그때 지운다)
+function fetchPic(url) {
+  const get = u => (keyed(u) ? loadKeyed(u) : loadImage(u));
+  return get(url).catch(e => { if (url.endsWith('.webp')) return get(url.replace(/\.webp$/, '.png')); throw e; });
+}
+
 function load(url) {
-  if (!(url in pics)) pics[url] = (keyed(url) ? loadKeyed(url) : loadImage(url)).then(c => (pics[url] = c), () => (pics[url] = null));
+  if (!(url in pics)) pics[url] = fetchPic(url).then(c => (pics[url] = c), () => (pics[url] = null));
   return pics[url];
 }
 

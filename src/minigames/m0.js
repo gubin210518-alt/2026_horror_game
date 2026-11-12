@@ -8,7 +8,8 @@ import { sfx } from '../engine/audio.js';
 import { pic } from '../engine/gfx.js';
 
 // 가짜 컴퓨터 화면의 해상도. 게임 화면(640x360)보다 촘촘하게 그려서, 아이콘과 창이 실제 바탕화면처럼 작게 보인다
-const VW = 960, VH = 540;
+const TOUCH = matchMedia('(pointer: coarse)').matches; // 손가락으로 누르는 기기에서는 덜 촘촘하게 (아이콘과 글자가 커진다)
+const VW = TOUCH ? 768 : 960, VH = TOUCH ? 432 : 540;
 const ms = { get x() { return mouse.x * VW / GW; }, get y() { return mouse.y * VH / GH; } }; // 이 해상도로 바꾼 마우스 위치
 const hit = (r, x = ms.x, y = ms.y) => x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h;
 const TASK = 26; // 작업 표시줄 높이
@@ -20,6 +21,7 @@ export function intro() {
     let wins = [];       // 열린 창들. 뒤에 있을수록 위
     let dialogs = [];    // 다운로드 창들 { x, y, cancel: {dx,dy}, close: {dx,dy} }
     let drag = null, wasDown = false;
+    const LY = TOUCH ? 62 : 0; // 낮은 화면에서는 로그인 화면을 위로 당긴다
 
     // 한글 입력을 위해 이름 칸만 진짜 입력 상자를 캔버스 위에 겹친다
     const input = Object.assign(document.createElement('input'), { maxLength: 8, placeholder: L.namePlaceholder });
@@ -27,12 +29,12 @@ export function intro() {
     document.body.appendChild(input);
     const place = () => {
       const r = canvas.getBoundingClientRect(), k = r.width / VW;
-      Object.assign(input.style, { left: r.left + (VW / 2 - 90) * k + 'px', top: r.top + 306 * k + 'px', width: 180 * k + 'px', height: 26 * k + 'px', fontSize: 14 * k + 'px' });
+      Object.assign(input.style, { left: r.left + (VW / 2 - 90) * k + 'px', top: r.top + (306 - LY) * k + 'px', width: 180 * k + 'px', height: 26 * k + 'px', fontSize: Math.max(16, 14 * k) + 'px' });
     };
     place(); input.focus();
     const login = () => { name = input.value.trim() || L.defaultName; input.remove(); scene = 'desktop'; t = 0; sfx('ok'); };
     input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) login(); });
-    const loginBtn = { x: VW / 2 - 40, y: 342, w: 80, h: 26 };
+    const loginBtn = { x: VW / 2 - 40, y: 342 - LY, w: 80, h: 26 };
 
     // ----- 바탕화면 아이콘 (두 줄) -----
     const icons = () => [...K.icons, ...(downloaded ? [{ label: L.exeName, kind: 'exe', open: 'exe' }] : [])]
@@ -44,7 +46,7 @@ export function intro() {
       const same = wins.find(w => w.type === type && w.key === data.key);
       if (same) { wins = wins.filter(w => w !== same).concat(same); return same; }
       const [w, h] = SIZE[type], n = wins.length;
-      const win = { type, ...data, w, h, x: type === 'browser' ? 220 : 300 + (n % 4) * 24, y: type === 'browser' ? 100 : 120 + (n % 4) * 20 };
+      const win = { type, ...data, w, h, x: type === 'browser' ? (VW - 520) / 2 : VW / 2 - 180 + (n % 4) * 24, y: type === 'browser' ? (VH - TASK - 292) / 2 : VH / 2 - 150 + (n % 4) * 20 };
       wins.push(win); sfx('blip');
       return win;
     };
@@ -132,7 +134,7 @@ export function intro() {
             if (hit(dlRect(d))) { dialogs = []; wins = []; startOpen = false; scene = 'download'; t = 0; sfx('ok'); return; }
             if (hit(btnRect(d, 'cancel'))) { cancels++; sfx(cancels >= 2 ? 'bad' : 'blip'); if (cancels >= 3) sfx('alert'); return; }
             if (hit(btnRect(d, 'close'))) { // X를 누르면 창이 하나 더 생긴다
-              dialogs.push(newDialog(120 + Math.random() * 540, 80 + Math.random() * 270)); sfx('bad'); return;
+              dialogs.push(newDialog(60 + Math.random() * (VW - 380), 50 + Math.random() * (VH - 230))); sfx('bad'); return;
             }
             if (hit({ x: d.x, y: d.y, w: 300, h: 134 })) return;
           }
@@ -154,7 +156,7 @@ export function intro() {
             if (w.type === 'browser') {
               if (w.page === 'post' && hit(backBtn(w))) { w.page = 'board'; return; }
               if (w.page === 'board') L.posts.forEach((p, k) => { if (hit(postRow(w, k))) { w.page = 'post'; w.post = k; sfx('ok'); } });
-              else if (L.posts[w.post].open && hit(attachBtn(w))) { dialogs = [newDialog(330, 200)]; sfx('ok'); }
+              else if (L.posts[w.post].open && hit(attachBtn(w))) { dialogs = [newDialog(VW / 2 - 150, VH / 2 - 70)]; sfx('ok'); }
             }
             return;
           }
@@ -223,19 +225,21 @@ export function intro() {
 
         if (scene === 'login') { // 잠금 화면처럼: 위에 큰 시계, 가운데에 사용자
           wallpaper(true);
+          ctx.save(); ctx.translate(0, -LY);
           text(L.clock.replace(/^\S+\s/, ''), VW / 2, 118, 60, '#fff', false, 'center'); text(K.dateLong, VW / 2, 146, 15, '#e8f0fa', false, 'center');
           ctx.beginPath(); ctx.arc(VW / 2, 228, 40, 0, 7); ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.fill();
           ctx.fillStyle = '#7a94bc'; ctx.beginPath(); ctx.arc(VW / 2, 216, 14, 0, 7); ctx.fill(); ctx.beginPath(); ctx.arc(VW / 2, 258, 26, Math.PI * 1.08, Math.PI * 1.92); ctx.fill();
           text(L.loginTitle, VW / 2, 292, 16, '#fff', true, 'center');
-          button(loginBtn, L.loginButton, true, hit(loginBtn));
           text(L.loginHint, VW / 2, 388, 11, '#d8e4f4', false, 'center');
+          ctx.restore();
+          button(loginBtn, L.loginButton, true, hit(loginBtn));
           return;
         }
         if (scene === 'title' || scene === 'off') {
           ctx.fillStyle = '#000'; ctx.fillRect(0, 0, VW, VH);
           const k = scene === 'off' ? Math.max(0, 1 - t / 0.5) : 1; // 화면이 꺼진다
           if (k > 0) {
-            const gw = 544, gh = 408, gx = (VW - gw) / 2, gy = (VH - gh) / 2; // 4:3 게임 화면
+            const gh = Math.min(408, VH - 16), gw = gh * 4 / 3, gx = (VW - gw) / 2, gy = (VH - gh) / 2; // 4:3 게임 화면
             ctx.save(); ctx.translate(0, VH / 2); ctx.scale(1, k); ctx.translate(0, -VH / 2);
             ctx.beginPath(); ctx.rect(gx, gy, gw, gh); ctx.clip();
             const bg = pic(D.game.titleImage);
@@ -330,10 +334,11 @@ export function intro() {
         }
 
         if (scene === 'download') {
-          windowFrame({ x: 330, y: 210, w: 300, h: 100, title: L.dlTitle }, true);
+          const dx = VW / 2 - 150, dy = VH / 2 - 60;
+          windowFrame({ x: dx, y: dy, w: 300, h: 100, title: L.dlTitle }, true);
           const step = progress < 0.5 ? L.downloading : progress < 1 ? L.extracting : L.running;
-          text(step, 350, 252, 13, '#111');
-          rr(350, 266, 260, 12, 6, '#dde2e8'); rr(350, 266, Math.max(12, 260 * (progress < 0.5 ? progress * 2 : Math.min(1, progress * 2 - 1))), 12, 6, '#0a5ac8');
+          text(step, dx + 20, dy + 42, 13, '#111');
+          rr(dx + 20, dy + 56, 260, 12, 6, '#dde2e8'); rr(dx + 20, dy + 56, Math.max(12, 260 * (progress < 0.5 ? progress * 2 : Math.min(1, progress * 2 - 1))), 12, 6, '#0a5ac8');
         }
 
         // ----- 시작 메뉴와 작업 표시줄 -----

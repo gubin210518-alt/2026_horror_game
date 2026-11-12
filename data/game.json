@@ -12,7 +12,7 @@
     "player": {
       "name": "나",
       "color": "#4a78c8",
-      "sheet": "assets/chars/player.png",
+      "sheet": "assets/chars/player.webp",
       "style": "boy",
       "hair": "#1c1a1a",
       "top": "#2c3a5e",
@@ -21,27 +21,27 @@
     "yunha": {
       "name": "윤하",
       "color": "#c85a7a",
-      "sheet": "assets/chars/yunha.png",
+      "sheet": "assets/chars/yunha.webp",
       "style": "girl",
       "hair": "#2a1a20",
       "top": "#e8e4dc",
       "bottom": "#2a3050",
-      "portrait": "assets/portraits/yunha.png"
+      "portrait": "assets/portraits/yunha.webp"
     },
     "guard": {
       "name": "경비",
       "color": "#2a3a6a",
-      "sheet": "assets/chars/guard.png",
+      "sheet": "assets/chars/guard.webp",
       "style": "guard",
       "hair": "#1a1a1a",
       "top": "#2a4a8a",
       "bottom": "#1c2a4a",
-      "portrait": "assets/portraits/guard.png"
+      "portrait": "assets/portraits/guard.webp"
     },
     "red": {
       "name": "붉은 형체",
       "color": "#a02020",
-      "sheet": "assets/chars/red.png",
+      "sheet": "assets/chars/red.webp",
       "style": "red"
     }
   },
@@ -62,7 +62,7 @@
       }
     ]
   },
-  "titleImage": "assets/pics/title.png",
+  "titleImage": "assets/pics/title.webp",
   "maps": [
     "archive",
     "art",
@@ -79,18 +79,18 @@
     "vent"
   ],
   "greenScreen": [
-    "assets/pics/organs.png",
-    "assets/pics/model.png",
-    "assets/pics/items.png"
+    "assets/pics/organs.webp",
+    "assets/pics/model.webp",
+    "assets/pics/items.webp"
   ],
   "sheets": {
     "items": {
-      "url": "assets/pics/items.png",
+      "url": "assets/pics/items.webp",
       "cols": 4,
       "rows": 3
     },
     "organs": {
-      "url": "assets/pics/organs.png",
+      "url": "assets/pics/organs.webp",
       "cols": 3,
       "rows": 3
     }

@@ -50,6 +50,7 @@ export async function open(url, port = 9400 + Math.floor(Math.random() * 500)) {
   await sleep(1200);
 
   const page = {
+    send, // 브라우저에 직접 명령 보내기 (화면 크기 흉내 등)
     errors,
     async ev(expression) {
       const r = await send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true });

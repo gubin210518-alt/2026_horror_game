@@ -129,7 +129,7 @@
     "running": "비현실.exe 실행 중...",
     "gameSub": "2009 · 미완성 · ver 0.37",
     "pressStart": "화면을 누르거나 Space",
-    "wallpaper": "assets/pics/wallpaper.jpg",
+    "wallpaper": "assets/pics/wallpaper.webp",
     "exeName": "비현실.exe",
     "desktop": {
       "date": "2026-11-11",
@@ -248,7 +248,7 @@
       "photos": {
         "school": {
           "title": "우리학교_밤.jpg",
-          "image": "assets/pics/title.png",
+          "image": "assets/pics/title.webp",
           "text": "야자 끝나고 찍은 학교. 창문 하나만 불이 켜져 있다."
         },
         "broken": {

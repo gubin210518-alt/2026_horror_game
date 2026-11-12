@@ -269,7 +269,7 @@
           ],
           "else": [
             {
-              "picture": "assets/pics/yunha_window.png",
+              "picture": "assets/pics/yunha_window.webp",
               "zoom": true
             },
             "@c2.window",
