@@ -7,14 +7,15 @@ import { run } from './events.js';
 import { sheet, pic, itemIcon } from './gfx.js';
 import { actorOf, portrait } from './art.js';
 
-const FONT = '"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif';
+const SYS = '"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif';
+const FONT = '"Galmuri11",' + SYS; // 게임 글꼴: 갈무리11 (픽셀 글꼴, assets/fonts). 인트로의 가짜 컴퓨터 화면만 시스템 글꼴을 쓴다
 const mc = document.createElement('canvas').getContext('2d'); // 글자 폭 재기용
 
 export const UI = { stack: [], toasts: [], hooks: {}, get modal() { return this.stack[this.stack.length - 1]; } };
 export const push = m => (UI.stack.push(m), m);
 export const pop = m => { const i = UI.stack.indexOf(m); if (i >= 0) UI.stack.splice(i, 1); };
 
-export function font(ctx, px, bold) { ctx.font = `${bold ? 'bold ' : ''}${px}px ${FONT}`; }
+export function font(ctx, px, bold) { ctx.font = `${bold ? 'bold ' : ''}${px}px ${UI.modal?.kind === 'intro' ? SYS : FONT}`; }
 export function box(ctx, x, y, w, h) {
   const g = ctx.createLinearGradient(0, y, 0, y + h);
   g.addColorStop(0, 'rgba(26,22,32,.96)'); g.addColorStop(1, 'rgba(8,8,14,.96)');

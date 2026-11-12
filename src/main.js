@@ -101,7 +101,8 @@ async function boot() {
   // 맵을 모두 받아 두고, 데이터에 적힌 그림 경로를 전부 미리 불러온다 (그림이 뒤늦게 바뀌어 보이지 않게)
   await Promise.all((D.game.maps || []).map(async id => { D.maps[id] = await (await fetch('data/maps/' + id + '.json')).json(); }));
   const urls = [...JSON.stringify(D).matchAll(/assets\/[\w\/.-]+\.(?:png|jpg|jpeg|webp)/g)].map(x => x[0]);
-  await Promise.all([preload(urls, (done, total) => { loading = [done, total]; }), loadSounds(D.game.sounds)]);
+  const fonts = Promise.all(['14px Galmuri11', 'bold 14px Galmuri11'].map(f => document.fonts.load(f, '가'))).catch(() => {}); // 글꼴을 못 받아도 시스템 글꼴로 계속
+  await Promise.all([preload(urls, (done, total) => { loading = [done, total]; }), loadSounds(D.game.sounds), fonts]);
   loading = null;
   title();
 }

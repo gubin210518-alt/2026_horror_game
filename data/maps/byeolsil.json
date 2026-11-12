@@ -3,14 +3,14 @@
   "lit": true,
   "tiles": [
     "#######",
-    "#,.,.,#",
-    "#.,.,.#",
-    "#,.,.,#",
-    "#.,.,.#",
-    "#,.,.,#",
-    "#.,.,.#",
-    "#,.,.,#",
-    "#.,.,.#",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#.....#",
     "#######"
   ],
   "events": {
@@ -35,8 +35,9 @@
         "picture": null
       },
       {
-        "minigame": "terms",
-        "note": "ink_terms"
+        "minigame": "itemcard",
+        "item": "special_ink",
+        "recall": true
       },
       {
         "picture": "assets/pics/cam_in.webp"
@@ -206,27 +207,28 @@
       "x": 5,
       "y": 2,
       "label": "시체",
-      "art": "corpse",
       "event": [
         "@c5.corpse"
-      ]
+      ],
+      "img": "assets/pics/corpse.webp",
+      "ih": 1.05
     },
     {
       "x": 3,
       "y": 3,
       "label": "머리",
-      "art": "head",
       "if": "!c5_head",
       "event": [
         "@c5.head"
-      ]
+      ],
+      "img": "assets/pics/head.webp",
+      "ih": 0.7
     },
     {
       "x": 3,
       "y": 8,
       "solid": false,
       "label": "간",
-      "art": "organ",
       "if": "!c5_liver & !c5_liver_y",
       "event": [
         "@c5.liver",
@@ -236,7 +238,9 @@
         {
           "set": "c5_liver"
         }
-      ]
+      ],
+      "img": "assets/pics/liver.webp",
+      "ih": 0.6
     },
     {
       "x": 3,
@@ -254,8 +258,8 @@
         },
         "@c5.inkLabel",
         {
-          "minigame": "terms",
-          "note": "ink_terms"
+          "minigame": "itemcard",
+          "item": "special_ink"
         },
         {
           "note": "ink_terms"

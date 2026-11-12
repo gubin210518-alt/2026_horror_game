@@ -10,7 +10,7 @@ const errors = [];
 const err = (where, msg) => errors.push(`${where}: ${msg}`);
 const COMMANDS = ['if', 'say', 'choice', 'give', 'take', 'organ', 'set', 'add', 'sanity', 'goal', 'note', 'rule', 'puzzle', 'puzzleDone', 'goto', 'sfx',
   'toast', 'wait', 'shake', 'flash', 'scare', 'companion', 'npc', 'move', 'face', 'run', 'minigame', 'die', 'timer', 'timerStop', 'waitKey', 'readNote', 'resetPush', 'ending', 'picture', 'fx'];
-const MINIGAMES = ['grid', 'timing', 'order', 'mash', 'organs', 'painting', 'photo', 'bigpic', 'terms', 'mix', 'rollcall', 'tapes', 'screen', 'piano', 'lock', 'valves', 'rules'];
+const MINIGAMES = ['grid', 'timing', 'order', 'mash', 'organs', 'painting', 'photo', 'bigpic', 'itemcard', 'mix', 'rollcall', 'tapes', 'screen', 'piano', 'lock', 'valves', 'rules'];
 
 const dialog = key => key.slice(1).split('.').reduce((v, k) => v?.[k], D.dialog);
 function text(where, s) {

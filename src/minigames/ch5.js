@@ -1,8 +1,8 @@
-// 5장 별실 (M9). 차례제 카메라, 큰 그림 보기와 찢기, 약관 화면.
+// 5장 별실 (M9). 차례제 카메라, 큰 그림 보기와 찢기, 아이템 카드(설명과 회상).
 // 경로와 문구 위치는 data/puzzles.json 의 m9, 글은 data/notes.json 에 있다. 기획: design/game-brief.md M9
 import { D, S, settings, T, VW, VH } from '../engine/core.js';
 import { pressed, consume, lastDir } from '../engine/input.js';
-import { push, pop, box, font, wrap, say } from '../engine/ui.js';
+import { push, pop, box, font, wrap, say, drawIcon } from '../engine/ui.js';
 import { minigames } from '../engine/events.js';
 import { sfx } from '../engine/audio.js';
 import { W, DIRS, blocked, walk, npcById } from '../engine/world.js';
@@ -73,7 +73,7 @@ minigames.photo = c => open(done => {
   };
 });
 
-// 큰 그림 한 장을 화면 가득 보여 준다. c.photo 면 puzzles 의 photo 설정대로 제목과 이름을 얹고(졸업사진),
+// 큰 그림 한 장을 화면 가득 보여 준다. c.photo 면 puzzles 의 photo 설정대로 주인공 이름을 얹고(졸업사진),
 // c.tear 면 그림이 세로로 찢어지며 닫힌다. 아니면 Space 로 닫는다
 minigames.bigpic = c => open(done => {
   const ph = c.photo ? D.puzzles[c.photo].photo : null;
@@ -84,15 +84,9 @@ minigames.bigpic = c => open(done => {
     const k = Math.min((VW - 20) / img.width, (VH - 16) / img.height), w = Math.round(img.width * k), h = Math.round(img.height * k);
     const cc = Object.assign(document.createElement('canvas'), { width: w * 2, height: h * 2 }), g = cc.getContext('2d');
     g.scale(2, 2); g.imageSmoothingQuality = 'high'; g.drawImage(img, 0, 0, w, h);
-    if (ph) {
-      g.textAlign = 'center'; g.fillStyle = '#2a2a30';
-      font(g, Math.round(h * 0.05), true); g.fillText(T(ph.title), w / 2, h * ph.titleY);
-      font(g, Math.round(h * 0.03), true); // 가운데 사진 아래의 이름표: 주인공 이름만 또렷하다
-      const nw = g.measureText(S.name).width + h * 0.03;
-      g.fillStyle = '#d6cfbf'; g.fillRect(w * ph.name[0] - nw / 2, h * (ph.name[1] - 0.031), nw, h * 0.042);
-      g.fillStyle = '#2a2a30'; g.fillText(S.name, w * ph.name[0], h * ph.name[1]);
-      g.fillStyle = 'rgba(30,30,36,.75)'; // 다른 학생들의 이름은 뭉개져 있다
-      for (const [fx, fy] of ph.smudges) for (let i = 0; i < 3; i++) g.fillRect(w * fx - h * 0.032 + i * h * 0.024, h * fy - h * 0.012, h * 0.016 + (i % 2) * h * 0.004, h * 0.02);
+    if (ph) { // 가운데 사진 아래에 주인공 이름. 다른 학생들의 이름은 그림에 번진 채로 들어 있다
+      g.textAlign = 'center'; g.fillStyle = '#26242a';
+      font(g, Math.round(h * ph.nameSize), true); g.fillText(S.name, w * ph.name[0], h * ph.name[1]);
     }
     return Object.assign(cc, { dw: w, dh: h });
   }
@@ -135,32 +129,40 @@ minigames.bigpic = c => open(done => {
   };
 });
 
-// 약관 화면: 쪽지(c.note)의 제목과 본문을 낡은 모니터 같은 화면에 띄운다. 첫 문단은 크게, 나머지는 작게
-minigames.terms = c => open(done => {
-  const n = D.notes[c.note], paras = n.text.split('\n\n');
+// 아이템 카드: 아이템 그림과 이름, 설명을 한 장으로 보여 준다 (c.item).
+// c.recall 이면 그때의 장면을 떠올리는 회상: 빛바랜 색, 지직거리는 줄, 어두운 가장자리
+minigames.itemcard = c => open(done => {
+  const it = D.items[c.item], X = 110, Y = 84, BW = 420, BH = 176;
   let t = 0;
   return {
-    kind: 'terms',
+    kind: 'itemcard',
     update(dt) {
       t += dt;
       if ((pressed('ok') || pressed('cancel')) && t > 0.5) { consume('ok'); consume('cancel'); sfx('blip'); done(true); }
     },
     draw(ctx) {
-      const g = ctx.createLinearGradient(0, 0, 0, VH);
-      g.addColorStop(0, '#3a5266'); g.addColorStop(1, '#1c2a38');
-      ctx.fillStyle = g; ctx.fillRect(0, 0, VW, VH);
-      ctx.fillStyle = 'rgba(0,0,0,.14)'; for (let y = 0; y < VH; y += 3) ctx.fillRect(0, y, VW, 1); // 주사선
-      ctx.textAlign = 'center';
-      const line = (text, y, px, bold, color) => { font(ctx, px, bold); ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillText(text, VW / 2 + 1, y + 1); ctx.fillStyle = color; ctx.fillText(text, VW / 2, y); };
-      let y = 44;
-      line(n.title, y, 20, true, '#f0f4f0'); y += 28;
-      paras.forEach((para, i) => {
-        const px = i === 0 ? 20 : i === 1 ? 16 : 11, gap = i === 0 ? 28 : i === 1 ? 24 : 15;
-        for (const l of wrap(para, VW - 90, px)) { line(l, y, px, i < 2, i < 2 ? '#f0f4f0' : '#c8d4d8'); y += gap; }
-        y += i < 2 ? 22 : 4;
-      });
-      if (t > 0.5 && (performance.now() / 400 | 0) % 2) line('▼', VH - 10, 12, false, '#ffd27a');
-      ctx.textAlign = 'left';
+      const re = !!c.recall, a = Math.min(1, t / 0.35);
+      ctx.fillStyle = re ? `rgba(18,14,10,${0.82 * a})` : `rgba(0,0,0,${0.6 * a})`; ctx.fillRect(0, 0, VW, VH);
+      ctx.globalAlpha = a * (re ? 0.9 + 0.1 * Math.sin(t * 31) * Math.sin(t * 7) : 1);
+      box(ctx, X, Y, BW, BH);
+      ctx.fillStyle = '#14151c'; ctx.fillRect(X + 18, Y + 20, 104, 104);
+      ctx.strokeStyle = '#4a4652'; ctx.strokeRect(X + 18.5, Y + 20.5, 103, 103);
+      if (re) ctx.filter = 'grayscale(1) sepia(.55)';
+      drawIcon(ctx, c.item, X + 70, Y + 72, 84);
+      ctx.filter = 'none';
+      font(ctx, 16, true); ctx.fillStyle = re ? '#d8c8a0' : '#ffd27a'; ctx.fillText(it.name, X + 140, Y + 42);
+      font(ctx, 13); ctx.fillStyle = re ? '#c8bca4' : '#ddd';
+      wrap(T(it.desc), BW - 160, 13).forEach((l, k) => ctx.fillText(l, X + 140, Y + 68 + k * 19));
+      if (re) { // 회상 효과
+        font(ctx, 12); ctx.fillStyle = '#a89a78'; ctx.fillText(T(c.label) || '— 그때 본 글씨 —', X + 18, Y + BH - 16);
+        ctx.fillStyle = 'rgba(0,0,0,.22)'; for (let y = Y; y < Y + BH; y += 3) ctx.fillRect(X, y, BW, 1);
+        const ny = Y + ((t * 90) % BH); ctx.fillStyle = 'rgba(255,240,210,.10)'; ctx.fillRect(X, ny, BW, 5);
+        const g = ctx.createRadialGradient(VW / 2, VH / 2, 110, VW / 2, VH / 2, 360);
+        g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.75)');
+        ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.fillRect(0, 0, VW, VH);
+      }
+      ctx.globalAlpha = 1;
+      if (t > 0.5 && (performance.now() / 400 | 0) % 2) { font(ctx, 12); ctx.fillStyle = '#ffd27a'; ctx.fillText('▼', X + BW - 22, Y + BH - 12); }
     },
   };
 });

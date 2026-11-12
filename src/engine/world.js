@@ -470,9 +470,13 @@ export function drawWorld(ctx) {
     const b = BAG;
     ctx.fillStyle = 'rgba(8,8,14,.72)'; ctx.fillRect(b.x, b.y, b.w, b.h);
     ctx.strokeStyle = '#a89a6a'; ctx.strokeRect(b.x + 0.5, b.y + 0.5, b.w - 1, b.h - 1);
-    ctx.strokeStyle = '#d8b070'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(b.x + 15, b.y + 11, 5, Math.PI, 0); ctx.stroke(); ctx.lineWidth = 1;
-    ctx.fillStyle = '#8a5a2a'; ctx.fillRect(b.x + 6, b.y + 10, 18, 13); ctx.fillStyle = '#a8743a'; ctx.fillRect(b.x + 6, b.y + 10, 18, 5);
-    ctx.fillStyle = '#d8b070'; ctx.fillRect(b.x + 14, b.y + 14, 2, 3);
+    const bag = D.game.bagIcon && pic(D.game.bagIcon);
+    if (bag) { const k = 24 / Math.max(bag.width, bag.height); ctx.imageSmoothingEnabled = true; ctx.drawImage(bag, b.x + (b.w - bag.width * k) / 2 - 1, b.y + (b.h - bag.height * k) / 2, bag.width * k, bag.height * k); ctx.imageSmoothingEnabled = false; }
+    else { // 그림이 없으면 코드로 그린 가방
+      ctx.strokeStyle = '#d8b070'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(b.x + 15, b.y + 11, 5, Math.PI, 0); ctx.stroke(); ctx.lineWidth = 1;
+      ctx.fillStyle = '#8a5a2a'; ctx.fillRect(b.x + 6, b.y + 10, 18, 13); ctx.fillStyle = '#a8743a'; ctx.fillRect(b.x + 6, b.y + 10, 18, 5);
+      ctx.fillStyle = '#d8b070'; ctx.fillRect(b.x + 14, b.y + 14, 2, 3);
+    }
     font(ctx, 9, true); ctx.fillStyle = '#fff'; ctx.textAlign = 'right'; ctx.fillText(String(S.items.length), b.x + b.w - 3, b.y + b.h - 3); ctx.textAlign = 'left';
   }
   if (W.timer) { // 제한 시간: 화면 아래에서부터 붉게 차오른다

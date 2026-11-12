@@ -114,5 +114,6 @@
     "v_dont": "assets/audio/v_dont.mp3",
     "v_first": "assets/audio/v_first.mp3",
     "v_caught": "assets/audio/v_caught.mp3"
-  }
+  },
+  "bagIcon": "assets/pics/bag.webp"
 }

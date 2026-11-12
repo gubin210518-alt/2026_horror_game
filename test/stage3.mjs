@@ -72,6 +72,7 @@ t.ok(last === '' && await flag('c5_done') === 1, 'M9: 사진기가 D7에 오면 
 t.ok(await ev(`${G}.S.items.includes('liver') && ${G}.S.notes.includes('notice_bottom') && ${G}.S.companion === 'yunha'`), 'M9: 간과 주의사항 아랫부분을 얻고 윤하가 다시 동행한다');
 t.ok(await ev(`!${G}.S.puzzles.includes('m9') && !${G}.W.picture`), 'M9: 단서가 정리되고 그림이 닫힌다');
 await snap('a-after');
+await key('KeyI'); await sleep(300); for (let i = 0; i < 3; i++) await key('ArrowRight'); await snap('a-inventory'); await key('KeyX');
 
 // ---------- 갈래 2: 도중에 사진기와 같은 칸에 선다 ----------
 t.ok(await toStart('b') === 'photo', 'M9 다시: 카메라 차례가 처음 자리에서 다시 시작된다');
@@ -82,8 +83,6 @@ const r = await step('ArrowRight'); // C5로 들어가면 사진기가 따라와
 t.ok(r === '' && await flag('c5_done') === 1, 'M9: 도중에 찍혀도 흰 방을 거쳐 풀려난다 (죽지 않는다)');
 t.ok(await ev(`${G}.S.items.includes('liver')`) && await ev(`${G}.S.deaths`) === 0, 'M9: 도중에 찍힌 경우에도 간을 받는다');
 
-// 특수 잉크를 가방에서 쓰면 약관을 다시 볼 수 있다
-await ev(`void ${G}.D.items.special_ink.use && 0`);
-t.ok(await ev(`${G}.D.items.special_ink.use[0].minigame`) === 'terms', '특수 잉크: 사용하면 약관 화면이 뜬다');
+t.ok(await ev(`${G}.D.items.special_ink.desc.includes('제15조')`), '특수 잉크: 설명에 약관 조항이 들어 있다');
 
 t.done(page);
