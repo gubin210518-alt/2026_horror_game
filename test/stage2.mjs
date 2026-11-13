@@ -88,12 +88,12 @@ t.ok(await ev(`${G}.S.items.includes('key_front')`), 'M1: 목요일 3교시 사�
 await use(2, 9, 'down');
 t.ok(await flag('c1_open') === 1, 'M1: 열쇠로 앞문을 연다');
 await walkTo('ArrowDown', `${G}.S.map === 'floor2'`); await says();
-await use(9, 1, 'up');
+await use(10, 1, 'up');
 t.ok(await ev(`${G}.S.rules[0]`) === 'hall', '복도: 학교 규칙이 일기장에 기록된다');
-await use(12, 1, 'up'); t.ok(await ev(`${G}.S.map`) === 'floor2', '복도: 다른 문은 잠겨 있다');
-await use(2, 5, 'down'); t.ok(await ev(`${G}.W.p.y`) === 5, '복도: 특별동 쪽은 셔터로 막혀 있다');
-await put(8, 2, 'right'); await walkTo('ArrowRight', `${G}.W.p.x >= 14`); t.ok(true, '복도: 중정을 둘러싼 복도를 자유롭게 걸을 수 있다');
-await put(18, 1, 'up'); await walkTo('ArrowUp', `${G}.S.map === 'class2'`);
+await use(13, 1, 'up'); t.ok(await ev(`${G}.S.map`) === 'floor2', '복도: 다른 문은 잠겨 있다');
+await use(2, 4, 'down'); t.ok(await ev(`${G}.W.p.y`) === 4, '복도: 특별동 쪽은 셔터로 막혀 있다');
+await put(13, 1, 'right'); await walkTo('ArrowRight', `${G}.W.p.x >= 19`); t.ok(true, '복도: 중정을 둘러싼 복도를 자유롭게 걸을 수 있다');
+await put(19, 1, 'up'); await walkTo('ArrowUp', `${G}.S.map === 'class2'`);
 await key('KeyJ'); await says(); t.ok(await ev(`${G}.UI.stack.length`) === 0, '1장: 일기장을 얻기 전에는 열 수 없다');
 await use(9, 4, 'down');
 t.ok(await flag('diary') === 1 && await ev(`${G}.S.goal`) === '여기서 나가야 한다', '1장: 옆 교실 서랍에서 일기장을 얻고 목표가 적힌다');
@@ -101,10 +101,10 @@ await key('KeyJ'); await key('Space'); await says(); await menus();
 t.ok(await ev(`${G}.S.saves`) === 0, '1장: 잉크가 없어서 아직 일기를 못 쓴다');
 
 // ---------- 2장: M2 가란델가의 자매들 ----------
-await warp('floor2', 39, 26, 'down'); await snap('c2-window');
-await use(39, 26, 'down');
+await warp('floor2', 40, 28, 'down'); await snap('c2-window');
+await use(40, 28, 'down');
 t.ok(await flag('m2_fled') === 1, '2장: 복도에서 미술실 창문을 조사하면 안에 서 있던 윤하가 달아난다');
-await put(36, 26, 'down'); await walkTo('ArrowDown', `${G}.S.map === 'art'`); await says(); await snap('c2-art');
+await put(37, 28, 'down'); await walkTo('ArrowDown', `${G}.S.map === 'art'`); await says(); await snap('c2-art');
 await use(10, 3, 'up');
 t.ok(await ev(`${G}.S.ink`) === 1 && await flag('ink1') === 1, '2장: 윤하가 서 있던 자리에서 첫 잉크를 얻고 창문이 액자로 바뀐다');
 await save();
@@ -142,7 +142,7 @@ await put(9, 3, 'right'); await key('Space'); await says(); await key('Space'); 
 t.ok(await ev(`${G}.S.items.includes('key_library') && !${G}.S.items.includes('hammer')`), '비품실: 따뜻한 석고상을 망치로 깨면 도서관 열쇠가 나오고 망치는 부서진다');
 
 // ---------- 3장: 도서관, M3, M4, M5 ----------
-await warp('floor2', 30, 26, 'down'); await key('Space'); await says();
+await warp('floor2', 31, 28, 'down'); await key('Space'); await says();
 t.ok(await flag('lib_open') === 1, '3장: 도서관 열쇠로 문을 연다');
 await walkTo('ArrowDown', `${G}.S.map === 'library'`); await says();
 await ev(`${G}.S.sanity = 100`); await sleep(1500); t.ok(await ev(`${G}.S.sanity`) < 100, '3장: 도서관은 어두워서 손전등 없이는 정신력이 줄어든다');
@@ -194,11 +194,11 @@ const toChase = async () => {
 await toChase();
 t.ok(await ev(`${G}.S.map`) === 'floor2' && await ev(`${G}.S.items.includes('key_science')`), 'M5: 경비에게 끌려가다 풀려나며 과학실 열쇠를 얻고, 복도에서 추격이 시작된다'); await snap('m5-chase');
 t.ok(await ev(`!${G}.W.objs.some(o => o.label === '셔터' && !${G}.S.flags.m5_start)`), 'M5: 특별동으로 가는 셔터가 열려 있다');
-t.ok(await ev(`(()=>{const m=${G}.W.map,T=${G}.D.tiles,q=[[27,26]],seen=new Set(['27,26']); while(q.length){const [x,y]=q.shift(); if(x===1&&y===14) return true; for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy,k=nx+','+ny,c=m.tiles[ny]?.[nx]; if(!c||seen.has(k)||T[c].solid) continue; seen.add(k); q.push([nx,ny]);}} return false;})()`), 'M5: 넘어진 의자를 피해 과학실 문까지 가는 길이 있다');
+t.ok(await ev(`(()=>{const m=${G}.W.map,T=${G}.D.tiles,q=[[28,28]],seen=new Set(['28,28']); while(q.length){const [x,y]=q.shift(); if(x===1&&y===15) return true; for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy,k=nx+','+ny,c=m.tiles[ny]?.[nx]; if(!c||seen.has(k)||T[c].solid) continue; seen.add(k); q.push([nx,ny]);}} return false;})()`), 'M5: 넘어진 의자를 피해 과학실 문까지 가는 길이 있다');
 await died('M5 실패: 가만히 있으면 경비에게 붙잡힌다');
 t.ok(await ev(`${G}.S.map`) === 'archive', 'M5: 죽으면 비밀서고에서 다시 시작한다');
 await toChase();
-await put(1, 14, 'left'); await walkTo('ArrowLeft', `${G}.S.map === 'science'`);
+await put(1, 15, 'left'); await walkTo('ArrowLeft', `${G}.S.map === 'science'`);
 await says();
 t.ok(await flag('m5_done') === 1 && await ev(`${G}.W.chasing`) === false, 'M5 성공: 과학실에 들어가면 추격이 끝난다');
 

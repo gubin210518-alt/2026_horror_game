@@ -14,5 +14,9 @@
   "vent": {
     "text": "환풍구에 들어가지 마시오",
     "real": false
+  },
+  "store": {
+    "text": "매점의 물건은 값을 치르고 가져가시오",
+    "real": true
   }
 }

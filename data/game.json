@@ -66,15 +66,16 @@
   "maps": [
     "archive",
     "art",
-    "auditorium",
     "byeolsil",
     "class2",
     "classroom",
+    "floor1",
     "floor2",
     "lab",
     "library",
     "science",
     "storage",
+    "store",
     "test",
     "test2",
     "vent"

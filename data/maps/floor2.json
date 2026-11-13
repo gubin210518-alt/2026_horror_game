@@ -1,40 +1,42 @@
 {
   "name": "본관 2층 복도",
   "flicker": {
-    "x": 39,
-    "y": 26,
+    "x": 40,
+    "y": 28,
     "r": 9
   },
   "tiles": [
-    "################################################",
-    "#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,###",
-    "#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,###",
-    "#,,#####ww##ww##ww##ww##ww##ww##ww##ww#####,,###",
-    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
-    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
-    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
-    "#,,#ggggttgggggggggggggggggggggggggggggggg#,,###",
-    "#,,wggggtgggggggggggggggggggggggggggtgggggw,,###",
-    "#,,wggggggggggggggggggtgggggggggggggggggggw,,###",
-    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
-    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
-    "#,,wggggggggggggggggggggggggggggggggggggggw,,###",
-    "#,,wggggggggggggggggggggggttggggggggggggggw,,###",
-    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
-    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
-    "#,,wgggggggggggttgggggggggggggggggggggggggw,,###",
-    "#,cwggggggggggggggggggggggggggggggggggggggw,,###",
-    "#,,#ggggggggggggggggggggggggggttgggggggggg#,,###",
-    "#,,#ggggggggggggggggggggggggggtggggggggggg#,,###",
-    "#,,wggggggggtgggggggggggggggggggggggggggggw,,###",
-    "#c,wggggggggggggggggggggggggggggggggggggggw,,###",
-    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
-    "#,,#gggggggggggggggggggggggggggggggggggggg#,,###",
-    "#,,#####ww##ww##ww##ww##ww##ww##ww##ww#####,,###",
-    "#,,,,,,,,,c,,,,,,,,,,,c,,,,,,,,,,,,,,,,,,,,,,###",
-    "#,,,,c,,,,,,,,,,c,,,,,,,,,,,,,,,,,,,,,,,,,,,,###",
-    "######################################hhhh######",
-    "#####################################......#####"
+    "##################################################",
+    "#,,,,,,,,,,,,,,,,,,,,,,,,,,c,,,,,,,,,,,,,,,,,,,###",
+    "#,,,,,,,,,,,c,,,,,,,,,,,,,,c,,,,,,,,,,,,,,,,,,,###",
+    "#,,,,,,,,,,,c,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,###",
+    "#,,,#####ww##ww##ww##ww##ww##ww##ww##ww#####,,,###",
+    "#,,,#gggggggggggggggggggggggggggggggggggggg#,,,###",
+    "#,,,#gggggggggggggggggggggggggggggggggggggg#,,,###",
+    "#,,,#gggggggggggggggggggggggggggggggggggggg#,,,###",
+    "#,,,#ggggttgggggggggggggggggggggggggggggggg#,,,###",
+    "#,,,wggggtgggggggggggggggggggggggggggtgggggw,,,###",
+    "#,,,wggggggggggggggggggtgggggggggggggggggggw,,,###",
+    "#,,,#gggggggggggggggggggggggggggggggggggggg#,,,###",
+    "#,,,#gggggggggggggggggggggggggggggggggggggg#,cc###",
+    "#,,,wggggggggggggggggggggggggggggggggggggggw,,,###",
+    "#,,,wggggggggggggggggggggggttggggggggggggggw,,,###",
+    "#,,,#gggggggggggggggggggggggggggggggggggggg#,,,###",
+    "#,,,#gggggggggggggggggggggggggggggggggggggg#,,,###",
+    "#,,,wgggggggggggttgggggggggggggggggggggggggw,,,###",
+    "#,,,wggggggggggggggggggggggggggggggggggggggw,,,###",
+    "#cc,#ggggggggggggggggggggggggggttgggggggggg#,,,###",
+    "#,,,#ggggggggggggggggggggggggggtggggggggggg#cc,###",
+    "#,,,wggggggggtgggggggggggggggggggggggggggggw,,,###",
+    "#,,,wggggggggggggggggggggggggggggggggggggggw,,,###",
+    "#,cc#gggggggggggggggggggggggggggggggggggggg#,,,###",
+    "#,,,#gggggggggggggggggggggggggggggggggggggg#,,,###",
+    "#,,,#####ww##ww##ww##ww##ww##ww##ww##ww#####,,,###",
+    "#,,,,,,,c,,,,,,,,,,,c,,,,,,,,,,,,,,,,,,,,,,,,,,###",
+    "#,,,,,,,c,,,,,c,,,,,c,,,,c,,,,,,,,,,,,,,,,,,,,,###",
+    "#,,,,,,,,,,,,,c,,,,,,,,,,c,,,,,,,,,,,,,,,,,,,,,###",
+    "#######################################hhhh#######",
+    "######################################......######"
   ],
   "onEnter": [
     {
@@ -49,7 +51,7 @@
   ],
   "exits": [
     {
-      "x": 6,
+      "x": 7,
       "y": 0,
       "to": "classroom",
       "tx": 2,
@@ -57,7 +59,7 @@
       "dir": "up"
     },
     {
-      "x": 12,
+      "x": 13,
       "y": 0,
       "to": "floor2",
       "tx": 1,
@@ -66,7 +68,7 @@
       "locked": "2학년 1반 뒷문. 밖에서도 열리지 않는다."
     },
     {
-      "x": 18,
+      "x": 19,
       "y": 0,
       "to": "class2",
       "tx": 2,
@@ -74,7 +76,7 @@
       "dir": "up"
     },
     {
-      "x": 24,
+      "x": 25,
       "y": 0,
       "to": "floor2",
       "tx": 1,
@@ -83,7 +85,7 @@
       "locked": "2학년 2반 뒷문. 잠겨 있다."
     },
     {
-      "x": 30,
+      "x": 31,
       "y": 0,
       "to": "floor2",
       "tx": 1,
@@ -92,7 +94,7 @@
       "locked": "[2학년 3반] 잠겨 있다."
     },
     {
-      "x": 36,
+      "x": 37,
       "y": 0,
       "to": "floor2",
       "tx": 1,
@@ -101,7 +103,7 @@
       "locked": "문을 흔들어 봤지만, 여긴 아무것도 없다."
     },
     {
-      "x": 44,
+      "x": 46,
       "y": 0,
       "to": "floor2",
       "tx": 1,
@@ -110,8 +112,8 @@
       "locked": "위층으로 가는 계단에 셔터가 내려와 있다."
     },
     {
-      "x": 45,
-      "y": 23,
+      "x": 47,
+      "y": 24,
       "to": "floor2",
       "tx": 1,
       "ty": 1,
@@ -119,8 +121,8 @@
       "locked": "문패가 떨어져 나간 문. 잠겨 있다."
     },
     {
-      "x": 10,
-      "y": 27,
+      "x": 11,
+      "y": 29,
       "to": "floor2",
       "tx": 1,
       "ty": 1,
@@ -128,8 +130,8 @@
       "locked": "아래층으로 가는 계단에 셔터가 내려와 있다."
     },
     {
-      "x": 20,
-      "y": 27,
+      "x": 21,
+      "y": 29,
       "to": "floor2",
       "tx": 1,
       "ty": 1,
@@ -137,8 +139,8 @@
       "locked": "[시청각실] 잠겨 있다."
     },
     {
-      "x": 30,
-      "y": 27,
+      "x": 31,
+      "y": 29,
       "to": "library",
       "tx": 2,
       "ty": 1,
@@ -167,7 +169,7 @@
     },
     {
       "x": 0,
-      "y": 14,
+      "y": 15,
       "to": "science",
       "tx": 18,
       "ty": 6,
@@ -175,7 +177,7 @@
     },
     {
       "x": 0,
-      "y": 8,
+      "y": 9,
       "to": "floor2",
       "tx": 1,
       "ty": 1,
@@ -184,7 +186,7 @@
     },
     {
       "x": 0,
-      "y": 20,
+      "y": 21,
       "to": "floor2",
       "tx": 1,
       "ty": 1,
@@ -192,8 +194,8 @@
       "locked": "[기술실] 잠겨 있다."
     },
     {
-      "x": 45,
-      "y": 8,
+      "x": 47,
+      "y": 9,
       "to": "floor2",
       "tx": 1,
       "ty": 1,
@@ -201,8 +203,8 @@
       "locked": "[미술 준비실] 잠겨 있다."
     },
     {
-      "x": 45,
-      "y": 18,
+      "x": 47,
+      "y": 19,
       "to": "floor2",
       "tx": 1,
       "ty": 1,
@@ -210,8 +212,8 @@
       "locked": "여긴 아무것도 없다."
     },
     {
-      "x": 36,
-      "y": 27,
+      "x": 37,
+      "y": 29,
       "to": "art",
       "tx": 2,
       "ty": 2,
@@ -220,7 +222,7 @@
   ],
   "objects": [
     {
-      "x": 9,
+      "x": 10,
       "y": 0,
       "color": "#c8c0a0",
       "label": "게시",
@@ -233,8 +235,8 @@
     },
     {
       "x": 1,
-      "y": 4,
-      "w": 2,
+      "y": 5,
+      "w": 3,
       "color": "#555",
       "label": "셔터",
       "art": "shutter",
@@ -245,8 +247,8 @@
     },
     {
       "x": 1,
-      "y": 23,
-      "w": 2,
+      "y": 24,
+      "w": 3,
       "color": "#555",
       "label": "셔터",
       "art": "shutter",
@@ -256,8 +258,8 @@
       ]
     },
     {
-      "x": 38,
-      "y": 27,
+      "x": 39,
+      "y": 29,
       "invisible": true,
       "label": "창문",
       "if": "!ink1",
@@ -292,8 +294,8 @@
       "w": 4
     },
     {
-      "x": 37,
-      "y": 27,
+      "x": 38,
+      "y": 29,
       "w": 6,
       "h": 2,
       "art": "wallpatch",
@@ -307,15 +309,15 @@
   "npcs": [
     {
       "id": "yunha",
-      "x": 39,
-      "y": 28,
+      "x": 40,
+      "y": 30,
       "dir": "up",
       "if": "!m2_fled"
     },
     {
       "id": "guard",
-      "x": 31,
-      "y": 26,
+      "x": 32,
+      "y": 28,
       "dir": "left",
       "ai": "hunter",
       "speed": 6.2,

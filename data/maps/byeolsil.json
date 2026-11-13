@@ -187,14 +187,14 @@
       "art": "doorobj",
       "event": [
         {
+          "sfx": "locked"
+        },
+        {
           "if": "c5_done",
           "then": [
-            "@c5.doorAfter"
+            "@c5.frontDoor"
           ],
           "else": [
-            {
-              "sfx": "locked"
-            },
             "@c5.door"
           ]
         }
@@ -207,15 +207,37 @@
       "art": "doorobj",
       "event": [
         {
-          "if": "c5_done",
+          "if": "c5_done & organ:liver",
           "then": [
-            "@c5.doorAfter"
+            {
+              "if": "!f1_seen",
+              "then": [
+                {
+                  "sfx": "door"
+                },
+                "@c5.backDoor"
+              ]
+            },
+            {
+              "goto": "floor1",
+              "x": 3,
+              "y": 1,
+              "dir": "down"
+            }
           ],
           "else": [
             {
-              "sfx": "locked"
-            },
-            "@c5.door"
+              "if": "c5_done",
+              "then": [
+                "@c5.doorLiver"
+              ],
+              "else": [
+                {
+                  "sfx": "locked"
+                },
+                "@c5.door"
+              ]
+            }
           ]
         }
       ]

@@ -19,7 +19,7 @@
       "x": 2,
       "y": 10,
       "to": "floor2",
-      "tx": 6,
+      "tx": 7,
       "ty": 1,
       "dir": "down",
       "if": "c1_open",

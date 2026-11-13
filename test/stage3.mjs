@@ -86,6 +86,21 @@ t.ok(r === '' && await flag('c5_done') === 1, 'M9: 도중에 찍혀도 흰 방�
 await put(3, 8, 'right'); await key('Space'); await flow('b');
 t.ok(await ev(`${G}.S.items.includes('liver')`) && await ev(`${G}.S.deaths`) === 0, 'M9: 도중에 찍힌 경우에도 간을 주울 수 있다');
 
+// ---------- 별실 뒷문 → 1층 복도 → 매점 ----------
+await put(5, 2, 'right'); await key('Space'); await flow('f1');
+t.ok(await ev(`${G}.S.map`) === 'byeolsil', '별실: 앞문은 끝까지 열리지 않는다');
+await put(5, 8, 'right'); await key('Space'); await flow('f1'); await page.until(`${G}.W.id === 'floor1'`); await flow('f1');
+t.ok(same(await at(), [3, 1]), '6장: 뒷문으로 나가 계단을 내려가면 1층 복도다');
+await snap('f1-corridor');
+await put(30, 1, 'up'); await key('Space'); await flow('f1');
+t.ok(await ev(`${G}.S.coins`) >= 1, '1층: 자판기 밑에서 동전을 줍는다');
+await put(33, 1, 'up'); await page.keyDown('ArrowUp'); await page.until(`${G}.W.id === 'store'`); await page.keyUp('ArrowUp'); await flow('f1');
+await snap('f1-store');
+await put(4, 1, 'up'); await key('Space'); await flow('f1');
+t.ok(await ev(`${G}.S.rules.includes('store')`), '매점: 학교 규칙이 일기장에 기록된다');
+await put(2, 8, 'down'); await page.keyDown('ArrowDown'); await page.until(`${G}.W.id === 'floor1'`); await page.keyUp('ArrowDown');
+t.ok((await at())[0] === 33, '매점: 문으로 나오면 1층 복도의 매점 앞이다'); // 아래 키를 누른 채라 몇 칸 더 내려갈 수 있다
+
 t.ok(await ev(`${G}.D.items.special_ink.desc.includes('제15조')`), '특수 잉크: 설명에 약관 조항이 들어 있다');
 
 t.done(page);

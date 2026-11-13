@@ -17,7 +17,7 @@
 | `assets/pics/ch5.webp`, `camera.webp`, `bag.webp` (2026-11-12 교체) | 연님이 나노바나나(Gemini)로 생성 | 바퀴 달린 사진기, 특수 잉크, 찢어진 종이, 가죽 가방. 앞 줄의 `ch5.webp`, `camera.webp` 를 대신함. 생성 도구 표시는 덮음 |
 | `assets/pics/corpse.webp`, `head.webp` | Higgsfield MCP, 모델 GPT Image 2 (2026-11-12 생성) | 별실의 시체와 머리 |
 | `assets/pics/liver.webp` | `organs.webp` 에서 간만 잘라 냄 | 별실 바닥의 간 |
-| `assets/pics/gradphoto.webp` (2026-11-12 다시 짬) | Higgsfield 그림의 얼굴 타원을 잘라 새 종이에 다시 배치 | 이름 자리를 넓힘 |
+| `assets/pics/gradphoto.webp` (2026-11-13 새로 생성) | Higgsfield MCP, GPT Image 2, 0.5 크레딧 | 글자 없는 졸업사진. 제목과 이름은 게임이 명조체로 얹음 |
 | `assets/pics/cam_frame.webp`, `cam_room.webp`, `cam_yunha.webp` | Higgsfield MCP, GPT Image 2 (2026-11-13 생성, 1.5 크레딧) | 흰 방 틀(타원 구멍), 타원 너머의 별실, 들여다보는 윤하. 게임이 셋을 겹쳐 그림 |
 | `assets/pics/vent_yunha.webp` | 연님이 생성 | 환풍구로 먼저 들어가는 윤하 |
 | 타일, 물건, 문 | 코드로 직접 그림 (`src/engine/art.js`) | 외부 소스 없음 |
