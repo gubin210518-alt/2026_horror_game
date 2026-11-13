@@ -55,12 +55,6 @@
       },
       "@c5.yunhaFinds",
       {
-        "note": "notice_bottom"
-      },
-      {
-        "readNote": "notice_bottom"
-      },
-      {
         "picture": "assets/pics/cam_frame.webp",
         "scene": "stare"
       },
@@ -85,23 +79,30 @@
         "companion": "yunha"
       },
       "@c5.out",
+      "@c5.ask",
       {
-        "if": "!organ:liver",
-        "then": [
-          "@c5.liverGive",
-          {
-            "organ": "liver"
-          },
-          {
-            "set": "c5_liver"
-          }
-        ]
+        "note": "notice_bottom"
       },
+      {
+        "minigame": "paper",
+        "note": "notice_bottom"
+      },
+      "@c5.askAfter",
       {
         "puzzleDone": "m9"
       },
       {
-        "goal": "@c5.goalEnd"
+        "if": "organ:liver",
+        "then": [
+          {
+            "goal": "@c5.goalEnd"
+          }
+        ],
+        "else": [
+          {
+            "goal": "@c5.goalLiver"
+          }
+        ]
       }
     ]
   },
@@ -266,11 +267,11 @@
       "ih": 0.7
     },
     {
-      "x": 3,
+      "x": 4,
       "y": 8,
       "solid": false,
       "label": "간",
-      "if": "!c5_liver & !c5_liver_y",
+      "if": "c5_done & !c5_liver",
       "event": [
         "@c5.liver",
         {
@@ -278,6 +279,9 @@
         },
         {
           "set": "c5_liver"
+        },
+        {
+          "goal": "@c5.goalEnd"
         }
       ],
       "img": "assets/pics/liver.webp",

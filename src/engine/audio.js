@@ -18,6 +18,7 @@ const P = {
   glass: ['noise', 9000, 2500, 0.35, 0.7],
   scream: ['sawtooth', 500, 1400, 0.7, 0.45],
   shutter: ['noise', 7000, 500, 0.09, 0.6],
+  wheel: ['noise', 900, 260, 0.22, 0.35],
   tear: ['noise', 5200, 700, 0.75, 0.65],
 };
 
